@@ -19,7 +19,11 @@
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="<?= $baseDir ?>/login">Login</a></li>
+                <?php if (!$login): ?>
+                    <li class="active"><a href="<?= $baseDir ?>/login">Login</a></li>
+                <?php else: ?>
+                    <li><a href="<?= $baseDir ?>/index">Home</a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </div>

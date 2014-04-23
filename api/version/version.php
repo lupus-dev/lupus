@@ -7,6 +7,6 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-// qui andranno le api
-?>
-apiiiii
+response(200, array(
+    "version" => "0.1-alpha"
+));

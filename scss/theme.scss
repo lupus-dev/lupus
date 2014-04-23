@@ -4,3 +4,10 @@ Lupus in Tabula
 Contributors:
 - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
 */
+
+body {
+    padding-top: 70px;
+    padding-bottom: 30px;
+}
+
+@import "_login/_login.scss";

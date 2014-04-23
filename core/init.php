@@ -26,3 +26,12 @@ $baseDir = "/lupus";
 
 session_start();
 
+$id_user = false;
+$login = false;
+$user = null;
+
+if (isset($_SESSION["id_user"])) {
+    $id_user = $_SESSION["id_user"];
+    $login = true;
+    $user = User::fromIdUser($id_user);
+}

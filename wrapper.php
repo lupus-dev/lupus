@@ -17,9 +17,12 @@ $request = isset($_GET["request"]) ? $_GET["request"] : "";
 // i valori:
 //   - se terminano con .php verranno inclusi
 //   - altrimenti ci sarà un redirect
+// al primo match la valutazione si ferma
 $paths = array(
+    "/^api\/(.*)/" => "../api/api.php",
     "/^index$/" => "index.php",
     "/^login$/" => "login.php",
+    // tutto quello che non è riconoscuto rimanda all'index
     "/.*/" => "index"
 );
 

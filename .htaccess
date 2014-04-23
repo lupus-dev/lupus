@@ -3,7 +3,6 @@
 	# cambiare il percorso per adattarsi alla sottodirectory del server
 	RewriteBase /lupus
 	# esclude dal rewrite le seguenti directory:
-	RewriteCond %{REQUEST_URI} !api/
 	RewriteCond %{REQUEST_URI} !js/
 	RewriteCond %{REQUEST_URI} !img/
 	RewriteCond %{REQUEST_URI} !css/

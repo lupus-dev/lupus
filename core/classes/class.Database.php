@@ -49,4 +49,12 @@ class Database {
             $res[] = $row;
         return $res;
     }
+    /**
+     * Effettua l'escape di una stringa usando il database connesso
+     * @param string $string Stringa da "escappare"
+     * @return string La stringa sicuras
+     */
+    public static function escape($string) {
+        return Database::$mysqli->escape_string($string);
+    }
 }
