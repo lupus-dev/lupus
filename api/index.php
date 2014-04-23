@@ -7,4 +7,4 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-echo $_GET["request"];
+// qui andranno le api

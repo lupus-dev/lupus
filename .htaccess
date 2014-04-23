@@ -2,6 +2,12 @@
 	RewriteEngine On
 	# cambiare il percorso per adattarsi alla sottodirectory del server
 	RewriteBase /lupus
+	# esclude dal rewrite le seguenti directory:
+	RewriteCond %{REQUEST_URI} !api/
+	RewriteCond %{REQUEST_URI} !js/
+	RewriteCond %{REQUEST_URI} !img/
+	RewriteCond %{REQUEST_URI} !css/
+	RewriteCond %{REQUEST_URI} !fonts/
 	# Inoltra tutte le richieste a index.php e mette l'url in request, NON è 
 	# presente la parte di RewriteBase
 	RewriteRule ^(.*)$ index.php?request=$1 [QSA,NC,L]
