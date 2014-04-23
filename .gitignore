@@ -6,3 +6,10 @@ dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
+specifiche/*.aux
+specifiche/*.bak
+specifiche/*converted-to.pdf
+specifiche/*.log
+specifiche/*.out
+specifiche/*.gz
+specifiche/*.toc

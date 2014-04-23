@@ -1,0 +1,8 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	# cambiare il percorso per adattarsi alla sottodirectory del server
+	RewriteBase /lupus
+	# Inoltra tutte le richieste a index.php e mette l'url in request, NON è 
+	# presente la parte di RewriteBase
+	RewriteRule ^(.*)$ index.php?request=$1 [QSA,NC,L]
+</IfModule>
