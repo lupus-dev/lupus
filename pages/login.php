@@ -16,6 +16,7 @@ if ($login)
     <head>
         <?php include __DIR__ . "/common/head.php"; ?>
         <title>Login - Lupus in Tabula</title>
+        <?php insertScript("default.js"); ?>
         <?php insertScript("login.js"); ?>
     </head>
     <body>

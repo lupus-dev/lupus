@@ -15,16 +15,25 @@ $apiReqUri = $_SERVER['REQUEST_URI'];
 $apiReq = substr($apiReqUri, strlen($baseApiDir));
 $apiReq = ($temp = strstr($apiReq, "?", true)) ? $temp : $apiReq;
 
+// espressione regolare per un nome breve
+$shortName = "[a-zA-Z][a-zA-Z0-9]*";
+
 // lista dei percorsi da redirigere
 $apiPaths = array(
     // /login
     "/^login$/" => "login.php",
     // /login/(username)
-    "/^login\/([a-zA-Z][a-zA-Z0-9]*)$/" => "login.php",
+    "/^login\/($shortName)$/" => "login.php",
     // /logout
     "/^logout$/" => "logout.php",
     // /me
     "/^me$/" => "me.php",
+    // /user/(username)
+    "/^user\/($shortName)$/" => "user.php",
+    // /room/(room_name)
+    "/^room\/($shortName)$/" => "room.php",
+    // /game/(room_name)/(game_name)
+    "/^game\/($shortName)\/($shortName)$/" => "game.php",
     // /status
     "/^status$/" => "status.php"
 );
@@ -37,6 +46,8 @@ foreach ($apiPaths as $path => $dest) {
             require __DIR__ . "/$dest";
         else
             header("Location: $baseDir/$dest");
-        break;
+        return;
     }
 }
+
+response(400, array("error" => "$apiReq non è una richiesta valida"));

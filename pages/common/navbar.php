@@ -5,6 +5,8 @@
  * Contributors:
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
+
+$index = startsWith($request, "index") ? "active" : "";
 ?>
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -22,9 +24,18 @@
                 <?php if (!$login): ?>
                     <li class="active"><a href="<?= $baseDir ?>/login">Login</a></li>
                 <?php else: ?>
-                    <li><a href="<?= $baseDir ?>/index">Home</a></li>
+                    <li class="<?= $index ?>"><a href="<?= $baseDir ?>/index">Home</a></li>                    
                 <?php endif; ?>
             </ul>
+            <?php if ($login): ?>
+                <div class="navbar-right">
+                    <span class="navbar-text">
+                        Benvenuto <?= $user->name ?> <?= $user->surname ?> 
+                        <small>(<?= $user->username ?>)</small>
+                    </span>
+                    <button type="button" class="btn btn-warning navbar-btn" onclick="logout()">Logout</button>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </nav>

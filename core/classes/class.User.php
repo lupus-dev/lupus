@@ -27,6 +27,16 @@ class User {
      */
     public $level;
     /**
+     * Il nome dell'utente
+     * @var string
+     */
+    public $name;
+    /**
+     * Il cognome dell'utente
+     * @var type 
+     */
+    public $surname;
+    /**
      * Costruttore privato...
      */
     private function __construct() {
@@ -41,7 +51,7 @@ class User {
     public static function fromIdUser($id) {
         $id = intval($id);
         
-        $query = "SELECT id_user,username,level FROM user WHERE id_user=$id";
+        $query = "SELECT id_user,username,level,name,surname FROM user WHERE id_user=$id";
         $res = Database::query($query);
         
         if (count($res) != 1)
@@ -51,6 +61,8 @@ class User {
         $user->id_user = $res[0]["id_user"];
         $user->username = $res[0]["username"];
         $user->level = $res[0]["level"];
+        $user->name = $res[0]["name"];
+        $user->surname = $res[0]["surname"];
         
         return $user;
     }
@@ -63,7 +75,7 @@ class User {
     public static function fromUsername($username) {
         $username = Database::escape($username);
         
-        $query = "SELECT id_user,username,level FROM user WHERE username='$username'";
+        $query = "SELECT id_user,username,level,name,surname FROM user WHERE username='$username'";
         $res = Database::query($query);
         
         if (count($res) != 1)
@@ -73,6 +85,8 @@ class User {
         $user->id_user = $res[0]["id_user"];
         $user->username = $res[0]["username"];
         $user->level = $res[0]["level"];
+        $user->name = $res[0]["name"];
+        $user->surname = $res[0]["surname"];
         
         return $user;
     }

@@ -5,8 +5,6 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-var APIdir = "/lupus/api";
-
 function login() {
 	var username = $("#username").val();
 	var password = $("#password").val();

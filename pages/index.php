@@ -15,6 +15,7 @@ if (!$login)
     <head>
         <?php include __DIR__ . "/common/head.php"; ?>
         <title>Index - Lupus in Tabula</title>
+        <?php insertScript("default.js"); ?>
     </head>
     <body>
         <div class="container" role="main">

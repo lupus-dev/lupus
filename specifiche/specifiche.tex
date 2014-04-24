@@ -17,21 +17,13 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{3pt}
 
-\newcommand{\ruolobuono}[1]{
-{\color{green}{\textbf{#1}}}
-}
-\newcommand{\ruolocattivo}[1]{
-{\color{red}{\textbf{#1}}}
-}
-\newcommand{\manabuono}{
-{\color{green}{$\star$}}
-}
-\newcommand{\manacattivo}{
-{\color{red}{$\star$}}
-}
-\newcommand{\mail}[1]{
-\href{mailto:#1}{#1}
-}
+\newcommand{\ruolobuono}[1]{{\color{green}{\textbf{#1}}}}
+\newcommand{\ruolocattivo}[1]{{\color{red}{\textbf{#1}}}}
+\newcommand{\manabuono}{{\color{green}{$\star$}}}
+\newcommand{\manacattivo}{{\color{red}{$\star$}}}
+\newcommand{\mail}[1]{\href{mailto:#1}{#1}}
+\newcommand{\pageurl}[1]{\small\texttt{#1}}
+\newcommand{\valpha}{\begin{large}$^\alpha$\end{large}}
 
 \begin{document}
 \maketitle
@@ -218,6 +210,20 @@ Il database è formato da una serie di tabelle spiegate nel dettaglio nella sezi
 \subsection{Le API}
 A causa della natura dinamica del gioco sono necessarie delle funzioni accessibili facilmente tramite JavaScript. Tramite queste funzioni è possibile far proseguire la partita, ottenere informazioni ed effettuare richieste al server.
 
+\subsubsection*{Funzioni disponibili}
+Tutte le seguenti funzioni si intendono già nel percorso delle API (es: \pageurl{/api}). \valpha~indica che è in stato alpha.
+
+\begin{itemize}
+\item \pageurl{/login} Effettua il login tramite username/password e salva nella sessione l'identificativo dell'utente. Devono essere specificati i parametri \texttt{username} e \texttt{password} tramite \texttt{GET}
+\item \pageurl{/login/(username)} Sovrappone il metodo precedente. Effettua il login dell'utente specificato. La password va specificata in \texttt{GET} come per \pageurl{/login}. Se viene specificato anche lo \texttt{username} in \texttt{GET} viene ignorato.
+\item \pageurl{/logout} Se l'utente è connesso lo disconnette cancellando la sessione
+\item \pageurl{/status\valpha} Mostra delle informazioni sul server, come la versione, ecc..
+\item \pageurl{/user/(username)} Mostra le informazioni dell'utente specificato
+\item \pageurl{/me} Scorciatoia per \pageurl{/user/(username)} con lo \texttt{username} dell'utente 
+\item \pageurl{/room/(room\_name)\valpha} Mostra le informazioni della stanza specificata
+\item \pageurl{/game/(room\_name)/(game\_name)\valpha} Mostra le informazioni della partita specificata
+\end{itemize}
+
 \subsection{La web-app}
 L'interfaccia grafica del gioco sarà sviluppata con la libreria BootStrap, la quale rende tutto molto portabile su dispositivi con schermo ridotto. 
 
@@ -226,18 +232,19 @@ Non ci sarà troppo PHP in queste pagine, il grosso del lavoro sarà il JavaScri
 \subsubsection*{Pagine}
 Quello che segue è un elenco delle pagine che devono essere implementate
 \begin{itemize}
-\item \textsf{/login} è la pagina per accedere al sito
-\item \textsf{/admin} è una pagina che contiene la lista dei collegamenti alle altre pagine di amministrazione 
-\item \textsf{/admin/(room\_name)} è la pagina di amministrazione di una stanza
-\item \textsf{/admin/(room\_name)/(num$|$game\_name)} è la pagina di amministrazione di una partita
-\item \textsf{/game} è una pagina che contiene la lista dei collegamenti alle altre pagine di gioco
-\item \textsf{/game/(room\_name)} è una pagina che contiene le partite di una stanza
-\item \textsf{/game/(room\_name)/(num$|$game\_name)} è la pagina di gioco di una partita
-\item \textsf{/user} è la pagina dell'utente
-\item \textsf{/user/(username)} è la pagina di un utente specifico
-\item \textsf{/status} contiene lo stato del server (numero di partite, di stanze, ecc...)
-\item \textsf{/join} è la pagina per trovare una partita
-\item \textsf{/singup} è la pagina per registrarsi
+\item \pageurl{/index} è la pagina che contiene i link alle varie pagine del gioco. Accessibile solo dopo il login.
+\item \pageurl{/login} è la pagina per accedere al sito
+\item \pageurl{/admin} è una pagina che contiene la lista dei collegamenti alle altre pagine di amministrazione 
+\item \pageurl{/admin/(room\_name)} è la pagina di amministrazione di una stanza
+\item \pageurl{/admin/(room\_name)/(num$|$game\_name)} è la pagina di amministrazione di una partita
+\item \pageurl{/game} è una pagina che contiene la lista dei collegamenti alle altre pagine di gioco
+\item \pageurl{/game/(room\_name)} è una pagina che contiene le partite di una stanza
+\item \pageurl{/game/(room\_name)/(num$|$game\_name)} è la pagina di gioco di una partita
+\item \pageurl{/user} è la pagina dell'utente
+\item \pageurl{/user/(username)} è la pagina di un utente specifico
+\item \pageurl{/status} contiene lo stato del server (numero di partite, di stanze, ecc...)
+\item \pageurl{/join} è la pagina per trovare una partita
+\item \pageurl{/singup} è la pagina per registrarsi
 \end{itemize}
 
 \newpage

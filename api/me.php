@@ -11,11 +11,6 @@
  * API per visualizzare le informazioni dell'utente connesso
  */
 
-if (!$login) 
-    response (200, array("info" => "Utente non connesso"));
-else
-    response (202, array(
-        "info" => "Utente connesso",
-        "username" => $user->username,
-        "level" => $user->level
-    ));
+$apiMatches[1] = $user->username;
+
+require __DIR__ . "/user.php";
