@@ -21,7 +21,7 @@
 \newcommand{\mail}[1]{\href{mailto:#1}{#1}}
 \newcommand{\pageurl}[1]{\small\texttt{#1}}
 \newcommand{\valpha}{\begin{large}$^\alpha$\end{large}}
-\newcommand{\GET}{\texttt{GET}}
+\newcommand{\GET}{\texttt{GET}\ }
 \newcommand{\GameMaster}{
 $\mathfrak{G\alpha me}
 \allowbreak \mathfrak{M\alpha ster}$
@@ -124,8 +124,8 @@ Ovviamente perché si possa chiamare “gioco” è necessario che tutto abbia u
 \subsubsection{Gli utenti}
 \begin{itemize}
 \item Ogni utente che si registra ha un identificativo univoco che fa da chiave primaria
-\item Ogni utente ha uno \textsf{username} univoco che usa per identificarsi e per accedere al sito
-\item Lo \textsf{username} è un nome breve
+\item Ogni utente ha uno \texttt{username} univoco che usa per identificarsi e per accedere al sito
+\item Lo \texttt{username} è un nome breve
 \item Ogni utente ha un livello pubblico che determina i privilegi a cui l'utente può accedere
 \item Ogni utente ha una email che viene usata per verificare l'account e notificare qualcosa\dots Da definire
 \end{itemize}
@@ -134,7 +134,7 @@ Ovviamente perché si possa chiamare “gioco” è necessario che tutto abbia u
 \begin{itemize}
 \item Ogni utente di livello appropriato può creare un certo numero di stanze (in base al livello)
 \item Ogni stanza può contenere più partite, una sola però può essere attiva
-\item Ogni stanza ha un nome breve \textsf{room\_name}
+\item Ogni stanza ha un nome breve \texttt{room\_name}
 \item Ogni stanza ha una descrizione con lo stesso grado di accessibilità della partita
 \item Le stanze possono essere private o pubbliche
 \item Ogni utente può visualizzare una stanza pubblica
@@ -146,7 +146,7 @@ Ovviamente perché si possa chiamare “gioco” è necessario che tutto abbia u
 \subsubsection{Le partite}
 \begin{itemize}
 \item Ogni partita è interna ad una stanza
-\item Ogni partita ha un nome breve unico per quella stanza (\textsf{game\_name})
+\item Ogni partita ha un nome breve unico per quella stanza (\texttt{game\_name})
 \item Ogni partita ha un titolo scelto dall'amministratore
 \item L'amministratore della partita è l'amministratore della stanza corrispondente
 \item Possono essere create delle partite solo se non ci sono partite attive
@@ -185,14 +185,14 @@ Deve essere possibile avere una cartella dove mettere dei file php contenenti i 
 Non deve essere presente un file dove vengono registrati i ruoli, deve essere gestito in maniera automatica e dinamica.
 
 \subsubsection*{Orientato agli oggetti}
-Ogni ruolo deve essere un oggetto che deriva dalla classe \textsf{Ruolo}
+Ogni ruolo deve essere un oggetto che deriva dalla classe \texttt{Ruolo}
 
 Il server include tutti i ruoli presenti nella cartella dedicata. Ognuno di questi file contiene una classe e un'istruzione del genere:
 \begin{verbatim}
 $ruoli[] = "nomeClasse";
 \end{verbatim}
 
-Dove \textsf{\$ruoli} è un vettore che conterrà i nomi delle classi da interpretare come ruoli. Se uno dei file in quella cartella non dovesse contenere quell'istruzione allora quel ruolo non sarà abilitato.
+Dove \texttt{\$ruoli} è un vettore che conterrà i nomi delle classi da interpretare come ruoli. Se uno dei file in quella cartella non dovesse contenere quell'istruzione allora quel ruolo non sarà abilitato.
 
 Se un giocatore ha un ruolo non esistente o non abilitato la partita termina a causa di un errore interno.
 
@@ -336,40 +336,46 @@ Quello che segue è un elenco delle pagine che devono essere implementate
 \section{Il database}
 \includegraphics[width = \textwidth]{database.png}
 
-Questa è una bozza della struttura del database, ci saranno sicuramente molte modifiche. Lo schema E-R è stato disegnato con il programma \textsf{MySQL Workbench}.
+Questa è una bozza della struttura del database, ci saranno sicuramente molte modifiche. Lo schema E-R è stato disegnato con il programma \texttt{MySQL Workbench}.
 
 \subsection{Tabella user}
-In questa tabella vengono memorizzati gli utenti registrati. Ogni utente ha un \textsf{id\_user} che rimane nascosto al pubblico e identifica all'interno del database uno ed un solo utente. Ogni utente è identificato all'esterno con un \textsf{username} unico che rispetta il formato "nome breve"
+In questa tabella vengono memorizzati gli utenti registrati. Ogni utente ha un \texttt{id\_user} che rimane nascosto al pubblico e identifica all'interno del database uno ed un solo utente. Ogni utente è identificato all'esterno con un \texttt{username} unico che rispetta il formato "nome breve"
 
 La password dell'utente è salvata codificata in SHA-256. In futuro potrebbe essere aggiunto un ulteriore livello di protezione aggiungendo del salt.
 
 Il livello dell'utente è salvato nella righe dell'utente. Ogni volta che si verifica un evento che potrebbe modificare il livello, si ricalcola il livello e lo si aggiorna solo se è strettamente maggiore.
 
-\subsection{Tabella room}
-La tabella \textsf{room} contiene le informazioni di una stanza. Ogni stanza ha un identificativo univoco \textsf{id\_room}, nascosto al pubblico che identifica la stanza all'interno del database. Ogni stanza contiene l'identificativo dell'utente amministratore della stanza \textsf{id\_admin}. Al pubblico la stanza è identificata con un nome \textsf{room\_name} il quale è unico. Ogni stanza ha anche una descrizione \textsf{room\_descr} che rappresenta il titolo della stanza. 
+Ogni utente ha anche un campo \texttt{name} e uno campo \texttt{surname}
 
-Il campo \textsf{open} nelle prime versioni sarà ignorato perché vanno definiti ancora i permessi per la creazione di stanze e di partite.
+\subsection{Tabella room}
+La tabella \texttt{room} contiene le informazioni di una stanza. Ogni stanza ha un identificativo univoco \texttt{id\_room}, nascosto al pubblico che identifica la stanza all'interno del database. Ogni stanza contiene l'identificativo dell'utente amministratore della stanza \texttt{id\_admin}. Al pubblico la stanza è identificata con un nome \texttt{room\_name} il quale è unico. Ogni stanza ha anche una descrizione \texttt{room\_descr} che rappresenta il titolo della stanza. 
+
+Il campo \texttt{private} indica se la stanza è privata.
 
 \subsection{Tabella game}
-La tabella game raccoglie le informazioni di una singola partita. Ogni partita è identificata all'interno del database con un identificativo unico \textsf{id\_game}. Ogni partita è contenuta all'interno di una stanza \textsf{id\_room}. Ogni partita è identificata all'esterno con un nome breve unico all'interno della stessa stanza \textsf{game\_name}, inoltre ogni partita ha una descrizione che rappresenta il titolo della partita \textsf{game\_descr}.
+La tabella game raccoglie le informazioni di una singola partita. Ogni partita è identificata all'interno del database con un identificativo unico \texttt{id\_game}. Ogni partita è contenuta all'interno di una stanza \texttt{id\_room}. Ogni partita è identificata all'esterno con un nome breve unico all'interno della stessa stanza \texttt{game\_name}, inoltre ogni partita ha una descrizione che rappresenta il titolo della partita \texttt{game\_descr}.
 
-I campi \textsf{day} e \textsf{status} sono informazioni utili della partita, l'istante temporale del gioco e lo stato della partita (in corso, terminata, interrotta, ecc\dots)
+I campi \texttt{day} e \texttt{status} sono informazioni utili della partita, l'istante temporale del gioco e lo stato della partita (in corso, terminata, interrotta, ecc\dots)
+
+Il campo \texttt{roles} contiene una stringa \texttt{JSON} che codifica un vettore associativo con il numero di personaggi di ogni ruolo presente nella partita.
 
 \subsection{Tabella role}
-In questa tabella sono memorizzati i ruoli dei giocatori interni ad una partita. Ogni riga è identificata da un campo \textsf{id\_role} non pubblico. Ogni ruolo è interno alla partita \textsf{id\_game} e relativo all'utente \textsf{id\_user}. 
+In questa tabella sono memorizzati i ruoli dei giocatori interni ad una partita. Ogni riga è identificata da un campo \texttt{id\_role} non pubblico. Ogni ruolo è interno alla partita \texttt{id\_game} e relativo all'utente \texttt{id\_user}. 
 
-Il ruolo dell'utente è memorizzato nella stringa \textsf{role} la quale identifica un ruolo nella cartella dei ruoli. Il campo \textsf{status} indica lo stato dell'utente (vivo, morto, ecc\dots). Alcuni ruoli potrebbero richiedere di memorizzare delle informazioni aggiuntive, il campo \textsf{data} contiene dei dati salvati da un ruolo, codificati in \textsf{JSON}.
+Il ruolo dell'utente è memorizzato nella stringa \texttt{role} la quale identifica un ruolo nella cartella dei ruoli. Il campo \texttt{status} indica lo stato dell'utente (vivo, morto, ecc\dots). 
+
+Alcuni ruoli potrebbero richiedere di memorizzare delle informazioni aggiuntive, il campo \texttt{data} contiene dei dati salvati da un ruolo, codificati in \texttt{JSON}.
 
 \subsection{Tabella vote}
-In questa tabella vengono memorizzati i voti degli utenti. Ogni voto è identificato tramite il campo \textsf{id\_vote}, il quale rimane nascosto all'esterno del database. Ogni voto è specifico della partita \textsf{id\_game} nel momento \textsf{day} e appartiene all'utente \textsf{id\_user}. Il suo voto è \textsf{vote} il quale può essere l'identificativo di un utente ma anche altro. 
+In questa tabella vengono memorizzati i voti degli utenti. Ogni voto è identificato tramite il campo \texttt{id\_vote}, il quale rimane nascosto all'esterno del database. Ogni voto è specifico della partita \texttt{id\_game} nel momento \texttt{day} e appartiene all'utente \texttt{id\_user}. Il suo voto è \texttt{vote} il quale può essere l'identificativo di un utente ma anche altro. 
 
 \subsection{Tabella chat}
-In questa tabella vengono memorizzati i messaggi delle varie chat. Ogni messaggio è identificato all'interno del database da \textsf{id\_chat}. Ogni messaggio si riferisce alla partita \textsf{id\_game}. Il mettente del messaggio è \textsf{id\_user\_from} cioè l'identificativo dell'utente che ha inviato il messaggio. Il destinatario \textsf{to} è un numero intero che può rappresentare vari identificativi, in base a \textsf{level} il destinatario può essere un utente, il pubblico, una chat privata, ecc..
+In questa tabella vengono memorizzati i messaggi delle varie chat. Ogni messaggio è identificato all'interno del database da \texttt{id\_chat}. Ogni messaggio si riferisce alla partita \texttt{id\_game}. Il mettente del messaggio è \texttt{id\_user\_from} cioè l'identificativo dell'utente che ha inviato il messaggio. Il destinatario \texttt{dest} è un numero intero che può rappresentare vari identificativi, in base a \texttt{level} il destinatario può essere un utente, il pubblico, una chat privata, ecc..
 
-Il testo del messaggio è \textsf{text} il quale non può essere più lungo di 200 caratteri e viene eseguito l'escape sia per il database che per il JavaScript.
+Il testo del messaggio è \texttt{text} il quale non può essere più lungo di 200 caratteri e viene eseguito l'escape sia per il database che per il JavaScript.
 
 \subsection{Tabella newspaper}
-In questa tabella viene memorizzato il giornale dei vari giorni della partita. Ogni articolo è identificato da \textsf{id\_news} ed appartiene alla partita \textsf{id\_game} al tempo \textsf{day}. Il testo dell'articolo è memorizzato in \textsf{news}.
+In questa tabella viene memorizzato il giornale dei vari giorni della partita. Ogni articolo è identificato da \texttt{id\_news} ed appartiene alla partita \texttt{id\_game} al tempo \texttt{day}. Il testo dell'articolo è memorizzato in \texttt{news}.
 
 \newpage
 \tableofcontents

@@ -10,7 +10,7 @@
 /**
  * Classe che contiene le informazioni sugli stati
  */
-class Status {
+class GameStatus {
 
     /**
      * Elenco delgi stati di una partita
@@ -42,7 +42,7 @@ class Status {
      * @return type
      */
     public static function getStatuses() {
-        return Status::$status;
+        return GameStatus::$status;
     }
 
     /**
@@ -52,8 +52,8 @@ class Status {
      * ritorna false
      */
     public static function getStatus($num) {
-        if (isset(Status::$status[$num]))
-            return Status::$status[$num];
+        if (isset(GameStatus::$status[$num]))
+            return GameStatus::$status[$num];
         return false;
     }
 
