@@ -2,6 +2,9 @@
 	RewriteEngine On
 	# cambiare il percorso per adattarsi alla sottodirectory del server
 	RewriteBase /lupus
+	# rewrite per le API
+	RewriteCond %{REQUEST_URI} api/
+	RewriteRule ^api/(.*)$ api/api.php [QSA,L]
 	# esclude dal rewrite le seguenti directory:
 	RewriteCond %{REQUEST_URI} !js/
 	RewriteCond %{REQUEST_URI} !img/
