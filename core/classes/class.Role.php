@@ -12,7 +12,9 @@
  */
 abstract class Role {
     /**
-     * Nome breve del ruolo
+     * Nome breve del ruolo. Identifica il ruolo. La definizione del ruolo
+     * è nel percorso: roles/role.Xxxx.php e il ruolo è una classe di nome Xxxx
+     * con Xxxx il role_name con l'iniziale maiuscola
      * @var string
      */
     public $role_name = "";
@@ -183,5 +185,17 @@ abstract class Role {
             return false;
         
         return $res[0]["status"];
+    }
+    
+    /**
+     * Confronta due ruoli per ordinarli in base alla loro priorità
+     * @param \Role $roleA 
+     * @param \Role $roleB
+     * @return int Ritorna il valore del contronto delle priorità dei ruoli
+     */
+    static function cmpRole($roleA, $roleB) {
+        if ($roleA->priority == $roleB->priority)
+            return 0;
+        return ($roleA->priority < $roleB->priority) ? -1 : 1;
     }
 }

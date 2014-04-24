@@ -18,7 +18,7 @@ class Team {
     /**
      * Squadra dei lupi
      */
-    const Lupus = 1;
+    const Antagonists = 1;
     /**
      * Squadra dei criceti
      */

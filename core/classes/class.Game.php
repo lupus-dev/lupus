@@ -83,7 +83,7 @@ class Game {
         $game->status = $res[0]["status"];
         $game->game_name = $res[0]["game_name"];
         $game->game_descr = $res[0]["game_descr"];
-        $game->roles = json_decode($res[0]["roles"]);
+        $game->roles = json_decode($res[0]["roles"], true);
 
         return $game;
     }
@@ -116,7 +116,7 @@ class Game {
         $game->status = $res[0]["status"];
         $game->game_name = $res[0]["game_name"];
         $game->game_descr = $res[0]["game_descr"];
-        $game->roles = json_decode($res[0]["roles"]);
+        $game->roles = json_decode($res[0]["roles"], true);
 
         return $game;
     }
@@ -170,4 +170,15 @@ class Game {
         return Game::fromRoomGameName($room->room_name, $name);
     }
 
+    public function status($status) {
+        $status = intval($status);
+        if ($status == 0)
+            $status = GameStatus::TermByBug;
+        $id_game = $this->id_game;
+        $query = "UPDATE game SET status=$status WHERE id_game=$id_game";
+        $res = Database::query($query);
+        if (!$res)
+            return false;
+        return true;
+    }    
 }

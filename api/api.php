@@ -30,6 +30,7 @@ $apiPaths = array(
     "/^status$/" => "status.php",
     "/^new_room\/($shortName)$/" => "new_room.php",
     "/^new_game\/($shortName)\/($shortName)$/" => "new_game.php",
+    "/^debug$/" => "debug.php",
 );
 
 // dentro apiMatches ci sono gli eventuali match della richiesta
