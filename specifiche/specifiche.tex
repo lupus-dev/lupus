@@ -1,6 +1,3 @@
-\title{Lupus in Tabula}
-\author{Edoardo Morassutto}
-
 \documentclass[10pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[italian]{babel}
@@ -24,6 +21,27 @@
 \newcommand{\mail}[1]{\href{mailto:#1}{#1}}
 \newcommand{\pageurl}[1]{\small\texttt{#1}}
 \newcommand{\valpha}{\begin{large}$^\alpha$\end{large}}
+\newcommand{\GET}{\texttt{GET}}
+\newcommand{\GameMaster}{
+$\mathfrak{G\alpha me}
+\allowbreak \mathfrak{M\alpha ster}$
+}
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 
+
+\title{
+\horrule{0.5pt} \\[0.5cm]
+\huge Lupus in Tabula
+\horrule{0.5pt}
+}
+
+\author{
+{\Large Edoardo Morassutto}
+}
+
+\date{
+{\small Ultimo aggiornamento} \\
+\today
+}
 
 \begin{document}
 \maketitle
@@ -39,7 +57,7 @@ Se vuoi dare una mano ogni tanto forka il repository /lupus-dev/lupus su GitHub 
 Se vuoi diventare uno sviluppatore chiedimelo e vedrò di accontentarti!
 
 \section{Introduzione}
-Il progetto viene scritto in PHP. Ovviamente non può mancare l'HTML, JavaScript, CSS, database, git, SASS, ed altro...
+Il progetto viene scritto in PHP. Ovviamente non può mancare l'HTML, JavaScript, CSS, database, git, SASS, ed altro\dots
 
 \subsection{Pacchetti software}
 Il progetto verrà avviato su una macchina con questi pacchetti (e dipendenze):
@@ -55,7 +73,7 @@ Il progetto verrà avviato su una macchina con questi pacchetti (e dipendenze):
 \item MySQL (compatibile con i più comuni webserver gratuiti)
 \item SASS (solo lato compilazione del CSS)
 	\begin{itemize}	
-	\item Quindi Ruby...	
+	\item Quindi Ruby\dots
 	\end{itemize}
 \end{itemize}
 
@@ -70,7 +88,7 @@ Tramite il file .htaccess vengono configurate l'estensioni usate, facile il veri
 \subsubsection*{PHP}
 Dato che il server del gioco verrà scritto in PHP, è necessario che PHP sia installato e configurato correttamente. 
 
-Il progetto verrà scritto in PHP 5.3 (la versione attuale di Altervista) per permettere una facile migrazione di host nel caso sia necessario e per renderlo il più retrocompatibile possibile. Alcune funzioni sono state marcate come “deprecated” in 5.4, sapendolo cerchiamo di evitarle... Ad esempio non useremo l'estensione mysql ma la nuova mysqli con approccio ad oggetti. È necessario quindi che sia abilitata se non lo fosse già.
+Il progetto verrà scritto in PHP 5.3 (la versione attuale di Altervista) per permettere una facile migrazione di host nel caso sia necessario e per renderlo il più retrocompatibile possibile. Alcune funzioni sono state marcate come “deprecated” in 5.4, sapendolo cerchiamo di evitarle\dots Ad esempio non useremo l'estensione mysql ma la nuova mysqli con approccio ad oggetti. È necessario quindi che sia abilitata se non lo fosse già.
 
 \subsubsection*{MySQL}
 Per quanto mi possa piacere di più PostgreSQL sono costretto a scegliere di usare MySQL per le stesse ragioni per cui useremo PHP 5.3. PostgreSQL non è supportato da Altervista e da altri webhosting gratuiti. La versione è abbastanza ininfluente, non useremo funzioni particolarmente recenti.
@@ -85,7 +103,7 @@ SASS è un preprocessore di CSS, permette di scrivere il CSS molto più semplice
 \item Si possono includere altri fogli SASS dentro un file SASS (aka import)
 \end{itemize}
 
-SASS richiede che sia installato anche Ruby per funzionare... 
+SASS richiede che sia installato anche Ruby per funzionare\dots 
 
 Usando NetBeans è possibile abilitare la compilazione automatica e trasparente dei file .scss ad ogni salvataggio.
 
@@ -98,7 +116,7 @@ Questa è una semplice guida per iniziare a giocare:
 
 \url{http://www.davincigames.net/lit/lupus_in_tabula_4th_regole.pdf}
 
-Ignorare a prescindere la roba delle carte e pensare in grande per scrivere un server web...
+Ignorare a prescindere la roba delle carte e pensare in grande per scrivere un server web\dots
 
 \subsection{Struttura dei componenti}
 Ovviamente perché si possa chiamare “gioco” è necessario che tutto abbia una struttura solida e chiara. Vengono quindi spiegate le principali entità del gioco. Tutti i riferimenti ai nomi brevi sono chiariti nella sezione apposita.
@@ -109,7 +127,7 @@ Ovviamente perché si possa chiamare “gioco” è necessario che tutto abbia u
 \item Ogni utente ha uno \textsf{username} univoco che usa per identificarsi e per accedere al sito
 \item Lo \textsf{username} è un nome breve
 \item Ogni utente ha un livello pubblico che determina i privilegi a cui l'utente può accedere
-\item Ogni utente ha una email che viene usata per verificare l'account e notificare qualcosa... Da definire
+\item Ogni utente ha una email che viene usata per verificare l'account e notificare qualcosa\dots Da definire
 \end{itemize}
 
 \subsubsection{Le stanze}
@@ -145,8 +163,8 @@ Ovviamente perché si possa chiamare “gioco” è necessario che tutto abbia u
 \subsubsection{I livelli}
 \begin{itemize}
 \item Ogni utente ha un livello
-\item Il livello è solo crescente (non si può essere degradati tranne dall'game master)
-\item Un utente bannato ha livello uguale a zero
+\item Il livello è solo crescente (non si può essere degradati tranne dall'\GameMaster)
+\item Un utente bannato ha livello uguale a zero (da definire\dots)
 \end{itemize}
 
 \subsubsection{Nomi brevi}
@@ -189,11 +207,73 @@ I ruoli da implementare fin da subito potrebbero essere: (il colore indica la fa
 \item \ruolobuono{Criceto mannaro\manacattivo} \'E un giocatore normale, senza poteri speciali. Se la partita termina e lui è ancora vivo allora vince solo lui e non la sua fazione.
 \item \ruolobuono{Assassino\manacattivo} L'assassino una sola volta nella partita può scegliere una persona e ucciderla
 \item \ruolobuono{Massone\manabuono} I massoni non hanno poteri però hanno una chat dedicata e quindi si conoscono tra loro
-\item \ruolobuono{Contadino\manabuono} I contadini non hanno poteri...
+\item \ruolobuono{Contadino\manabuono} I contadini non hanno poteri\dots
 \item \ruolobuono{Pastore\manabuono} I pastori possono scegliere di sacrificare delle pecore per salvare dei giocatori dalle grinfie dei lupi
 \item \ruolobuono{Falso\manacattivo} Il falso può scegliere tra una serie di proposizioni false e renderle pubbliche sul giornale
 \item \ruolobuono{Prescelto\manabuono} Il prescelto all'inizio della partita conosce 4 proposizioni, 2 vere e 2 valse
 \item \ruolobuono{Sindaco\manabuono} Il sindaco è un contadino che non può essere messo al rogo
+\end{itemize}
+
+\subsection{Stati partita}
+Ogni partita contiene il campo status, un valore intero che rappresenta lo stato di gioco della partita.
+
+Lo stato della partita divide ogni partita in 3 fasi (a volte 4):
+
+\subsubsection{Fase pre-partita}
+Questa fase è presente solo prima dell'avvio della partita e server per salvare ed aggiustare i dettagli della partita, come il numero di giocatori, di ruoli, la descrizione, ecc\dots
+
+Questa fase è identificata da codici nell'intervallo:
+\[
+	0 \le x < 100
+\]
+
+I codici riconosciuti sono:
+\begin{itemize}
+\item 0: Setup
+\end{itemize}
+
+\subsubsection{Fase in-partita}
+Questa fase è presente poco prima dell'inizio della partita e durante tutto il corso della partita. 
+
+Viene identificata da codici nell'intervallo:
+\[
+	100 \le x < 200
+\]
+
+I codici riconosciuti sono:
+\begin{itemize}
+\item 100: attiva ma non iniziata. La partita è attiva e i giocatori possono iniziare ad entrare
+\item 101: in corso. La partita è in corso e i giocatori non possono più entrare
+\end{itemize}
+
+\subsubsection{Fase terminata in modo corretto}
+Questa fase si verifica quando la partita termina in modo corretto e viene scelta una squadra vincitrice.
+
+I codici che la identificano sono compresi nell'intervallo:
+\[
+	200 \le x < 300
+\]
+
+I codici riconosciuti sono:
+\begin{itemize}
+\item $200+y$: la partita è terminata e ha vinto la squadra $y$
+\end{itemize}
+
+\subsubsection{Fase terminata in modo inaspettato}
+Questa fase si verifica quando la partita viene interrotta prima della sua normale fine. In questo caso non viene designato alcun vincitore.
+
+I codici che identificano questa fase sono compresi dall'intervallo:
+\[
+	300 \le x < 400
+\]
+
+I codici riconosciuti sono:
+\begin{itemize}
+\item 300: terminata dall'admin. L'amministratore della stanza ha fatto terminare la partita
+\item 301: numero di giocatori insufficiente. Un numero eccessivo di giocatori hanno abbandonato la partita
+\item 302: terminata per votazione. \'E stato raggiunto il \emph{quorum} per terminare la partita
+\item 303: terminata per bug. Un errore interno del server ha fatto terminare la partita per preservare l'integrità del server
+\item 304: terminata dal \GameMaster. Il \GameMaster ha deciso di terminare la partita
 \end{itemize}
 
 \section{Il server}
@@ -211,17 +291,21 @@ Il database è formato da una serie di tabelle spiegate nel dettaglio nella sezi
 A causa della natura dinamica del gioco sono necessarie delle funzioni accessibili facilmente tramite JavaScript. Tramite queste funzioni è possibile far proseguire la partita, ottenere informazioni ed effettuare richieste al server.
 
 \subsubsection*{Funzioni disponibili}
-Tutte le seguenti funzioni si intendono già nel percorso delle API (es: \pageurl{/api}). \valpha~indica che è in stato alpha.
+Tutte le seguenti funzioni si intendono già nel percorso delle API (es: \pageurl{/api}). 
+
+\valpha~indica che la funzione non è completa.
 
 \begin{itemize}
-\item \pageurl{/login} Effettua il login tramite username/password e salva nella sessione l'identificativo dell'utente. Devono essere specificati i parametri \texttt{username} e \texttt{password} tramite \texttt{GET}
-\item \pageurl{/login/(username)} Sovrappone il metodo precedente. Effettua il login dell'utente specificato. La password va specificata in \texttt{GET} come per \pageurl{/login}. Se viene specificato anche lo \texttt{username} in \texttt{GET} viene ignorato.
+\item \pageurl{/login} Effettua il login tramite username/password e salva nella sessione l'identificativo dell'utente. Devono essere specificati i parametri \texttt{username} e \texttt{password} tramite \GET
+\item \pageurl{/login/(username)} Sostituisce il metodo precedente. Effettua il login dell'utente specificato. La password va specificata in \GET come per \pageurl{/login}. Se viene specificato anche lo \texttt{username} in \GET viene ignorato.
 \item \pageurl{/logout} Se l'utente è connesso lo disconnette cancellando la sessione
 \item \pageurl{/status\valpha} Mostra delle informazioni sul server, come la versione, ecc..
 \item \pageurl{/user/(username)} Mostra le informazioni dell'utente specificato
 \item \pageurl{/me} Scorciatoia per \pageurl{/user/(username)} con lo \texttt{username} dell'utente 
-\item \pageurl{/room/(room\_name)\valpha} Mostra le informazioni della stanza specificata
-\item \pageurl{/game/(room\_name)/(game\_name)\valpha} Mostra le informazioni della partita specificata
+\item \pageurl{/room/(room\_name)} Mostra le informazioni della stanza specificata
+\item \pageurl{/game/(room\_name)/(game\_name)} Mostra le informazioni della partita specificata
+\item \pageurl{/new\_room/(room\_name)} Crea una nuova stanza appartenente all'utente. Deve venire specificato il parametro \texttt{descr} in \GET. Può essere specificato il parametro \texttt{private} per rendere la stanza privata
+\item \pageurl{/new\_game/(room\_name)/(game\_name)} Crea una nuova partita nella stanza specificata. Devono venire specificati i parametri \texttt{descr} e \texttt{roles} in \GET
 \end{itemize}
 
 \subsection{La web-app}
@@ -242,7 +326,7 @@ Quello che segue è un elenco delle pagine che devono essere implementate
 \item \pageurl{/game/(room\_name)/(num$|$game\_name)} è la pagina di gioco di una partita
 \item \pageurl{/user} è la pagina dell'utente
 \item \pageurl{/user/(username)} è la pagina di un utente specifico
-\item \pageurl{/status} contiene lo stato del server (numero di partite, di stanze, ecc...)
+\item \pageurl{/status} contiene lo stato del server (numero di partite, di stanze, ecc\dots)
 \item \pageurl{/join} è la pagina per trovare una partita
 \item \pageurl{/singup} è la pagina per registrarsi
 \end{itemize}
@@ -269,12 +353,12 @@ Il campo \textsf{open} nelle prime versioni sarà ignorato perché vanno definit
 \subsection{Tabella game}
 La tabella game raccoglie le informazioni di una singola partita. Ogni partita è identificata all'interno del database con un identificativo unico \textsf{id\_game}. Ogni partita è contenuta all'interno di una stanza \textsf{id\_room}. Ogni partita è identificata all'esterno con un nome breve unico all'interno della stessa stanza \textsf{game\_name}, inoltre ogni partita ha una descrizione che rappresenta il titolo della partita \textsf{game\_descr}.
 
-I campi \textsf{day} e \textsf{status} sono informazioni utili della partita, l'istante temporale del gioco e lo stato della partita (in corso, terminata, interrotta, ecc...)
+I campi \textsf{day} e \textsf{status} sono informazioni utili della partita, l'istante temporale del gioco e lo stato della partita (in corso, terminata, interrotta, ecc\dots)
 
 \subsection{Tabella role}
 In questa tabella sono memorizzati i ruoli dei giocatori interni ad una partita. Ogni riga è identificata da un campo \textsf{id\_role} non pubblico. Ogni ruolo è interno alla partita \textsf{id\_game} e relativo all'utente \textsf{id\_user}. 
 
-Il ruolo dell'utente è memorizzato nella stringa \textsf{role} la quale identifica un ruolo nella cartella dei ruoli. Il campo \textsf{status} indica lo stato dell'utente (vivo, morto, ecc...). Alcuni ruoli potrebbero richiedere di memorizzare delle informazioni aggiuntive, il campo \textsf{data} contiene dei dati salvati da un ruolo, codificati in \textsf{JSON}.
+Il ruolo dell'utente è memorizzato nella stringa \textsf{role} la quale identifica un ruolo nella cartella dei ruoli. Il campo \textsf{status} indica lo stato dell'utente (vivo, morto, ecc\dots). Alcuni ruoli potrebbero richiedere di memorizzare delle informazioni aggiuntive, il campo \textsf{data} contiene dei dati salvati da un ruolo, codificati in \textsf{JSON}.
 
 \subsection{Tabella vote}
 In questa tabella vengono memorizzati i voti degli utenti. Ogni voto è identificato tramite il campo \textsf{id\_vote}, il quale rimane nascosto all'esterno del database. Ogni voto è specifico della partita \textsf{id\_game} nel momento \textsf{day} e appartiene all'utente \textsf{id\_user}. Il suo voto è \textsf{vote} il quale può essere l'identificativo di un utente ma anche altro. 

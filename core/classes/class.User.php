@@ -106,4 +106,35 @@ class User {
         $res = Database::query($query);
         return count($res) == 1 ? $res[0]["id_user"] : false;
     }
+    
+    /**
+     * Ottiene la lista dei nomi delle stanze pubbliche associate all'utente
+     * @return string Un vettore di room_name
+     */
+    public function getPublicRoom() {
+        $id_admin = $this->id_user;
+        $query = "SELECT room_name FROM room WHERE id_admin=$id_admin AND private=0";
+        $res = Database::query($query);
+        
+        $rooms = array();
+        foreach ($res as $room)
+            $rooms[] = $room["room_name"];
+        
+        return $rooms;
+    }
+    /**
+     * Ottiene la lista dei nomi delle stanze private associate all'utente
+     * @return string Un vettore di room_name
+     */
+    public function getPrivateRoom() {
+        $id_admin = $this->id_user;
+        $query = "SELECT room_name FROM room WHERE id_admin=$id_admin AND private=1";
+        $res = Database::query($query);
+        
+        $rooms = array();
+        foreach ($res as $room)
+            $rooms[] = $room["room_name"];
+        
+        return $rooms;
+    }
 }

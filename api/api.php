@@ -20,22 +20,16 @@ $shortName = "[a-zA-Z][a-zA-Z0-9]*";
 
 // lista dei percorsi da redirigere
 $apiPaths = array(
-    // /login
     "/^login$/" => "login.php",
-    // /login/(username)
     "/^login\/($shortName)$/" => "login.php",
-    // /logout
     "/^logout$/" => "logout.php",
-    // /me
     "/^me$/" => "me.php",
-    // /user/(username)
     "/^user\/($shortName)$/" => "user.php",
-    // /room/(room_name)
     "/^room\/($shortName)$/" => "room.php",
-    // /game/(room_name)/(game_name)
     "/^game\/($shortName)\/($shortName)$/" => "game.php",
-    // /status
-    "/^status$/" => "status.php"
+    "/^status$/" => "status.php",
+    "/^new_room\/($shortName)$/" => "new_room.php",
+    "/^new_game\/($shortName)\/($shortName)$/" => "new_game.php",
 );
 
 // dentro apiMatches ci sono gli eventuali match della richiesta

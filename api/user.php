@@ -21,11 +21,27 @@ if (!$login)
 $reqUser = User::fromUsername($username);
 // l'utente deve esistere
 if (!$reqUser)
-    response (404, array("error" => "Utente non trovato"));
+    response(404, array("error" => "Utente non trovato"));
 
-response(202, array(
+$level = Level::getLevel($user->level);
+
+$result = array(
     "username" => $reqUser->username,
     "name" => $reqUser->name,
     "surname" => $reqUser->surname,
-    "level" => $user->level
-));
+    "level" => (!$level) ?
+        array("level" => $user->level) :
+        array(
+            "level" => $user->level,
+            "name" => $level->name,
+            "aviableRoom" => $level->aviableRoom,
+            "privateRoom" => $level->privateRoom,
+            "betaFeature" => $level->betaFeature
+        ),
+    "room" => $user->getPublicRoom()
+);
+
+if ($username == $user->username)
+    $result["private_room"] = $user->getPrivateRoom();
+
+response(202, $result);

@@ -22,9 +22,7 @@ if (!$room)
 
 $admin = User::fromIdUser($room->id_admin);
 
-response(202, array(
-    "room_name" => $room->room_name,
-    "room_descr" => $room->room_descr,
-    "admin" => $admin->username,
-    "games" => $room->getGame()
-));
+if ($admin->id_user != $user->id_user && $room->private)
+    response (401, array("error" => "La stanza non è accessibile all'utente'"));
+
+response(202, Room::makeResponse($room));
