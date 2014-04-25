@@ -10,7 +10,7 @@
 /**
  * Classe con le costanti delle squadre supportate
  */
-class Team {
+class RoleTeam {
     /**
      * Squadra dei paesani
      */
@@ -30,5 +30,5 @@ class Team {
     private function __construct() {
         
     }
-
+    
 }
