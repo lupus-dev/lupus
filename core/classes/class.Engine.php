@@ -23,6 +23,11 @@ class Engine {
     const NeedVote = 2;
 
     /**
+     * La partita è terminata in modo corretto
+     */
+    const EndGame = 3;
+
+    /**
      * La partita è stata terminata a causa di un ruolo non riconosciuto
      */
     const BadRole = 500;
@@ -31,6 +36,11 @@ class Engine {
      * La partita è stata terminata a causa di un'azione fallita
      */
     const BadAction = 501;
+
+    /**
+     * La partita è stata terminata a causa di una squadra non riconosciuta
+     */
+    const BadTeam = 502;
 
     /**
      * La partita da far muovere
@@ -43,6 +53,13 @@ class Engine {
      * @var array
      */
     public $protected;
+
+    /**
+     * Vettore che contiene gli identificativi dei giocatori indicizzati per 
+     * ruolo
+     * @var array
+     */
+    public $roles;
 
     /**
      * Crea un nuovo motore basandosi sulla partita specificata
@@ -63,7 +80,8 @@ class Engine {
             $this->game->status(GameStatus::TermByBug);
             return Engine::BadRole;
         }
-
+        
+        // controlla se qualcuno deve ancora votare
         $voteStatus = $this->checkVotes($roles);
         if ($voteStatus)
             return $voteStatus;
@@ -73,14 +91,26 @@ class Engine {
         shuffle($roles);
         usort($roles, array("Role", "cmpRole"));
 
+        // esegue le azioni associate agli utenti
         $performStatus = $this->performAction($roles);
         if ($performStatus)
             return $performStatus;
 
-        // @todo Per ogni squadra verificare se la partita termina
-        //       Se si, falla terminare con codice 200+y
-        //       Se no, fa avanzare il giorno/notte
-        return Engine::Ok;
+        // verifica se la partita termina
+        $endStatus = $this->checkEnd();
+        // se il giorno/notte è finito correttamente
+        if ($endStatus == Engine::Ok) {
+            $this->game->nextDay();
+            return Engine::Ok;
+        }
+        // se la partita termina
+        if ($endStatus <= GameStatus::DeadWin) {
+            $this->game->status($endStatus);
+            return Engine::EndGame;
+        }
+        // se se verifica un errore
+        $this->game->status(GameStatus::TermByBug);
+        return $endStatus;
     }
 
     /**
@@ -97,22 +127,30 @@ class Engine {
             return false;
 
         $roles = array();
+        $this->roles = array();
 
         foreach ($res as $role) {
             $id_user = $role["id_user"];
-            $role = $role["role"];
+            $user_role = $role["role"];
 
             $user = User::fromIdUser($id_user);
             // il nome del ruolo è il codice del ruolo con l'iniziale maiuscola
-            $role_name = firstUpper($role);
+            $role_name = firstUpper($user_role);
             // deve esistere una classe con quel nome e deve derivare da "Role"
             if (!class_exists($role_name) || !in_array("Role", class_parents($role_name)))
                 return false;
             // usa il contenuto di ($role_name) come nome della classe da dichiarare
             $role = new $role_name($user, $this);
             // il ruolo deve essere abilitato
-            if (!$role->enabled)
+            if (!$role_name::$enabled)
                 return false;
+
+            // memorizzo l'utente nell'elenco di utenti per ruolo
+            if (!isset($this->roles[$user_role]))
+                $this->roles[$user_role] = array($id_user);
+            else
+                $this->roles[$user_role][] = $id_user;
+
             $roles[] = $role;
         }
 
@@ -173,6 +211,52 @@ class Engine {
                 break;
         }
         return false;
+    }
+
+    /**
+     * Verifica se la partita è terminata
+     * @return int Ritorna un valore che identifica lo stato del motore
+     */
+    private function checkEnd() {
+        // elenco di tutti ruoli nella partita
+        $roles = array_keys($this->roles);
+        $teams = array();
+        // estrae i nomi delle squadre della partita
+        foreach ($roles as $role) {
+            $role_name = firstUpper($role);
+            $team_name = $role_name::$team_name;
+            $teams[$team_name] = $team_name;
+        }
+        foreach ($teams as $team_name) {
+            $team = firstUpper($team_name);
+            // se la squadra non è riconosciuta
+            if (!class_exists($team) || !in_array("Team", class_parents($team)))
+                return Engine::BadTeam;
+            $team_obj = new $team($this);
+            // se la squadra ha vinto
+            if ($team_obj->checkWin())
+                return GameStatus::Winy + $team::$team_code;
+        }
+        // se tutti i giocatori sono morti, forza la fine della partita
+        if ($this->checkDeadEnd())
+            return GameStatus::DeadWin;
+        return Engine::Ok;
+    }
+
+    /**
+     * Verifica se la partita è terminata perchè tutti i giocatori sono morti
+     * @return boolean
+     */
+    private function checkDeadEnd() {
+        $id_game = $this->game->id_game;
+        $alive = RoleStatus::Alive;
+        
+        $query = "SELECT COUNT(*) AS alive FROM role WHERE id_game=$id_game AND status=$alive";
+        $res = Database::query($query);
+        if (!$res || count($res) != 1)
+            return false;
+        // se ci sono zero giocatori vivi, la partita termina
+        return $res[0]["alive"] == 0;
     }
 
 }

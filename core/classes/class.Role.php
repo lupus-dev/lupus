@@ -18,45 +18,45 @@ abstract class Role {
      * con Xxxx il role_name con l'iniziale maiuscola
      * @var string
      */
-    public $role_name = "";
+    public static $role_name = "";
 
     /**
      * Nome completo del ruolo
      * @var string
      */
-    public $name = "";
+    public static $name = "";
 
     /**
      * Indica se questo ruolo è accessibile solo agli utenti con le funzioni di
      * debug sbloccate
      * @var boolean
      */
-    public $debug = false;
+    public static $debug = false;
 
     /**
      * Indica se questo ruolo è abilitato
      * @var boolean
      */
-    public $enabled = true;
+    public static $enabled = true;
 
     /**
      * Priorità di esecuzione delle operazioni dei vari ruoli. Valori inferiori
      * hanno priorità maggiori
      * @var int
      */
-    public $priority = 1000;
+    public static $priority = 1000;
 
     /**
      * Squadra di appartenenza del ruolo
      * @var \RoleTeam
      */
-    public $team = RoleTeam::Villages;
+    public static $team_name;
 
     /**
      * Tipo di mana del ruolo
      * @var \Mana
      */
-    public $mana = Mana::Good;
+    public static $mana = Mana::Good;
 
     /**
      * Utente a cui appartiene il ruolo
@@ -278,16 +278,9 @@ abstract class Role {
      * @return \RoleStatus Ritorna lo stato del personaggio
      */
     protected function roleStatus($id_user = null) {
-        $id_game = $this->engine->game->id_game;
         if (!$id_user)
             $id_user = $this->user->id_user;
-
-        $query = "SELECT status FROM role WHERE id_game=$id_game AND id_user=$id_user";
-        $res = Database::query($query);
-        if (!$res || count($res) != 1)
-            return false;
-
-        return $res[0]["status"];
+        return Role::getRoleStatus($this->engine->game, $id_user);
     }
 
     /**
@@ -412,9 +405,20 @@ abstract class Role {
      * @return int Ritorna il valore del contronto delle priorità dei ruoli
      */
     static function cmpRole($roleA, $roleB) {
-        if ($roleA->priority == $roleB->priority)
+        $priA = $roleA->getPriority();
+        $priB = $roleB->getPriority();
+        if ($priA == $priB)
             return 0;
-        return ($roleA->priority < $roleB->priority) ? -1 : 1;
+        return ($priA < $priB) ? -1 : 1;
+    }
+
+    /**
+     * Ottiene la priorità del ruolo
+     * @return int
+     */
+    function getPriority() {
+        $class_name = get_class($this);
+        return $class_name::$priority;
     }
 
     /**
@@ -434,5 +438,20 @@ abstract class Role {
             return false;
         return $res[0]["role"];
     }
+    /**
+     * Verifica se un personaggio è ancora vivo
+     * @param \Game $game Gioco in cui il personaggio si trova
+     * @param int $user Identificativo dell'utente a cui corrisponde il personaggio
+     * @return \RoleStatus Ritorna lo stato del personaggio
+     */
+    public static function getRoleStatus($game, $id_user) {
+        $id_game = $game->id_game;
 
+        $query = "SELECT status FROM role WHERE id_game=$id_game AND id_user=$id_user";
+        $res = Database::query($query);
+        if (!$res || count($res) != 1)
+            return false;
+
+        return $res[0]["status"];
+    }
 }

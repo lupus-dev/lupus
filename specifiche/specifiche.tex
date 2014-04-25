@@ -266,7 +266,8 @@ I codici che la identificano sono compresi nell'intervallo:
 
 I codici riconosciuti sono:
 \begin{itemize}
-\item \gamestatus{$200+y$}{Win$y$}{La partita è terminata e ha vinto la squadra $y$}
+\item \gamestatus{200\,+\,y}{Win$y$}{La partita è terminata e ha vinto la squadra $y\ (0\le y < 99)$}
+\item \gamestatus{299}{DeadWin}{La partita è terminata perché tutti i giocatori sono morti}
 \end{itemize}
 
 \subsubsection{Fase terminata in modo inaspettato}

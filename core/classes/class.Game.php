@@ -170,6 +170,11 @@ class Game {
         return Game::fromRoomGameName($room->room_name, $name);
     }
 
+    /**
+     * Imposta lo stato della partita
+     * @param \GameStatus $status Il nuovo stato
+     * @return boolean True se la modifica ha avuto successo, false altrimenti
+     */
     public function status($status) {
         $status = intval($status);
         if ($status == 0)
@@ -179,7 +184,21 @@ class Game {
         $res = Database::query($query);
         if (!$res)
             return false;
+        $this->status = $status;
         return true;
     }    
+    /**
+     * Fa avanzare il giorno di uno
+     * @return boolean True se l'azione ha avuto successo, false altrimenti
+     */
+    public function nextDay() {
+        $id_game = $this->id_game;
+        $query = "UPDATE game SET day=day+1 WHERE id_game=$id_game";
+        $res = Database::query($query);
+        if (!$res)
+            return false;
+        $this->day++;
+        return true;
+    }
     
 }

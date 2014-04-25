@@ -12,13 +12,13 @@
  */
 class Contadino extends Role {
     
-    public $role_name = "contadino";
-    public $name = "Contadino";
-    public $debug = false;
-    public $enabled = true;
-    public $priority = 10000;
-    public $team = RoleTeam::Villages;
-    public $mana = Mana::Good;
+    public static $role_name = "contadino";
+    public static $name = "Contadino";
+    public static $debug = false;
+    public static $enabled = true;
+    public static $priority = 10000;
+    public static $team_name = RoleTeam::Villages;
+    public static $mana = Mana::Good;
     
     /**
      * Ritornerà l'HTML dello splash all'arrivo al villaggio

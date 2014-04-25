@@ -12,13 +12,13 @@
  */
 class Lupo extends Role {
     
-    public $role_name = "lupo";
-    public $name = "Lupo";
-    public $debug = false;
-    public $enabled = true;
-    public $priority = 100;
-    public $team = RoleTeam::Antagonists;
-    public $mana = Mana::Bad;
+    public static $role_name = "lupo";
+    public static $name = "Lupo";
+    public static $debug = false;
+    public static $enabled = true;
+    public static $priority = 100;
+    public static $team_name = RoleTeam::Antagonists;
+    public static $mana = Mana::Bad;
 
     public function __construct($user, $game) {
         parent::__construct($user, $game);
@@ -48,7 +48,7 @@ class Lupo extends Role {
     private function getVoteLupus() {
         $id_game = $this->engine->game->id_game;
         $day = $this->engine->game->day;
-        $role_name = $this->role_name;
+        $role_name = Lupo::$role_name;
         
         $query = "SELECT id_user,vote FROM vote WHERE "
                 . "id_game=$id_game AND day=$day AND "

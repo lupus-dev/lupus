@@ -14,15 +14,15 @@ class RoleTeam {
     /**
      * Squadra dei paesani
      */
-    const Villages = 0;
+    const Villages = "villages";
     /**
      * Squadra dei lupi
      */
-    const Antagonists = 1;
+    const Antagonists = "antagonist";
     /**
      * Squadra dei criceti
      */
-    const Hamster = 2;
+    const Hamster = "hamster";
     
     /**
      * Costruttore privato

@@ -24,17 +24,14 @@ class GameStatus {
      */
     const Started = 101;
     /**
-     * La partita è terminata ed ha vinto la squadra 0
+     * La partita è terminata ed ha vinto la squadra y. Sommare a questo stato y
      */
-    const Win0 = 200;
+    const Winy = 200;
     /**
-     * La partita è terminata ed ha vinto la squadra 1
+     * La partita è terminata ma non ha vinto nessuno perchè tutti i giocatori
+     * sono morti
      */
-    const Win1 = 201;
-    /**
-     * La partita è terminata ed ha vinto la squadra 2
-     */
-    const Win2 = 202;
+    const DeadWin = 299;
     /**
      * La partita è stata terminata dall'admin
      */
