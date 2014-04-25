@@ -54,8 +54,10 @@ class User {
         $query = "SELECT id_user,username,level,name,surname FROM user WHERE id_user=$id";
         $res = Database::query($query);
         
-        if (count($res) != 1)
+        if (count($res) != 1) {
+            logEvent("L'utente $id non esiste", LogLevel::Warning);
             return false;
+        }
         
         $user = new User();
         $user->id_user = $res[0]["id_user"];
@@ -78,8 +80,10 @@ class User {
         $query = "SELECT id_user,username,level,name,surname FROM user WHERE username='$username'";
         $res = Database::query($query);
         
-        if (count($res) != 1)
+        if (count($res) != 1) {
+            logEvent("L'utente $username non esiste", LogLevel::Warning);
             return false;
+        }
         
         $user = new User();
         $user->id_user = $res[0]["id_user"];

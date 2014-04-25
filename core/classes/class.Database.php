@@ -26,10 +26,14 @@ class Database {
      * Connette la classe al database specificato nel file di configurazione
      */
     public static function connect() {
-        Database::$mysqli = new mysqli(
+        Database::$mysqli = mysqli_connect(
                 Config::$db_host, Config::$db_user, Config::$db_password, Config::$db_database, Config::$db_port);
-        if (!Database::$mysqli)
+        
+        if (!Database::$mysqli || Database::$mysqli->errno) {
+            logEvent("Errore connessione DB", LogLevel::Error);
             return false;
+        }
+        logEvent("Connesso al DB", LogLevel::Verbose);
         return true;
     }
     /**
@@ -39,9 +43,12 @@ class Database {
      * che ritornano true. Un vettore nelle altre query
      */
     public static function query($query) {
+        logEvent("Query: $query", LogLevel::Verbose);
         $result = Database::$mysqli->query($query);
-        if (Database::$mysqli->errno)
+        if (Database::$mysqli->errno) {
+            logEvent("Query fallita: " . Database::$mysqli->error, LogLevel::Error);
             return false;
+        }
         if ($result === TRUE || $result === FALSE)
             return $result;
         $res = array();

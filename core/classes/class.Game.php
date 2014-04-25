@@ -73,9 +73,10 @@ class Game {
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,roles FROM game WHERE id_game=$id";
         $res = Database::query($query);
 
-        if (count($res) != 1)
+        if (count($res) != 1) {
+            logEvent("Partita non trovata. id_game=$id", LogLevel::Warning);
             return false;
-
+        }
         $game = new Game();
         $game->id_game = $res[0]["id_game"];
         $game->id_room = $res[0]["id_room"];
@@ -99,16 +100,19 @@ class Game {
         $game = Database::escape($game);
 
         $room = Room::fromRoomName($room);
-        if (!$room)
+        if (!$room) {
+            logEvent("Stanza non trovata. room_name=$room", LogLevel::Warning);
             return false;
+        }
         $id_room = $room->id_room;
 
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,roles FROM game WHERE id_room=$id_room AND game_name='$game'";
         $res = Database::query($query);
 
-        if (count($res) != 1)
+        if (count($res) != 1) {
+            logEvent("Partita non trovata. room_name=$room game_name=$game", LogLevel::Warning);
             return false;
-
+        }
         $game = new Game();
         $game->id_game = $res[0]["id_game"];
         $game->id_room = $res[0]["id_room"];
@@ -152,9 +156,10 @@ class Game {
      */
     public static function createGame($room, $name, $descr, $roles) {
         $room = Room::fromRoomName($room);
-        if (!$room)
+        if (!$room) {
+            logEvent("Stanza non trovata. room_name=$room", LogLevel::Warning);
             return false;
-        
+        }
         $name = Database::escape($name);
         $descr = Database::escape($descr);
         $roles = Database::escape(json_encode($roles));
@@ -177,8 +182,10 @@ class Game {
      */
     public function status($status) {
         $status = intval($status);
-        if ($status == 0)
+        if ($status == 0) {
+            logEvent("Stato $status non valido. Partita terminata", LogLevel::Warning);
             $status = GameStatus::TermByBug;
+        }
         $id_game = $this->id_game;
         $query = "UPDATE game SET status=$status WHERE id_game=$id_game";
         $res = Database::query($query);

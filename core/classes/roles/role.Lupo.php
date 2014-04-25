@@ -80,6 +80,8 @@ class Lupo extends Role {
         if ($votes[0]["id_user"] != $this->user->id_user)
             return true;
         
+        logEvent("L'utente {$this->user->username} è stato scelto per sbranare", LogLevel::Debug);
+        
         $candidates = array();
         foreach ($votes as $vote)
             if (!isset ($candidates[$vote["vote"]]))
@@ -94,12 +96,19 @@ class Lupo extends Role {
         $dead = User::fromIdUser($id_dead);
         
         // se il giocatore votato non esiste, c'è un bug nella votazione...
-        if (!$dead)
+        if (!$dead) {
+            logEvent("E' stato votato un giocatore inesistente ($id_dead x$num_votes)", LogLevel::Warning);
             return false;
+        }
         
         // quorum
-        if ($num_votes >= (int)(count($votes) * 0.5) + 1)
-            $this->kill ($dead);
+        if ($num_votes >= (int) (count($votes) * 0.5) + 1)
+            if ($this->kill($dead))
+                logEvent("Il giocatore {$dead->username} è stato sbranato", LogLevel::Debug);
+            else
+                logEvent("Il giocatore {$dead->username} non è stato sbranato", LogLevel::Debug);
+        else
+            logEvent("Non è stato raggiunto il quorum per l'uccisione dal lupo", LogLevel::Debug);
         
         return true;
     }

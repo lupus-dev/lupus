@@ -61,8 +61,11 @@ class Room {
         $query = "SELECT id_room,id_admin,room_name,room_descr,private FROM room WHERE id_room=$id";
         $res = Database::query($query);
 
-        if (count($res) != 1)
+        if (count($res) != 1) {
+            logEvent("La stanza $id non esiste", LogLevel::Warning);
             return false;
+        }
+            
 
         $room = new Room();
         $room->id_room = $res[0]["id_room"];
@@ -86,8 +89,10 @@ class Room {
         $query = "SELECT id_room,id_admin,room_name,room_descr,private FROM room WHERE room_name='$name'";
         $res = Database::query($query);
 
-        if (count($res) != 1)
+        if (count($res) != 1) {
+            logEvent("La stanza $name non esiste", LogLevel::Warning);
             return false;
+        }
 
         $room = new Room();
         $room->id_room = $res[0]["id_room"];

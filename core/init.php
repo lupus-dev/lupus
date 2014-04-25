@@ -20,7 +20,7 @@ requireDir(__DIR__ . "/functions");
 
 // carica il file di configurazione
 Config::loadConfig();
-Database::connect() || die("Errore");
+$db = Database::connect() || die();
 
 $baseDir = "/lupus";
 

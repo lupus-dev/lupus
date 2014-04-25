@@ -18,6 +18,9 @@ class Config {
     public static $db_port = 3306;
     public static $db_database = "lupus";
 
+    public static $log_level = 3;
+    public static $log_path = "log/log.txt";
+    
     public static $ini = "";
 
 
@@ -37,6 +40,8 @@ class Config {
         Config::$db_password = $config["database"]["password"];
         Config::$db_port = $config["database"]["port"];
         Config::$db_database = $config["database"]["database"];
+        
+        Config::$log_level = $config["log"]["level"];
     }
 
     

@@ -144,6 +144,8 @@ abstract class Role {
         if ($votes[0]["id_user"] != $this->user->id_user)
             return true;
 
+        logEvent("L'utente {$this->user->username} è stato scelto per mettere al rogo", LogLevel::Debug);
+
         $candidates = array();
         foreach ($votes as $vote)
             if (!isset($candidates[$vote["vote"]]))
@@ -158,13 +160,18 @@ abstract class Role {
         $dead = User::fromIdUser($id_dead);
 
         // se il giocatore votato non esiste, c'è un bug nella votazione...
-        if (!$dead)
+        if (!$dead) {
+            logEvent("E' stato votato un giocatore inesistente ($id_dead x$num_votes)", LogLevel::Warning);
             return false;
-
+        }
         // quorum
         if ($num_votes >= (int) (count($votes) * 0.5) + 1)
-            $this->kill($dead);
-
+            if ($this->kill($dead))
+                logEvent("Il giocatore {$dead->username} è stato messo al rogo", LogLevel::Debug);
+            else
+                logEvent("Il giocatore {$dead->username} non è stato messo al rogo", LogLevel::Debug);
+        else
+            logEvent("Non è stato raggiunto il quorum per la messa al rogo", LogLevel::Debug);
         return true;
     }
 
@@ -201,8 +208,10 @@ abstract class Role {
         if (!$res || count($res) != 1)
             return false;
         $data = json_decode($res[0], true);
-        if (!$data)
+        if (!$data) {
+            logEvent("I dati dell'utente {$this->user->username} sono danneggiati", LogLevel::Notice);
             return false;
+        }
         return $data;
     }
 
@@ -252,13 +261,18 @@ abstract class Role {
     protected function kill($user) {
         $status = $this->roleStatus($user->id_user);
         // se si è verificato un errore nel capire lo stato dell'utente, non fa nulla
-        if (is_bool($status) && !$status)
+        if (is_bool($status) && !$status) {
+            logEvent("Non è stato determinato lo stato di {$user->username}", LogLevel::Warning);
             return false;
-        if ($status == RoleStatus::Dead)
+        }
+        if ($status == RoleStatus::Dead) {
+            logEvent("E' stato ucciso un giocatore morto ({$this->user->username} => {$user->username}", LogLevel::Debug);
             return false;
-
-        if ($this->isProtected($user, $this->user))
+        }
+        if ($this->isProtected($user, $this->user)) {
+            logEvent("Si ha cercato di uccidere un giocatore protetto ({$this->user->username} => {$user->username}", LogLevel::Debug);
             return false;
+        }
 
         $id_game = $this->engine->game->id_game;
         $id_user = $user->id_user;
@@ -422,6 +436,15 @@ abstract class Role {
     }
 
     /**
+     * Ottiene la priorità del ruolo
+     * @return int
+     */
+    function getRoleName() {
+        $class_name = get_class($this);
+        return $class_name::$role_name;
+    }
+
+    /**
      * Ottiene una stringa con il nome del ruolo associato ad un giocatore nella 
      * partita
      * @param \User $user L'utente da controllare
@@ -434,10 +457,13 @@ abstract class Role {
         $query = "SELECT role FORM role WHERE id_user=$id_user AND id_game=$id_game";
         $res = Database::query($query);
 
-        if (!$res || count($res) != 1)
+        if (!$res || count($res) != 1) {
+            logEvent("L'utente $id_user non è nella partita $id_game", LogLevel::Warning);
             return false;
+        }
         return $res[0]["role"];
     }
+
     /**
      * Verifica se un personaggio è ancora vivo
      * @param \Game $game Gioco in cui il personaggio si trova
@@ -449,9 +475,11 @@ abstract class Role {
 
         $query = "SELECT status FROM role WHERE id_game=$id_game AND id_user=$id_user";
         $res = Database::query($query);
-        if (!$res || count($res) != 1)
+        if (!$res || count($res) != 1) {
+            logEvent("L'utente $id_user non è nella partita $id_game", LogLevel::Warning);
             return false;
-
+        }
         return $res[0]["status"];
     }
+
 }
