@@ -21,7 +21,7 @@
 \newcommand{\mail}[1]{\href{mailto:#1}{#1}}
 \newcommand{\pageurl}[1]{\small\texttt{#1}}
 \newcommand{\valpha}{\begin{large}$^\alpha$\end{large}}
-\newcommand{\GET}{\texttt{GET}\ }
+\newcommand{\GET}{\texttt{GET}}
 \newcommand{\lang}[1]{\texttt{#1}}
 \newcommand{\PHP}{\lang{PHP}}
 \newcommand{\SASS}{\lang{SASS}}
@@ -34,6 +34,13 @@
 \newcommand{\API}{\texttt{API}}
 \newcommand{\gamestatus}[3]{
 \textbf{#1}: \textbf{\texttt{#2}}$\quad$ #3
+}
+\newcommand{\eventcode}[4]{
+\textbf{#1}: \textbf{\texttt{#2}}$\quad$ #3 \\
+Parametri nel campo \texttt{event\_data}: \\
+\begin{tabular}{ll}
+#4
+\end{tabular}
 }
 
 \title{
@@ -50,6 +57,7 @@
 {\small Ultimo aggiornamento} \\
 \today
 }
+
 
 \begin{document}
 \maketitle
@@ -330,7 +338,7 @@ Tutte le seguenti funzioni si intendono già nel percorso delle \API\ (es: \page
 \begin{itemize}
 \item \pageurl{/login} Effettua il login tramite \texttt{username/password} e salva nella \emph{sessione} l'identificativo dell'utente. Devono essere specificati i parametri \texttt{username} e \texttt{password} tramite \GET
 
-\item \pageurl{/login/(username)} Sostituisce il metodo precedente. Effettua il login dell'utente specificato. La password va specificata in \GET come per \pageurl{/login}. Se viene specificato anche lo \texttt{username} in \GET viene ignorato.
+\item \pageurl{/login/(username)} Sostituisce il metodo precedente. Effettua il login dell'utente specificato. La password va specificata in \GET\ come per \pageurl{/login}. Se viene specificato anche lo \texttt{username} in \GET\ viene ignorato.
 
 \item \pageurl{/logout} Se l'utente è connesso lo disconnette cancellando la sessione
 
@@ -346,7 +354,7 @@ Tutte le seguenti funzioni si intendono già nel percorso delle \API\ (es: \page
 
 \item \pageurl{/new\_room/(room\_name)} Crea una nuova stanza appartenente all'utente. Deve venire specificato il parametro \texttt{descr} in \GET. Può essere specificato il parametro \texttt{private} per rendere la stanza privata
 
-\item \pageurl{/new\_game/(room\_name)/(game\_name)} Crea una nuova partita nella stanza specificata. Devono venire specificati i parametri \texttt{descr} e \texttt{roles} in \GET
+\item \pageurl{/new\_game/(room\_name)/(game\_name)} Crea una nuova partita nella stanza specificata. Devono venire specificati i parametri \texttt{descr} e \texttt{num\_players} in \GET.
 \end{itemize}
 
 \subsection{La web-app}
@@ -410,7 +418,7 @@ Ogni partita è identificata all'esterno con un \emph{nome breve} unico all'inte
 
 I campi \texttt{day} e \texttt{status} sono informazioni utili della partita, l'istante temporale del gioco e lo stato della partita.
 
-Il campo \texttt{roles} contiene una stringa \texttt{JSON} che codifica un vettore associativo con il numero di personaggi di ogni ruolo presente nella partita.
+Il campo \texttt{players} contiene una stringa \texttt{JSON} che codifica un vettore degli \texttt{username} degli utenti registrati alla partita.
 
 \subsection{Tabella role}
 In questa tabella sono memorizzati i ruoli dei giocatori interni ad una partita. 
@@ -447,12 +455,25 @@ Il destinatario \texttt{dest} è un numero intero che può rappresentare vari id
 
 Il testo del messaggio è \texttt{text} il quale non può essere più lungo di 200 caratteri e viene eseguito l'\emph{escape} sia per il database che per il \lang{JavaScript}.
 
-\subsection{Tabella newspaper}
-In questa tabella viene memorizzato il giornale dei vari giorni della partita. 
+\subsection{Tabella event}
+In questa tabella vengono memorizzati gli eventi delle partite. 
 
-Ogni articolo è identificato da \texttt{id\_news} ed appartiene alla partita \texttt{id\_game} al tempo \texttt{day}. 
+Ogni evento è identificato dal campo \texttt{id\_event} e appartiene alla partita \texttt{id\_game}.
 
-Il testo dell'articolo è memorizzato in \texttt{news}.
+Il tipo di evento che si è verificato è memorizzato in \texttt{event\_code} e le sue informazioni sono salvate in \texttt{event\_data}.
+
+\subsubsection*{Codici di evento riconosciuti}
+\begin{itemize}
+\item \eventcode{0}{GameStart}{La partita è appena iniziata}{
+\texttt{players} & Vettore con gli \texttt{username} dei giocatori nella partita \\
+\texttt{start}   & Timestamp dell'ora dell'inizio della partita
+}
+\item \eventcode{1}{Death}{Un giocatore è stato ucciso o è stato trovato morto}{
+\texttt{dead}	& Username del giocatore morto \\
+\texttt{cause}	& Causa della morte \\
+\texttt{actor}	& Causante della morte (killer)
+}
+\end{itemize}
 
 \newpage
 \tableofcontents

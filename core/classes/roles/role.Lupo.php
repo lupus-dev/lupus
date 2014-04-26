@@ -103,8 +103,10 @@ class Lupo extends Role {
         
         // quorum
         if ($num_votes >= (int) (count($votes) * 0.5) + 1)
-            if ($this->kill($dead))
+            if ($this->kill($dead)) {
                 logEvent("Il giocatore {$dead->username} è stato sbranato", LogLevel::Debug);
+                Event::insertDeath($this->engine->game, $dead, "kill-lupo", $this->user->username);
+            }
             else
                 logEvent("Il giocatore {$dead->username} non è stato sbranato", LogLevel::Debug);
         else
@@ -121,4 +123,17 @@ class Lupo extends Role {
         return "Sei un lupo...";
     }
 
+    /**
+     * Verifica se l'utente votato esiste, è vivo e non è un lupo
+     * @param string $username Utente votato
+     * @return boolean True se il voto è valido. False altrimenti
+     */
+    public function checkVoteNight($username) {
+        $normal = parent::checkVoteNight($username);
+        if (!$normal)
+            return false;
+        $user = User::fromUsername($username);
+        $role = Role::getRole($user, $this->engine->game);
+        return $role != Lupo::$role_name;
+    }
 }

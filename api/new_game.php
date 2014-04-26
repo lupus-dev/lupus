@@ -12,19 +12,14 @@
  */
 if (!$login)
     response(401, array("error" => "Utente non connesso"));
-if (!isset($_GET["descr"]) || !isset($_GET["roles"]))
-    response(400, array("error" => "Specificare una descrizione e l'elenco dei ruoli"));
+if (!isset($_GET["descr"]) || !isset($_GET["num_players"]))
+    response(400, array("error" => "Specificare una descrizione e il numero di giocatori"));
 
 $room_name = $apiMatches[1];
 $game_name = $apiMatches[2];
 
 $game_descr = $_GET["descr"];
-$roles = $_GET["roles"];
-if (is_string($roles)) $roles = json_decode ($roles, true);
-if (is_object($roles)) $roles = (array)$roles;
-
-if (!is_array($roles))
-    response (400, array("error" => "I ruoli non sono in un formato corretto"));
+$num_players = intval($_GET["num_players"]);
 
 $room = Room::fromRoomName($room_name);
 if (!$room)
@@ -41,7 +36,7 @@ $existGame = Game::fromRoomGameName($room_name, $game_name);
 if ($existGame)
     response (409, array("error" => "Esiste già una partita in questa stanza di nome '$game_name'"));
 
-$res = Game::createGame($room_name, $game_name, $game_descr, $roles);
+$res = Game::createGame($room_name, $game_name, $game_descr, $num_players);
 
 if (!$res)
     response (500, array("error" => "Non è stato possibile creare la partita"));

@@ -52,7 +52,7 @@ class Game {
      * Lista dei ruoli registrati nella partita
      * @var array
      */
-    public $roles;
+    public $players;
 
     /**
      * Costruttore privato
@@ -70,7 +70,7 @@ class Game {
     public static function fromIdGame($id) {
         $id = intval($id);
 
-        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,roles FROM game WHERE id_game=$id";
+        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,players FROM game WHERE id_game=$id";
         $res = Database::query($query);
 
         if (count($res) != 1) {
@@ -84,7 +84,10 @@ class Game {
         $game->status = $res[0]["status"];
         $game->game_name = $res[0]["game_name"];
         $game->game_descr = $res[0]["game_descr"];
-        $game->roles = json_decode($res[0]["roles"], true);
+        if (intval($res[0]["players"]) > 0)
+            $game->players = $res[0]["players"];
+        else
+            $game->players = json_decode($res[0]["players"], true);
 
         return $game;
     }
@@ -106,11 +109,11 @@ class Game {
         }
         $id_room = $room->id_room;
 
-        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,roles FROM game WHERE id_room=$id_room AND game_name='$game'";
+        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,players FROM game WHERE id_room=$id_room AND game_name='$game'";
         $res = Database::query($query);
 
         if (count($res) != 1) {
-            logEvent("Partita non trovata. room_name=$room game_name=$game", LogLevel::Warning);
+            logEvent("Partita non trovata. room_name={$room->room_name} game_name=$game", LogLevel::Warning);
             return false;
         }
         $game = new Game();
@@ -120,7 +123,10 @@ class Game {
         $game->status = $res[0]["status"];
         $game->game_name = $res[0]["game_name"];
         $game->game_descr = $res[0]["game_descr"];
-        $game->roles = json_decode($res[0]["roles"], true);
+        if (intval($res[0]["players"]) > 0)
+            $game->players = $res[0]["players"];
+        else
+            $game->players = json_decode($res[0]["players"], true);            
 
         return $game;
     }
@@ -138,10 +144,11 @@ class Game {
             "game_name" => $game->game_name,
             "day" => (int) $game->day,
             "status" => (int) $game->status,
-            "game_descr" => $game->game_descr
+            "game_descr" => $game->game_descr,
+            "num_players" => is_array($game->players) ? 
+                                count($game->players) : 
+                                (int)$game->players
         );
-        if ($room->id_admin == $user->id_user)
-            $res["roles"] = $game->roles;
         return $res;
     }
     
@@ -150,11 +157,11 @@ class Game {
      * @param string $room Nome della stanza
      * @param string $name Nome della partita
      * @param string $descr Descrizione della partita
-     * @param array $roles Elenco dei ruoli registrati nella partita
+     * @param int $num_players Numero di giocatori nella partita
      * @return boolean|\Game Ritorna la partita creata. False se si verifica un
      * errore
      */
-    public static function createGame($room, $name, $descr, $roles) {
+    public static function createGame($room, $name, $descr, $num_players) {
         $room = Room::fromRoomName($room);
         if (!$room) {
             logEvent("Stanza non trovata. room_name=$room", LogLevel::Warning);
@@ -162,17 +169,36 @@ class Game {
         }
         $name = Database::escape($name);
         $descr = Database::escape($descr);
-        $roles = Database::escape(json_encode($roles));
+        $num_players = Database::escape($num_players);
 
         $id_room = $room->id_room;
         
-        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,roles) VALUE "
-                . "($id_room,0,0,'$name','$descr','$roles')";
+        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,players) VALUE "
+                . "($id_room,0,0,'$name','$descr','$num_players')";
         
         $res = Database::query($query);
         if (!$res)
             return false;
         return Game::fromRoomGameName($room->room_name, $name);
+    }
+    
+    /**
+     * Cerca tutti gli utenti della partita
+     * @return array Vettore di \User
+     */
+    public function getUsers() {
+        $id_game = $this->id_game;
+        
+        $query = "SELECT id_user FROM role WHERE id_game=$id_game";
+        $res = Database::query($query);
+        
+        $users = array();
+        
+        foreach ($res as $id_user) {
+            $user = User::fromIdUser($id_user["id_user"]);
+            $users[] = $user;
+        }
+        return $users;
     }
 
     /**
@@ -207,5 +233,5 @@ class Game {
         $this->day++;
         return true;
     }
-    
+       
 }

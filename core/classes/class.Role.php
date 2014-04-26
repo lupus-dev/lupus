@@ -88,6 +88,8 @@ abstract class Role {
      */
     public abstract function splash();
 
+    // ------------ SEZIONE NOTTE --------------
+    
     /**
      * Questa funzione deve ritornare un valore booleano che indica se la partita
      * è in attesa del voto di questo personaggio in questa notte
@@ -109,6 +111,23 @@ abstract class Role {
         return true;
     }
 
+    /**
+     * Verifica se l'utente votato è valido per il personaggio durante la notte
+     * @param string $username Username o 'flag' dell'utente votato
+     * @return boolean Ritorna true se il voto è valido. False altrimenti
+     */
+    public function checkVoteNight($username) {
+        $user = User::fromUsername($username);
+        if (!$user)
+            return false;
+        $status = Role::getRoleStatus($this->engine->game, $user->id_user);
+        if ($status == RoleStatus::Dead)
+            return false;
+        return $username != $this->user->username;
+    }
+
+    // ------------ SEZIONE GIORNO --------------
+    
     /**
      * Questa funzione deve ritornare un valore booleano che indica se la partita
      * è in attesa del voto di questo personaggio in questa giorno. Può essere 
@@ -166,9 +185,10 @@ abstract class Role {
         }
         // quorum
         if ($num_votes >= (int) (count($votes) * 0.5) + 1)
-            if ($this->kill($dead))
+            if ($this->kill($dead)) {
                 logEvent("Il giocatore {$dead->username} è stato messo al rogo", LogLevel::Debug);
-            else
+                Event::insertDeath($this->engine->game, $dead, "kill-day", $this->user->username);
+            } else
                 logEvent("Il giocatore {$dead->username} non è stato messo al rogo", LogLevel::Debug);
         else
             logEvent("Non è stato raggiunto il quorum per la messa al rogo", LogLevel::Debug);
@@ -194,6 +214,23 @@ abstract class Role {
         return $res;
     }
 
+    /**
+     * Verifica se l'utente votato è valido per il personaggio durante il giorno
+     * @param string $username Username o 'flag' dell'utente votato
+     * @return boolean Ritorna true se il voto è valido. False altrimenti
+     */
+    public function checkVoteDay($username) {
+        $user = User::fromUsername($username);
+        if (!$user)
+            return false;
+        $status = Role::getRoleStatus($this->engine->game, $user->id_user);
+        if ($status == RoleStatus::Dead)
+            return false;
+        return $username != $this->user->username;
+    }
+    
+    // ------------- SEZIONE INTERNA ---------------
+    
     /**
      * Ottiene le informazioni associate al ruolo
      * @return array|boolean Ritorna un vettore con le informazioni del ruolo 
@@ -297,6 +334,8 @@ abstract class Role {
         return Role::getRoleStatus($this->engine->game, $id_user);
     }
 
+    // ---------------- TOOL DI PROTEZIONE -----------------
+    
     /**
      * Protegge un utente dall'uccisione da un altro utente
      * @param int $id_user Identificativo dell'utente protetto

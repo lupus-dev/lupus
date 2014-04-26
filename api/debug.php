@@ -10,7 +10,9 @@
 echo "Questo &egrave; il debug....<br><br>";
 echo "<pre>";
 
-$game = Game::fromRoomGameName("room", "game");
+Config::$log_level = LogLevel::Verbose;
 
-$engine = new Engine($game);
-$engine->run();
+$game = Game::fromRoomGameName("room", "game");
+$user = User::fromUsername("user3");
+
+print_r(Event::insertDeath($game, $user, "kill-lupo", "user1"));
