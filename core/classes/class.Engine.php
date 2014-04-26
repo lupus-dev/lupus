@@ -15,7 +15,7 @@ class Engine {
     /**
      * La partita è avanzata di un giorno/notte
      */
-    const Ok = 1;
+    const NextDay = 1;
 
     /**
      * La partita non è avanzata a causa di alcuni voti richiesti
@@ -41,6 +41,11 @@ class Engine {
      * La partita è stata terminata a causa di una squadra non riconosciuta
      */
     const BadTeam = 502;
+    
+    /**
+     * La partita non è in corso. Nessuna azione è stata compiuta
+     */
+    const BadGameStatus = 503;
 
     /**
      * La partita da far muovere
@@ -78,19 +83,27 @@ class Engine {
      */
     public function run() {
         logEvent("Engine avviato", LogLevel::Verbose);
+        
+        $gameStatus = $this->game->status;
+        if ($gameStatus < 100 || $gameStatus >= 200) {
+            logEvent("La partita non è in corso", LogLevel::Notice);
+            return Engine::BadGameStatus;
+        }
+        
         $roles = $this->getAllRoles();
         if (!$roles) {
             logEvent("Impossibile recuperare i ruoli. Partita terminata: codice " . Engine::BadRole, LogLevel::Warning);
             $this->game->status(GameStatus::TermByBug);
             return Engine::BadRole;
         }
-        
+
         // controlla se qualcuno deve ancora votare
         $voteStatus = $this->checkVotes($roles);
         if ($voteStatus) {
             logEvent("Alcuni giocatori non hanno votato: codice $voteStatus", LogLevel::Debug);
             return $voteStatus;
         }
+        
         // ordina i ruoli per priorità. Quelli con priorità uguale hanno ordine
         // casuale
         shuffle($roles);
@@ -105,10 +118,10 @@ class Engine {
         // verifica se la partita termina
         $endStatus = $this->checkEnd();
         // se il giorno/notte è finito correttamente
-        if ($endStatus == Engine::Ok) {
+        if ($endStatus == Engine::NextDay) {
             logEvent("Il giorno/notte è finito correttamente", LogLevel::Debug);
             $this->game->nextDay();
-            return Engine::Ok;
+            return Engine::NextDay;
         }
         // se la partita termina
         if ($endStatus <= GameStatus::DeadWin) {
@@ -133,7 +146,7 @@ class Engine {
         $res = Database::query($query);
         if (!$res)
             return false;
-        
+
         $roles = array();
         $this->roles = array();
 
@@ -142,20 +155,9 @@ class Engine {
             $user_role = $role["role"];
 
             $user = User::fromIdUser($id_user);
-            // il nome del ruolo è il codice del ruolo con l'iniziale maiuscola
-            $role_name = firstUpper($user_role);
-            // deve esistere una classe con quel nome e deve derivare da "Role"
-            if (!class_exists($role_name) || !in_array("Role", class_parents($role_name))) {
-                logEvent("Il ruolo '$role_name' di '{$user->username}' nella partita {$this->game->id_game} non è valido", LogLevel::Error);
-                return false;
-            }
-            // usa il contenuto di ($role_name) come nome della classe da dichiarare
-            $role = new $role_name($user, $this);
-            // il ruolo deve essere abilitato
-            if (!$role_name::$enabled) {
-                logEvent("Il ruolo '$role_name' di '{$user->username}' nella partita {$this->game->id_game} non è abilitato", LogLevel::Error);
-                return false;
-            }
+
+            $role = Role::fromUser($user, $this);
+
             // memorizzo l'utente nell'elenco di utenti per ruolo
             if (!isset($this->roles[$user_role]))
                 $this->roles[$user_role] = array($id_user);
@@ -188,6 +190,9 @@ class Engine {
                     if ($role->needVoteDay())
                         return Engine::NeedVote;
                 break;
+            case GameTime::Start:
+                // @todo Aggiungere controllo per votazione del sindaco
+                break;
             default:
                 logEvent("Tempo non riconosciuto ({$this->game->day} => $time)", LogLevel::Notice);
                 break;
@@ -206,7 +211,8 @@ class Engine {
     private function performAction($roles) {
         // in base alla priorità esegue le azioni associate a ciascun ruolo
         // suddivide le azioni in base al tempo della partita
-        switch (GameTime::fromDay($this->game->day)) {
+        $time = GameTime::fromDay($this->game->day);
+        switch ($time) {
             case GameTime::Night:
                 foreach ($roles as $role)
                     if (!$role->performActionNight()) {
@@ -222,6 +228,10 @@ class Engine {
                         $this->game->status(GameStatus::TermByBug);
                         return Engine::BadAction;
                     }
+                break;
+            case GameTime::Start:
+                // @todo Aggiungere funzione per scegliere il sindaco
+                //       Aggiungere funzione per dividere e creare i ruoli
                 break;
             default:
                 logEvent("Tempo non riconosciuto ({$this->game->day} => $time)", LogLevel::Notice);
@@ -246,17 +256,17 @@ class Engine {
             $teams[$team_name] = $team_name;
         }
         foreach ($teams as $team_name) {
-            $team = firstUpper($team_name);
+            $team_name = firstUpper($team_name);
             // se la squadra non è riconosciuta
-            if (!class_exists($team) || !in_array("Team", class_parents($team))) {
-                logEvent("La squadra '$team' non è valida", LogLevel::Error);
+            if (!class_exists($team_name) || !in_array("Team", class_parents($team_name))) {
+                logEvent("La squadra '$team_name' non è valida", LogLevel::Error);
                 return Engine::BadTeam;
             }
-            $team_obj = new $team($this);
+            $team_obj = new $team_name($this);
             // se la squadra ha vinto
             if ($team_obj->checkWin()) {
-                logEvent("La squadra {$team::$name} ha vinto", LogLevel::Debug);
-                return GameStatus::Winy + $team::$team_code;
+                logEvent("La squadra {$team_name::$name} ha vinto", LogLevel::Debug);
+                return GameStatus::Winy + $team_name::$team_code;
             }
         }
         // se tutti i giocatori sono morti, forza la fine della partita
@@ -264,7 +274,7 @@ class Engine {
             logEvent("La partita è terminata perchè sono tutti morti", LogLevel::Debug);
             return GameStatus::DeadWin;
         }
-        return Engine::Ok;
+        return Engine::NextDay;
     }
 
     /**
@@ -274,12 +284,12 @@ class Engine {
     private function checkDeadEnd() {
         $id_game = $this->game->id_game;
         $alive = RoleStatus::Alive;
-        
+
         $query = "SELECT COUNT(*) AS alive FROM role WHERE id_game=$id_game AND status=$alive";
         $res = Database::query($query);
         if (!$res || count($res) != 1)
             return false;
-        
+
         // se ci sono zero giocatori vivi, la partita termina
         return $res[0]["alive"] == 0;
     }

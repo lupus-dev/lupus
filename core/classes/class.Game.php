@@ -234,4 +234,19 @@ class Game {
         return true;
     }
        
+    /**
+     * Verifica se un utente appartiene alla partita
+     * @param int $id_user Identificativo dell'utente
+     * @return boolean rue se l'utente appartiene alla partita. False altrimenti
+     */
+    public function inGame($id_user) {
+        $id_game = $this->id_game;
+                
+        $query = "SELECT id_user FROM role WHERE id_game=$id_game AND id_user=$id_user";
+        $res = Database::query($query);
+        
+        if (!$res || count($res) != 1)
+            return false;
+        return true;
+    }
 }

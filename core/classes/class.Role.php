@@ -89,10 +89,15 @@ abstract class Role {
     public abstract function splash();
 
     // ------------ SEZIONE NOTTE --------------
-    
+
     /**
      * Questa funzione deve ritornare un valore booleano che indica se la partita
      * è in attesa del voto di questo personaggio in questa notte
+     * 
+     * Questa funzione viene chiamata prima che le azioni inizino ad essere 
+     * applicate. Può essere quindi sfruttata per applicare delle azioni 
+     * perventive (ad esempio proteggere). La funzione viene chiamata ad ogni
+     * richiesta dell'utente... non appesantire il server...
      * @return boolean|string False se la partita può continuare, altrimenti
      * contiene una stringa HTML da aggiungere alla pagina contenente il form da
      * completare
@@ -127,13 +132,18 @@ abstract class Role {
     }
 
     // ------------ SEZIONE GIORNO --------------
-    
+
     /**
      * Questa funzione deve ritornare un valore booleano che indica se la partita
      * è in attesa del voto di questo personaggio in questa giorno. Può essere 
      * modificata per adattarsi alle specifiche di personaggi che aviscono di 
      * giorno. E' implementata la funzione di un normale personaggio che vota 
-     * chi mettere al rogo
+     * chi mettere al rogo.
+     * 
+     * Questa funzione viene chiamata prima che le azioni inizino ad essere 
+     * applicate. Può essere quindi sfruttata per applicare delle azioni 
+     * perventive (ad esempio proteggere). La funzione viene chiamata ad ogni
+     * richiesta dell'utente... non appesantire il server...
      * @return boolean|string False se la partita può continuare, altrimenti
      * contiene una stringa HTML da aggiungere alla pagina contenente il form da
      * completare
@@ -228,9 +238,9 @@ abstract class Role {
             return false;
         return $username != $this->user->username;
     }
-    
+
     // ------------- SEZIONE INTERNA ---------------
-    
+
     /**
      * Ottiene le informazioni associate al ruolo
      * @return array|boolean Ritorna un vettore con le informazioni del ruolo 
@@ -335,7 +345,7 @@ abstract class Role {
     }
 
     // ---------------- TOOL DI PROTEZIONE -----------------
-    
+
     /**
      * Protegge un utente dall'uccisione da un altro utente
      * @param int $id_user Identificativo dell'utente protetto
@@ -452,6 +462,33 @@ abstract class Role {
     }
 
     /**
+     * Effettua la votazione di un personaggio
+     * @param int $username Utente votato
+     * @return boolean True se la votazione ha avuto successo, false altrimenti
+     */
+    public function vote($username) {
+        $id_game = $this->engine->game->id_game;
+        $id_user = $this->user->id_user;
+        $day = $this->engine->game->day;
+        
+        $user_voted = User::fromUsername($username);
+        if (!$user_voted) {
+            logEvent("L'utente $id_user ha votato l'utente $username che non esiste. id_game=$id_game", LogLevel::Warning);
+            return false;
+        }
+        $vote = $user_voted->id_user;
+        
+        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE "
+                . "($id_game,$id_user,$vote,$day)";
+        $res = Database::query($query);
+        if (!$res) {
+            logEvent("Impossibile compiere la votazione di $id_user => $username. id_game=$id_game", LogLevel::Warning);
+            return false;
+        }
+        return true;
+    }
+    
+    /**
      * Confronta due ruoli per ordinarli in base alla loro priorità
      * @param \Role $roleA 
      * @param \Role $roleB
@@ -493,7 +530,7 @@ abstract class Role {
         $id_user = $user->id_user;
         $id_game = $game->id_game;
 
-        $query = "SELECT role FORM role WHERE id_user=$id_user AND id_game=$id_game";
+        $query = "SELECT role FROM role WHERE id_user=$id_user AND id_game=$id_game";
         $res = Database::query($query);
 
         if (!$res || count($res) != 1) {
@@ -502,11 +539,34 @@ abstract class Role {
         }
         return $res[0]["role"];
     }
+    
+    /**
+     * Crea una nuova istanza di \Role dall'utente e dal motore della partita
+     * @param \User $user Utente a cui appartiene il ruolo
+     * @param \Engine $engine Motore della partita
+     * @return \Role|boolean Ritorna il ruolo dell'utente. False se si verifica un errore
+     */
+    public static function fromUser($user, $engine) {
+        $role_name = Role::getRole($user, $engine->game);
+        // deve esistere una classe con quel nome e deve derivare da "Role"
+        if (!class_exists($role_name) || !in_array("Role", class_parents($role_name))) {
+            logEvent("Il ruolo '$role_name' di '{$user->username}' nella partita {$engine->game->id_game} non è valido", LogLevel::Error);
+            return false;
+        }
+        // usa il contenuto di ($role_name) come nome della classe da dichiarare
+        $role = new $role_name($user, $engine);
+        // il ruolo deve essere abilitato
+        if (!$role_name::$enabled) {
+            logEvent("Il ruolo '$role_name' di '{$user->username}' nella partita {$engine->game->id_game} non è abilitato", LogLevel::Error);
+            return false;
+        }
+        return $role;
+    }
 
     /**
      * Verifica se un personaggio è ancora vivo
      * @param \Game $game Gioco in cui il personaggio si trova
-     * @param int $user Identificativo dell'utente a cui corrisponde il personaggio
+     * @param int $id_user Identificativo dell'utente a cui corrisponde il personaggio
      * @return \RoleStatus Ritorna lo stato del personaggio
      */
     public static function getRoleStatus($game, $id_user) {
