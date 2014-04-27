@@ -41,4 +41,18 @@ class GameTime {
             return GameTime::Start;
         return ($day % 2 == 0) ? GameTime::Day : GameTime::Night;
     }
+    
+    public static function getNameFromDay($day) {
+        $gameTime = GameTime::fromDay($day);
+        switch ($gameTime) {
+            case GameTime::Start:
+                return "Arrivo al villaggio";
+            case GameTime::Day:
+                return "Giorno";
+            case GameTime::Night;
+                return "Notte";
+            default:
+                return "Unknown";
+        }
+    }
 }

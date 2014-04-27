@@ -18,7 +18,6 @@ Config::$log_level = LogLevel::Verbose;
 // ^^^^^^^ 
 
 
-
 $game = Game::fromRoomGameName("room", "game");
 $user = User::fromUsername("user3");
 

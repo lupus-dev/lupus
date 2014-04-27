@@ -126,7 +126,7 @@ class Game {
         if (intval($res[0]["players"]) > 0)
             $game->players = $res[0]["players"];
         else
-            $game->players = json_decode($res[0]["players"], true);            
+            $game->players = json_decode($res[0]["players"], true);
 
         return $game;
     }
@@ -134,24 +134,25 @@ class Game {
     /**
      * Genera la risposta da dare come informazioni nelle API
      * @param \Game $game Partita da ritornare
-     * @param \User $user Utente che effettua la richiesta
      * @return array Vettore contenente le informazioni della partita
      */
-    public static function makeResponse($game, $user) {
+    public static function makeResponse($game) {
         $room = Room::fromIdRoom($game->id_room);
         $res = array(
             "room_name" => $room->room_name,
             "game_name" => $game->game_name,
-            "day" => (int) $game->day,
+            "day" => array(
+                "num_day" => (int) $game->day,
+                "game_time" => GameTime::getNameFromDay($game->day),
+                "game_time_num" => (int) ($game->day / 2) + 1
+            ),
             "status" => (int) $game->status,
             "game_descr" => $game->game_descr,
-            "num_players" => is_array($game->players) ? 
-                                count($game->players) : 
-                                (int)$game->players
+            "num_players" => $game->players["num_players"]
         );
         return $res;
     }
-    
+
     /**
      * Crea una nuova partita. Non vengono effettuati controlli.
      * @param string $room Nome della stanza
@@ -169,31 +170,35 @@ class Game {
         }
         $name = Database::escape($name);
         $descr = Database::escape($descr);
-        $num_players = Database::escape($num_players);
+        $players = json_encode(array(
+            "num_players" => $num_players,
+            "players" => array()
+        ));
+        $players = Database::escape($players);
 
         $id_room = $room->id_room;
-        
+
         $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,players) VALUE "
-                . "($id_room,0,0,'$name','$descr','$num_players')";
-        
+                . "($id_room,0,0,'$name','$descr','$players')";
+
         $res = Database::query($query);
         if (!$res)
             return false;
         return Game::fromRoomGameName($room->room_name, $name);
     }
-    
+
     /**
      * Cerca tutti gli utenti della partita
      * @return array Vettore di \User
      */
     public function getUsers() {
         $id_game = $this->id_game;
-        
+
         $query = "SELECT id_user FROM role WHERE id_game=$id_game";
         $res = Database::query($query);
-        
+
         $users = array();
-        
+
         foreach ($res as $id_user) {
             $user = User::fromIdUser($id_user["id_user"]);
             $users[] = $user;
@@ -219,7 +224,8 @@ class Game {
             return false;
         $this->status = $status;
         return true;
-    }    
+    }
+
     /**
      * Fa avanzare il giorno di uno
      * @return boolean True se l'azione ha avuto successo, false altrimenti
@@ -233,20 +239,44 @@ class Game {
         $this->day++;
         return true;
     }
-       
+
     /**
      * Verifica se un utente appartiene alla partita
      * @param int $id_user Identificativo dell'utente
      * @return boolean rue se l'utente appartiene alla partita. False altrimenti
      */
     public function inGame($id_user) {
+        $user = User::fromIdUser($id_user);
+        if (!$user)
+            return false;
+        return in_array($user->username, $this->players["players"]);
+    }
+
+    /**
+     * Effettua le operazioni per far entrare il giocatore nella partita
+     * @param \User $user Utente che deve entrare nella partita
+     * @return boolean True se il giocatore è entrato nella partita. False 
+     * altrimenti
+     */
+    public function joinGame($user) {
         $id_game = $this->id_game;
-                
-        $query = "SELECT id_user FROM role WHERE id_game=$id_game AND id_user=$id_user";
-        $res = Database::query($query);
         
-        if (!$res || count($res) != 1)
+        if ($this->inGame($user->id_user))
+            return false;
+        if ($this->status != GameStatus::NotStarted)
+            return false;
+        if (count($this->players["players"])+1 > $this->players["num_players"])
+            return false;
+        
+        $this->players["players"][] = $user->username;
+        
+        $players = Database::escape(json_encode($this->players));
+        
+        $query = "UPDATE game SET players='$players' WHERE id_game=$id_game";
+        $res = Database::query($query);
+        if (!$res)
             return false;
         return true;
     }
+
 }

@@ -22,7 +22,7 @@ class GameStatus {
     /**
      * La partita è in corso
      */
-    const Started = 101;
+    const Running = 101;
     /**
      * La partita è terminata ed ha vinto la squadra y. Sommare a questo stato y
      */

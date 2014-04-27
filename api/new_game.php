@@ -41,4 +41,4 @@ $res = Game::createGame($room_name, $game_name, $game_descr, $num_players);
 if (!$res)
     response (500, array("error" => "Non è stato possibile creare la partita"));
 
-response(201, Game::makeResponse($res, $user));
+response(201, Game::makeResponse($res));

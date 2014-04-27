@@ -41,7 +41,7 @@ class Engine {
      * La partita è stata terminata a causa di una squadra non riconosciuta
      */
     const BadTeam = 502;
-    
+
     /**
      * La partita non è in corso. Nessuna azione è stata compiuta
      */
@@ -83,27 +83,31 @@ class Engine {
      */
     public function run() {
         logEvent("Engine avviato", LogLevel::Verbose);
-        
+
         $gameStatus = $this->game->status;
         if ($gameStatus < 100 || $gameStatus >= 200) {
             logEvent("La partita non è in corso", LogLevel::Notice);
             return Engine::BadGameStatus;
         }
-        
-        $roles = $this->getAllRoles();
-        if (!$roles) {
-            logEvent("Impossibile recuperare i ruoli. Partita terminata: codice " . Engine::BadRole, LogLevel::Warning);
-            $this->game->status(GameStatus::TermByBug);
-            return Engine::BadRole;
-        }
 
+        if ($gameStatus == GameStatus::Running) {
+            $roles = $this->getAllRoles();
+            if (!$roles) {
+                logEvent("Impossibile recuperare i ruoli. Partita terminata: codice " . Engine::BadRole, LogLevel::Warning);
+                $this->game->status(GameStatus::TermByBug);
+                return Engine::BadRole;
+            }
+        } 
+        else if ($gameStatus == GameStatus::NotStarted) 
+            $roles = array();
+        
         // controlla se qualcuno deve ancora votare
         $voteStatus = $this->checkVotes($roles);
         if ($voteStatus) {
             logEvent("Alcuni giocatori non hanno votato: codice $voteStatus", LogLevel::Debug);
             return $voteStatus;
         }
-        
+
         // ordina i ruoli per priorità. Quelli con priorità uguale hanno ordine
         // casuale
         shuffle($roles);
@@ -191,8 +195,11 @@ class Engine {
                         return Engine::NeedVote;
                 break;
             case GameTime::Start:
-                // @todo Aggiungere controllo per votazione del sindaco
-                break;
+                // se la partita non è al completo allora aspetta altri giocatori
+                if (count($this->game->players["players"]) < $this->game->players["num_players"])
+                    return Engine::NeedVote;
+                // altrimenti può continuare
+                return false;                
             default:
                 logEvent("Tempo non riconosciuto ({$this->game->day} => $time)", LogLevel::Notice);
                 break;
@@ -230,8 +237,9 @@ class Engine {
                     }
                 break;
             case GameTime::Start:
-                // @todo Aggiungere funzione per scegliere il sindaco
-                //       Aggiungere funzione per dividere e creare i ruoli
+                // @todo Aggiungere funzione per dividere e creare i ruoli
+                RoleDispenser::Compute($this->game);
+                $this->game->status(GameStatus::Running);
                 break;
             default:
                 logEvent("Tempo non riconosciuto ({$this->game->day} => $time)", LogLevel::Notice);

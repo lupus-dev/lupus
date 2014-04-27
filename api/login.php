@@ -15,6 +15,8 @@
  * il secondo ha priorità maggiore
  */
 
+if ($login)
+    response (401, array("L'utente è già connesso, effettua prima il logout"));
 
 // se la richiesta è del tipo /login/(username)
 // (username) ha priorità maggiore di $_GET

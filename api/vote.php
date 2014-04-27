@@ -26,7 +26,7 @@ if (!$game->inGame($user->id_user))
     response(401, array("error" => "Non fai parte di questa partita"));
 
 $gameStatus = $game->status;
-if ($gameStatus < 100 || $gameStatus >= 200)
+if ($gameStatus != GameStatus::Running)
     response (401, array("error" => "La partita non è in corso"));
 
 if (!isset($_GET["vote"]))

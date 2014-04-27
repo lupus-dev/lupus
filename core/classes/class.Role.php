@@ -12,6 +12,8 @@
  */
 abstract class Role {
 
+    // ----------- CARATTERISTICHE DEL RUOLO -------------
+    
     /**
      * Nome breve del ruolo. Identifica il ruolo. La definizione del ruolo
      * è nel percorso: roles/role.Xxxx.php e il ruolo è una classe di nome Xxxx
@@ -58,6 +60,8 @@ abstract class Role {
      */
     public static $mana = Mana::Good;
 
+    // ------------ INFORMAZIONI SULLA PARTITA ------------
+    
     /**
      * Utente a cui appartiene il ruolo
      * @var \User
@@ -238,7 +242,7 @@ abstract class Role {
             return false;
         return $username != $this->user->username;
     }
-
+    
     // ------------- SEZIONE INTERNA ---------------
 
     /**

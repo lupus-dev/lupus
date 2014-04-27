@@ -21,4 +21,4 @@ $game = Game::fromRoomGameName($room_name, $game_name);
 if (!$game)
     response (404, array("error" => "Partita non trovata"));
 
-response(202, Game::makeResponse($game, $user));
+response(202, Game::makeResponse($game));
