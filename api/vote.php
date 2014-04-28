@@ -79,17 +79,20 @@ $status = $engine->run();
 if ($status == Engine::NextDay)
     response(201, array(
         "vote" => "Votazione effettuata",
-        "game" => "Partita avanzata"
+        "status" => "Partita avanzata",
+        "game" => Game::makeResponse($game)
     ));
 if ($status == Engine::NeedVote)
     response (201, array(
         "vote" => "Votazione effettuata",
-        "game" => "Partita in attesa"
+        "status" => "Partita in attesa",
+        "game" => Game::makeResponse($game)
     ));
 if ($status == Engine::EndGame)
     response (201, array(
         "vote" => "Votazione effettuata",
-        "game" => "Partita terminata"
+        "status" => "Partita terminata",
+        "game" => Game::makeResponse($game)
     ));
 if ($status >= 500)
     response (500, array("error" => "Un errore del server ha interrotto la partita"));

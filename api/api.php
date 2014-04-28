@@ -29,6 +29,7 @@ $apiPaths = array(
     "/^game\/($shortName)\/($shortName)$/" => "game.php",
     "/^game\/($shortName)\/($shortName)\/vote$/" => "vote.php",
     "/^game\/($shortName)\/($shortName)\/join$/" => "join.php",
+    "/^game\/($shortName)\/($shortName)\/start$/" => "start.php",
     "/^status$/" => "status.php",
     "/^new_room\/($shortName)$/" => "new_room.php",
     "/^new_game\/($shortName)\/($shortName)$/" => "new_game.php",

@@ -148,7 +148,8 @@ class Game {
             ),
             "status" => (int) $game->status,
             "game_descr" => $game->game_descr,
-            "num_players" => $game->players["num_players"]
+            "num_players" => $game->players["num_players"],
+            "registred_players" => count($game->players["players"])
         );
         return $res;
     }
@@ -284,4 +285,16 @@ class Game {
         return true;
     }
 
+    /**
+     * Fa avviare la partita, permette ai giocatori di entrare
+     * @return boolean True se l'operazione ha avuto successo. False altrimenti
+     */
+    public function startGame() {
+        if ($this->status != GameStatus::Setup)
+            return false;
+        logEvent("La partita {$this->game_name} è iniziata", LogLevel::Debug);
+        Event::insertGameStart($this);
+        $this->status(GameStatus::NotStarted);
+        return true;
+    }
 }

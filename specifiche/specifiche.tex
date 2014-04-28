@@ -354,7 +354,9 @@ Tutte le seguenti funzioni si intendono già nel percorso delle \API\ (es: \page
 
 \item \pageurl{/game/(room\_name)/(game\_name)/vote} Effettua la votazione di un utente. Il voto deve essere l'\texttt{username} dell'utente votato nel parametro \texttt{vote} in \GET.
 
-\item \pageurl{/game/(room\_name)/(game\_name)/join} Prova ad entrare nella partita specificata.
+\item \pageurl{/game/(room\_name)/(game\_name)/join} Prova ad entrare nella partita specificata. Se si ha raggiunto il numero di giocatori, la partita inizia
+
+\item \pageurl{/game/(room\_name)/(game\_name)/start} Avvia la partita e la porta allo stato \texttt{NotStarted} per far entrare i giocatori.
 
 \item \pageurl{/new\_room/(room\_name)} Crea una nuova stanza appartenente all'utente. Deve venire specificato il parametro \texttt{descr} in \GET. Può essere specificato il parametro \texttt{private} per rendere la stanza privata
 
