@@ -19,6 +19,10 @@ class Contadino extends Role {
     public static $priority = 10000;
     public static $team_name = RoleTeam::Villages;
     public static $mana = Mana::Good;
+    // valore di riferimento di probabilità
+    public static $gen_probability = 10;
+    // i contadini non vengono generati in gruppo
+    public static $gen_number = 1;
     
     /**
      * Ritornerà l'HTML dello splash all'arrivo al villaggio

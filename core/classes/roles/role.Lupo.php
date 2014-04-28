@@ -19,6 +19,9 @@ class Lupo extends Role {
     public static $priority = 100;
     public static $team_name = RoleTeam::Antagonists;
     public static $mana = Mana::Bad;
+    // i lupi non vengono mai scelti nella generazione
+    public static $gen_probability = 0; 
+    public static $gen_number = 0;
 
     public function __construct($user, $game) {
         parent::__construct($user, $game);

@@ -59,6 +59,19 @@ abstract class Role {
      * @var \Mana
      */
     public static $mana = Mana::Good;
+    
+    /**
+     * Probabilità che il ruolo venga scelto durante l'assegnazione dei ruoli
+     * all'inizio della partita. Non è necessario che sia minore di 1
+     * @var float
+     */
+    public static $gen_probability = 0;
+    /**
+     * Numero di ruoli uguali generati. Se dovessero venire generati più ruoli 
+     * del dovuto, quelli attuali verrebbero scartati
+     * @var int
+     */
+    public static $gen_number = 1;
 
     // ------------ INFORMAZIONI SULLA PARTITA ------------
     

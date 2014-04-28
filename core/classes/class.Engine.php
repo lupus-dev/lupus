@@ -46,6 +46,11 @@ class Engine {
      * La partita non è in corso. Nessuna azione è stata compiuta
      */
     const BadGameStatus = 503;
+    
+    /**
+     * La partita è terminata perchè i ruoli non sono stati generati correttamente
+     */
+    const BadRoleAssign = 504;
 
     /**
      * La partita da far muovere
@@ -107,18 +112,19 @@ class Engine {
             logEvent("Alcuni giocatori non hanno votato: codice $voteStatus", LogLevel::Debug);
             return $voteStatus;
         }
-
+        
         // ordina i ruoli per priorità. Quelli con priorità uguale hanno ordine
         // casuale
         shuffle($roles);
         usort($roles, array("Role", "cmpRole"));
-
+        
         // esegue le azioni associate agli utenti
         $performStatus = $this->performAction($roles);
         if ($performStatus) {
             logEvent("Un'azione non è terminata correttamente. Partita terminata: codice $performStatus", LogLevel::Warning);
             return $performStatus;
         }
+                
         // verifica se la partita termina
         $endStatus = $this->checkEnd();
         // se il giorno/notte è finito correttamente
@@ -237,8 +243,9 @@ class Engine {
                     }
                 break;
             case GameTime::Start:
-                // @todo Aggiungere funzione per dividere e creare i ruoli
-                RoleDispenser::Compute($this->game);
+                if (!RoleDispenser::Compute($this->game))
+                    return Engine::BadRoleAssign;
+                $this->getAllRoles();
                 $this->game->status(GameStatus::Running);
                 break;
             default:

@@ -168,11 +168,16 @@ class Game {
             logEvent("Stanza non trovata. room_name=$room", LogLevel::Warning);
             return false;
         }
+        $admin = User::fromIdUser($room->id_admin);
+        if (!$admin) {
+            logEvent("Amministratore della stanza non trovato. id_admin={$room->id_admin}", LogLevel::Warning);
+            return false;
+        }
         $name = Database::escape($name);
         $descr = Database::escape($descr);
         $players = json_encode(array(
             "num_players" => $num_players,
-            "players" => array()
+            "players" => array($admin->username)
         ));
         $players = Database::escape($players);
 

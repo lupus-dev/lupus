@@ -30,11 +30,12 @@ if ($room->id_admin != $user->id_user)
 if (!$room->isAllTerminated())
     response (401, array("error" => "C'è ancora una partita in corso in questa stanza"));
 
-// aggiungere controllo sui ruoli
-
 $existGame = Game::fromRoomGameName($room_name, $game_name);
 if ($existGame)
     response (409, array("error" => "Esiste già una partita in questa stanza di nome '$game_name'"));
+
+if ($num_players < RoleDispenser::MinPlayers)
+    response (400, array("error" => "Il numero di giocatori è insufficiente"));
 
 $res = Game::createGame($room_name, $game_name, $game_descr, $num_players);
 
