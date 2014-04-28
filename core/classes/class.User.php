@@ -141,4 +141,60 @@ class User {
         
         return $rooms;
     }
+    
+    /**
+     * Ottiene una lista delle partite attive dell'utente
+     * @return array Ritorna un vettore di coppie. Ogni coppia contiene la chiave
+     * room_name e la chiave game_name
+     */
+    public function getActiveGame() {
+        $username = Database::escape($this->username);
+        $notStarted = GameStatus::NotStarted;
+        $running = GameStatus::Running;
+        
+        // ottiene il game_name e la room_name
+        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
+                . "FROM game WHERE (status=$notStarted OR status=$running) AND players LIKE '%\"$username\"%'";
+        $res = Database::query($query);
+        
+        $games = array();
+        foreach ($res as $game) 
+            $games[] = $game;
+        
+        return $games;
+    }
+    
+    /**
+     * Ottiene una lista delle partite in fase di setup appartenenti all'utente
+     * @return array Ritorna un vettore di coppie. Ogni coppia contiene la chiave
+     * room_name e la chiave game_name
+     */
+    public function getSetupGame() {
+        $id_user = $this->id_user;
+        $setup = GameStatus::Setup;
+        
+        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
+                . "FROM game WHERE status=$setup AND (SELECT id_admin FROM room WHERE room.id_room=game.id_room)=$id_user";        
+        $res = Database::query($query);
+        
+        $games = array();
+        foreach ($res as $game) 
+            $games[] = $game;
+        
+        return $games;
+    }
+    
+    /**
+     * Verifica se l'utente può creare altre stanze
+     * @return boolean True se l'utente può creare un'altra stanza. False altrimenti
+     */
+    public function canCreateRoom() {
+        $numPublicRooms = count($this->getPublicRoom());
+        $numPrivateRooms = count($this->getPrivateRoom());
+        $level = Level::getLevel($this->level);
+        
+        if ($numPublicRooms+$numPrivateRooms+1 > $level->aviableRoom)
+            return false;
+        return true;
+    }
 }

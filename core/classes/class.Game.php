@@ -297,4 +297,26 @@ class Game {
         $this->status(GameStatus::NotStarted);
         return true;
     }
+    
+    /**
+     * Verifica se l'utente deve votare nella partita oppure è in attesa
+     * @param \User $user Utente da verificare
+     * @return boolean True se la partita è in attesa del voto dell'utente, false
+     * altrimenti
+     */
+    public function hasToVote($user) {
+        if (!$this->inGame($user->id_user))
+            return false;
+        $engine = new Engine($this);
+        $role = Role::fromUser($user, $engine);
+        switch (GameTime::fromDay($this->day)) {
+            case GameTime::Start:
+                return false;
+            case GameTime::Day:
+                return $role->needVoteDay();
+            case GameTime::Night:
+                return $role->needVoteNight();
+        }
+        return false;
+    }
 }

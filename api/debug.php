@@ -21,4 +21,4 @@ Config::$log_level = LogLevel::Verbose;
 $game = Game::fromRoomGameName("room", "game");
 $user = User::fromUsername("user3");
 
-print_r(Event::insertDeath($game, $user, "kill-lupo", "user1"));
+print_r($user->getActiveGame());

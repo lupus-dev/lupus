@@ -20,6 +20,7 @@ if (!$login)
     <body>
         <div class="container" role="main">
             <?php include __DIR__ . "/common/navbar.php"; ?>
+            <?php include __DIR__ . "/index/content.php"; ?>
         </div>
     </body>
 </html>
