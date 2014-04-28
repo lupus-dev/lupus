@@ -16,7 +16,9 @@
  */
 
 if ($login)
-    response (401, array("L'utente è già connesso, effettua prima il logout"));
+    response (401, array(
+        "error" => "L'utente è già connesso, effettua prima il logout", 
+        "code" => APIStatus::LoginAlreadyDone));
 
 // se la richiesta è del tipo /login/(username)
 // (username) ha priorità maggiore di $_GET
@@ -25,7 +27,9 @@ if (isset($apiMatches[1]))
 
 // se non ci sono i parametri necessari
 if (!isset($_GET["username"]) || !isset($_GET["password"]))
-    response (400, array("error" => "Specificare username e password"));
+    response (400, array(
+        "error" => "Specificare username e password",
+        "code" => APIStatus::LoginMissingParameter));
 
 $username = $_GET["username"];
 $password = $_GET["password"];
@@ -35,8 +39,12 @@ $id_user = User::checkLogin($username, $password);
 
 // se non è corretto ritona un errore
 if (!$id_user)
-    response (401, array("error" => "Nome utente/password errati"));
+    response (401, array(
+        "error" => "Nome utente/password errati",
+        "code" => APIStatus::LoginFailed));
 
 // altrimenti salva nella sessione il login
 $_SESSION["id_user"] = $id_user;
-response(202, array("ok" => "Login effettuato"));
+response(202, array(
+    "ok" => "Login effettuato",
+    "code" => APIStatus::LoginDone));

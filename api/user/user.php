@@ -16,12 +16,16 @@ $username = $apiMatches[1];
 
 // l'utente deve essere connesso
 if (!$login)
-    response(401, array("error" => "Utente non connesso"));
+    response(401, array(
+        "error" => "Utente non connesso",
+        "code" => APIStatus::NotLoggedIn));
 
 $reqUser = User::fromUsername($username);
 // l'utente deve esistere
 if (!$reqUser)
-    response(404, array("error" => "Utente non trovato"));
+    response(404, array(
+        "error" => "Utente non trovato",
+        "code" => APIStatus::UserNotFound));
 
 $level = Level::getLevel($user->level);
 
@@ -44,4 +48,6 @@ $result = array(
 if ($username == $user->username)
     $result["private_room"] = $user->getPrivateRoom();
 
-response(202, $result);
+response(202, array(
+    "user" => $result,
+    "code" => APIStatus::UserFound));

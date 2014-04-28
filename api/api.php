@@ -20,19 +20,19 @@ $shortName = "[a-zA-Z][a-zA-Z0-9]*";
 
 // lista dei percorsi da redirigere
 $apiPaths = array(
-    "/^login$/" => "login.php",
-    "/^login\/($shortName)$/" => "login.php",
-    "/^logout$/" => "logout.php",
-    "/^me$/" => "me.php",
-    "/^user\/($shortName)$/" => "user.php",
-    "/^room\/($shortName)$/" => "room.php",
-    "/^game\/($shortName)\/($shortName)$/" => "game.php",
-    "/^game\/($shortName)\/($shortName)\/vote$/" => "vote.php",
-    "/^game\/($shortName)\/($shortName)\/join$/" => "join.php",
-    "/^game\/($shortName)\/($shortName)\/start$/" => "start.php",
+    "/^login$/" => "auth/login.php",
+    "/^login\/($shortName)$/" => "auth/login.php",
+    "/^logout$/" => "auth/logout.php",
+    "/^me$/" => "user/me.php",
+    "/^user\/($shortName)$/" => "user/user.php",
+    "/^room\/($shortName)$/" => "room/room.php",
+    "/^game\/($shortName)\/($shortName)$/" => "game/game.php",
+    "/^game\/($shortName)\/($shortName)\/vote$/" => "game/vote.php",
+    "/^game\/($shortName)\/($shortName)\/join$/" => "game/join.php",
+    "/^game\/($shortName)\/($shortName)\/start$/" => "game/start.php",
     "/^status$/" => "status.php",
-    "/^new_room\/($shortName)$/" => "new_room.php",
-    "/^new_game\/($shortName)\/($shortName)$/" => "new_game.php",
+    "/^new_room\/($shortName)$/" => "room/new_room.php",
+    "/^new_game\/($shortName)\/($shortName)$/" => "game/new_game.php",
     "/^debug$/" => "debug.php",
 );
 
