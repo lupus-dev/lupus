@@ -11,37 +11,44 @@
  * Classe che contiene le informazioni di un utente
  */
 class User {
+
     /**
      * Identificativo dell'utente
      * @var int
      */
     public $id_user;
+
     /**
      * Username dell'utente
      * @var string
      */
     public $username;
+
     /**
      * Livello dell'utente
      * @var int
      */
     public $level;
+
     /**
      * Il nome dell'utente
      * @var string
      */
     public $name;
+
     /**
      * Il cognome dell'utente
      * @var type 
      */
     public $surname;
+
     /**
      * Costruttore privato...
      */
     private function __construct() {
         
     }
+
     /**
      * Crea un'istanza di \User dal suo identificativo
      * @param int $id Identificativo dell'utente
@@ -50,24 +57,25 @@ class User {
      */
     public static function fromIdUser($id) {
         $id = intval($id);
-        
+
         $query = "SELECT id_user,username,level,name,surname FROM user WHERE id_user=$id";
         $res = Database::query($query);
-        
+
         if (count($res) != 1) {
             logEvent("L'utente $id non esiste", LogLevel::Warning);
             return false;
         }
-        
+
         $user = new User();
         $user->id_user = $res[0]["id_user"];
         $user->username = $res[0]["username"];
         $user->level = $res[0]["level"];
         $user->name = $res[0]["name"];
         $user->surname = $res[0]["surname"];
-        
+
         return $user;
     }
+
     /**
      * Crea un'istanza di \User dal suo username
      * @param string $username Username dell'utente
@@ -76,25 +84,25 @@ class User {
      */
     public static function fromUsername($username) {
         $username = Database::escape($username);
-        
+
         $query = "SELECT id_user,username,level,name,surname FROM user WHERE username='$username'";
         $res = Database::query($query);
-        
+
         if (count($res) != 1) {
             logEvent("L'utente $username non esiste", LogLevel::Warning);
             return false;
         }
-        
+
         $user = new User();
         $user->id_user = $res[0]["id_user"];
         $user->username = $res[0]["username"];
         $user->level = $res[0]["level"];
         $user->name = $res[0]["name"];
         $user->surname = $res[0]["surname"];
-        
+
         return $user;
     }
-    
+
     /**
      * Controlla se la coppia username/password è corretta
      * @param string $username Nome utente
@@ -105,12 +113,12 @@ class User {
     public static function checkLogin($username, $password) {
         $username = Database::escape($username);
         $password = Database::escape($password);
-        
+
         $query = "SELECT id_user FROM user WHERE username='$username' AND password=SHA1('$password')";
         $res = Database::query($query);
         return count($res) == 1 ? $res[0]["id_user"] : false;
     }
-    
+
     /**
      * Ottiene la lista dei nomi delle stanze pubbliche associate all'utente
      * @return string Un vettore di room_name
@@ -119,13 +127,14 @@ class User {
         $id_admin = $this->id_user;
         $query = "SELECT room_name FROM room WHERE id_admin=$id_admin AND private=0";
         $res = Database::query($query);
-        
+
         $rooms = array();
         foreach ($res as $room)
             $rooms[] = $room["room_name"];
-        
+
         return $rooms;
     }
+
     /**
      * Ottiene la lista dei nomi delle stanze private associate all'utente
      * @return string Un vettore di room_name
@@ -134,14 +143,14 @@ class User {
         $id_admin = $this->id_user;
         $query = "SELECT room_name FROM room WHERE id_admin=$id_admin AND private=1";
         $res = Database::query($query);
-        
+
         $rooms = array();
         foreach ($res as $room)
             $rooms[] = $room["room_name"];
-        
+
         return $rooms;
     }
-    
+
     /**
      * Ottiene una lista delle partite attive dell'utente
      * @return array Ritorna un vettore di coppie. Ogni coppia contiene la chiave
@@ -151,19 +160,19 @@ class User {
         $username = Database::escape($this->username);
         $notStarted = GameStatus::NotStarted;
         $running = GameStatus::Running;
-        
+
         // ottiene il game_name e la room_name
         $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
                 . "FROM game WHERE (status=$notStarted OR status=$running) AND players LIKE '%\"$username\"%'";
         $res = Database::query($query);
-        
+
         $games = array();
-        foreach ($res as $game) 
+        foreach ($res as $game)
             $games[] = $game;
-        
+
         return $games;
     }
-    
+
     /**
      * Ottiene una lista delle partite in fase di setup appartenenti all'utente
      * @return array Ritorna un vettore di coppie. Ogni coppia contiene la chiave
@@ -172,18 +181,39 @@ class User {
     public function getSetupGame() {
         $id_user = $this->id_user;
         $setup = GameStatus::Setup;
-        
+
         $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
-                . "FROM game WHERE status=$setup AND (SELECT id_admin FROM room WHERE room.id_room=game.id_room)=$id_user";        
+                . "FROM game WHERE status=$setup AND (SELECT id_admin FROM room WHERE room.id_room=game.id_room)=$id_user";
         $res = Database::query($query);
-        
+
         $games = array();
-        foreach ($res as $game) 
+        foreach ($res as $game)
             $games[] = $game;
-        
+
         return $games;
     }
-    
+
+    /**
+     * Ottiene una lista delle partite in terminate appartenenti all'utente
+     * @return array Ritorna un vettore di coppie. Ogni coppia contiene la chiave
+     * room_name e la chiave game_name
+     */
+    public function getEndedGame() {
+        $username = Database::escape($this->username);
+        $winy = GameStatus::Winy;
+
+        // ottiene il game_name e la room_name
+        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
+                . "FROM game WHERE status>=$winy AND players LIKE '%\"$username\"%'";
+        $res = Database::query($query);
+
+        $games = array();
+        foreach ($res as $game)
+            $games[] = $game;
+
+        return $games;
+    }
+
     /**
      * Verifica se l'utente può creare altre stanze
      * @return boolean True se l'utente può creare un'altra stanza. False altrimenti
@@ -192,9 +222,10 @@ class User {
         $numPublicRooms = count($this->getPublicRoom());
         $numPrivateRooms = count($this->getPrivateRoom());
         $level = Level::getLevel($this->level);
-        
-        if ($numPublicRooms+$numPrivateRooms+1 > $level->aviableRoom)
+
+        if ($numPublicRooms + $numPrivateRooms + 1 > $level->aviableRoom)
             return false;
         return true;
     }
+
 }

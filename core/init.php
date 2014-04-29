@@ -22,7 +22,7 @@ requireDir(__DIR__ . "/functions");
 Config::loadConfig();
 $db = Database::connect() || die();
 
-$baseDir = "/lupus";
+$baseDir = Config::$webapp_base;
 
 session_start();
 

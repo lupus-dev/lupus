@@ -21,6 +21,8 @@ class Config {
     public static $log_level = 3;
     public static $log_path = "log/log.txt";
     
+    public static $webapp_base = "/lupus";
+    
     public static $ini = "";
 
 
@@ -42,6 +44,8 @@ class Config {
         Config::$db_database = $config["database"]["database"];
         
         Config::$log_level = $config["log"]["level"];
+        
+        Config::$webapp_base = $config["webapp"]["basedir"];
     }
 
     

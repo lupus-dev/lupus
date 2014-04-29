@@ -13,14 +13,14 @@ if (!$login)
 <!doctype html>
 <html>
     <head>
-        <?php include __DIR__ . "/common/head.php"; ?>
+        <?php include __DIR__ . "/../common/head.php"; ?>
         <title>Index - Lupus in Tabula</title>
         <?php insertScript("default.js"); ?>
     </head>
     <body>
         <div class="container" role="main">
-            <?php include __DIR__ . "/common/navbar.php"; ?>
-            <?php include __DIR__ . "/index/content.php"; ?>
+            <?php include __DIR__ . "/../common/navbar.php"; ?>
+            <?php include __DIR__ . "/content.php"; ?>
         </div>
     </body>
 </html>

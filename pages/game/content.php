@@ -7,11 +7,6 @@
  */
 
 ?>
-<div class="jumbotron">
-    <h1>Lupus in Tabula!</h1>
-    <p>
-        Benvenuto <?= $user->name ?>!
-    </p>
-</div>
 <?php include __DIR__ . "/../common/playing_games.php"; ?>
 <?php include __DIR__ . "/../common/settingup_games.php"; ?>
+<?php include __DIR__ . "/../common/ended_games.php"; ?>
