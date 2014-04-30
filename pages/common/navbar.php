@@ -6,7 +6,10 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-$index = startsWith($request, "index") ? "active" : "";
+$_index = startsWith($request, "index") ? "active" : "";
+$_game = startsWith($request, "game") ? "active" : "";
+$_room = startsWith($request, "room") ? "active" : "";
+
 ?>
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -24,7 +27,9 @@ $index = startsWith($request, "index") ? "active" : "";
                 <?php if (!$login): ?>
                     <li class="active"><a href="<?= $baseDir ?>/login">Login</a></li>
                 <?php else: ?>
-                    <li class="<?= $index ?>"><a href="<?= $baseDir ?>/index">Home</a></li>                    
+                    <li class="<?= $_index ?>"><a href="<?= $baseDir ?>/index">Home</a></li>                    
+                    <li class="<?= $_game ?>"><a href="<?= $baseDir ?>/game">Partite</a></li>                    
+                    <li class="<?= $_room ?>"><a href="<?= $baseDir ?>/room">Stanze</a></li>                    
                 <?php endif; ?>
             </ul>
             <?php if ($login): ?>

@@ -19,9 +19,10 @@ $request = isset($_GET["request"]) ? $_GET["request"] : "";
 //   - altrimenti ci sarà un redirect
 // al primo match la valutazione si ferma
 $paths = array(
-    "/^index$/" => "index/index.php",
-    "/^login$/" => "login/login.php",
-    "/^game$/" => "game/game.php",
+    "/^index\/?$/" => "index/index.php",
+    "/^login\/?$/" => "login/login.php",
+    "/^game\/?$/" => "game/game.php",
+    "/^room\/?$/" => "room/room.php",
     // tutto quello che non è riconoscuto rimanda all'index
     "/.*/" => "index"
 );

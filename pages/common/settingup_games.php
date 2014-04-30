@@ -31,7 +31,7 @@ $rooms = array_merge($user->getPublicRoom(), $user->getPrivateRoom());
     <?php endforeach; ?>
 <?php else: ?>
     <div class="page-header">
-        <h3>Non hai stai progettando partite...</h3>
+        <h3>Non stai progettando partite...</h3>
     </div>
     <?php $num_free = 0; ?>
     <?php foreach ($rooms as $room_name): ?>

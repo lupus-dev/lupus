@@ -13,14 +13,14 @@ function printGameStatus($game, $room, $waiting) {
         $color = "default";
     } else if ($status == GameStatus::Running) {
         if ($waiting) {
-            $mex = "Vote!";
+            $mex = "Vota!";
             $color = "success";
         } else {
-            $mex = "Wait!";
+            $mex = "Aspetta!";
             $color = "success";
         }
     } else if ($status == GameStatus::NotStarted) {
-        $mex = "Waiting";
+        $mex = "In attesa";
         $color = "primary";
     } else if ($status >= GameStatus::Winy && $status < GameStatus::TermByAdmin) {
         $mex = "Finita";

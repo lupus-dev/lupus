@@ -15,7 +15,7 @@ if (!$login)
 <html>
     <head>
         <?php include __DIR__ . "/../common/head.php"; ?>
-        <title>Partite - Lupus in Tabula</title>
+        <title>Stanze - Lupus in Tabula</title>
         <?php insertScript("default.js"); ?>
     </head>
     <body>
