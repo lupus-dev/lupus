@@ -151,7 +151,7 @@ class Room {
      */
     public function getGame() {
         $id_room = $this->id_room;
-        $query = "SELECT game_name FROM game WHERE id_room=$id_room";
+        $query = "SELECT game_name FROM game WHERE id_room=$id_room ORDER BY id_game";
         $res = Database::query($query);
 
         $games = array();

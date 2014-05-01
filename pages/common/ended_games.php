@@ -8,6 +8,7 @@
  */
 
 require_once __DIR__ . "/game_status.php";
+require_once __DIR__ . "/print_game.php";
 $endedGames = $user->getEndedGame();
 
 ?>
@@ -16,16 +17,10 @@ $endedGames = $user->getEndedGame();
         <h1>Hai giocato in queste partite</h1>
     </div>
     <?php foreach ($endedGames as $game): ?>
-        <h3>
+        <p>
         <?php $room = Room::fromRoomName($game["room_name"]); ?>
             <?php $game = Game::fromRoomGameName($game["room_name"], $game["game_name"]); ?>
-            <?= $game->game_descr ?>
-            <?php printGameStatus($game, $room, false); ?>
-            <small>
-                <a href="<?= $baseDir ?>/room/<?= $room->room_name ?>"><?= $room->room_name ?></a>
-                /
-                <a href="<?= $baseDir ?>/admin/<?= $room->room_name ?>/<?= $game->game_name ?>"><?= $game->game_name ?></a>
-            </small>
-        </h3>
+            <?php printGame($game, $room, $user); ?>
+        </p>
     <?php endforeach; ?>
 <?php endif; ?>

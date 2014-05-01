@@ -6,6 +6,12 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
+/**
+ * Stampa il label con lo stato di una partita
+ * @param \Game $game Partita da visualizzare
+ * @param \Room $room Stanza della partita
+ * @param boolean $waiting Indica se il giocatore deve votare
+ */
 function printGameStatus($game, $room, $waiting) {
     $status = $game->status;
     if ($status == GameStatus::Setup) {

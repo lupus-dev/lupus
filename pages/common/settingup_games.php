@@ -8,6 +8,8 @@
  */
 
 require_once __DIR__ . "/game_status.php";
+require_once __DIR__ . "/print_game.php";
+
 $setupGames = $user->getSetupGame();
 $rooms = array_merge($user->getPublicRoom(), $user->getPrivateRoom());
 
@@ -20,13 +22,7 @@ $rooms = array_merge($user->getPublicRoom(), $user->getPrivateRoom());
         <h3>
             <?php $room = Room::fromRoomName($game["room_name"]); ?>
             <?php $game = Game::fromRoomGameName($game["room_name"], $game["game_name"]); ?>
-            <?= $game->game_descr ?>
-            <?php printGameStatus($game, $room, false); ?>
-            <small>
-                <a href="<?= $baseDir ?>/room/<?= $room->room_name ?>"><?= $room->room_name ?></a>
-                /
-                <a href="<?= $baseDir ?>/admin/<?= $room->room_name ?>/<?= $game->game_name ?>"><?= $game->game_name ?></a>
-            </small>
+            <?php printGame($game, $room, $user); ?>
         </h3>
     <?php endforeach; ?>
 <?php else: ?>

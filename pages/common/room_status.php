@@ -14,7 +14,7 @@ function printRoomStatus($room) {
         $mex = "Libera";
     } else {
         $color = "warning";
-        $mex = "In corso";
+        $mex = "Occupata";
     }
     ?>
     <span class="label label-<?= $color ?>"><?= $mex ?></span>

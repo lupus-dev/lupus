@@ -12,6 +12,9 @@ require_once __DIR__ . "/core/init.php";
 
 $request = isset($_GET["request"]) ? $_GET["request"] : "";
 
+// espressione regolare per un nome breve
+$shortName = "[a-zA-Z][a-zA-Z0-9]*";
+
 // elenco dei percorsi riconosciuti:
 // le chiavi sono delle espressioni regolari
 // i valori:
@@ -23,6 +26,7 @@ $paths = array(
     "/^login\/?$/" => "login/login.php",
     "/^game\/?$/" => "game/game.php",
     "/^room\/?$/" => "room/room.php",
+    "/^room\/($shortName)$/" => "room/room_name/room_name.php",
     // tutto quello che non è riconoscuto rimanda all'index
     "/.*/" => "index"
 );
