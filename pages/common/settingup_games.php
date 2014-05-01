@@ -44,7 +44,7 @@ $rooms = array_merge($user->getPublicRoom(), $user->getPrivateRoom());
     <?php endforeach; ?>
     <?php if ($num_free == 0): ?>
         <p>Infatti non hai stanze libere...</p>
-        <?php if ($user->canCreateRoom()): ?>
+        <?php if ($user->canCreatePublicRoom()): ?>
             <p>Cosa aspetti a crearne una?</p>
             <a href="<?= $baseDir ?>/room" class="btn btn-success">
                 Crea!

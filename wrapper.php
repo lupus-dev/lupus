@@ -27,6 +27,7 @@ $paths = array(
     "/^game\/?$/" => "game/game.php",
     "/^room\/?$/" => "room/room.php",
     "/^room\/($shortName)$/" => "room/room_name/room_name.php",
+    "/^room\/_new$/" => "room/new_room/new_room.php",
     // tutto quello che non è riconoscuto rimanda all'index
     "/.*/" => "index"
 );

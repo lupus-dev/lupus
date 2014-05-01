@@ -5,10 +5,7 @@ Contributors:
 - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
 */
 
-body {
-    padding-top: 70px;
-    padding-bottom: 30px;
+.new-room {
+	input { margin-bottom: 5px; }
+	.short-name { width: 200px; }
 }
-
-@import "_login/_login.scss";
-@import "_new-room/_new-room.scss";

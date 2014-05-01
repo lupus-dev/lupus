@@ -16,7 +16,7 @@ $apiReq = substr($apiReqUri, strlen($baseApiDir));
 $apiReq = ($temp = strstr($apiReq, "?", true)) ? $temp : $apiReq;
 
 // espressione regolare per un nome breve
-$shortName = "[a-zA-Z][a-zA-Z0-9]*";
+$shortName = "[a-zA-Z][a-zA-Z0-9]{0,9}";
 
 // lista dei percorsi da redirigere
 $apiPaths = array(
@@ -33,7 +33,9 @@ $apiPaths = array(
     "/^status$/" => "status.php",
     "/^new_room\/($shortName)$/" => "room/new_room.php",
     "/^new_game\/($shortName)\/($shortName)$/" => "game/new_game.php",
-    "/^debug$/" => "debug.php",
+    "/^checkRoomName$/" => "room/checkRoomName.php",
+    "/^checkRoomDescr$/" => "room/checkRoomDescr.php",
+    "/^debug$/" => "debug.php",    
 );
 
 // dentro apiMatches ci sono gli eventuali match della richiesta

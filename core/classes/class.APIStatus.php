@@ -64,4 +64,14 @@ class APIStatus {
     // ---------- USER ----------
     const UserFound = 190;
     const UserNotFound = 191;
+    // ---------- CHECK-ROOM-NAME ----------
+    const CheckRoomNameAccepted = 200;
+    const CheckRoomNameMissingParameter = 201;
+    const CheckRoomNameMalformed = 202;
+    const CheckRoomNameExisting = 203;
+    // ---------- CHECK-ROOM-DESCR ----------
+    const CheckRoomDescrAccepted = 210;
+    const CheckRoomDescrMissingParameter = 211;
+    const CheckRoomDescrMalformed = 212;
+    
 }

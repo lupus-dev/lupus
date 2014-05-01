@@ -218,12 +218,26 @@ class User {
      * Verifica se l'utente può creare altre stanze
      * @return boolean True se l'utente può creare un'altra stanza. False altrimenti
      */
-    public function canCreateRoom() {
+    public function canCreatePublicRoom() {
         $numPublicRooms = count($this->getPublicRoom());
         $numPrivateRooms = count($this->getPrivateRoom());
         $level = Level::getLevel($this->level);
 
         if ($numPublicRooms + $numPrivateRooms + 1 > $level->aviableRoom)
+            return false;
+        return true;
+    }
+
+    /**
+     * Verifica se l'utente può creare altre stanze private
+     * @return boolean True se l'utente può creare un'altra stanza privata. 
+     * False altrimenti
+     */
+    public function canCreatePrivateRoom() {
+        $numPrivateRooms = count($this->getPrivateRoom());
+        $level = Level::getLevel($this->level);
+
+        if ($numPrivateRooms + 1 > $level->privateRoom)
             return false;
         return true;
     }
