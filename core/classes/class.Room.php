@@ -62,7 +62,7 @@ class Room {
         $res = Database::query($query);
 
         if (count($res) != 1) {
-            logEvent("La stanza $id non esiste", LogLevel::Warning);
+            logEvent("La stanza $id non esiste", LogLevel::Debug);
             return false;
         }
             
@@ -90,7 +90,7 @@ class Room {
         $res = Database::query($query);
 
         if (count($res) != 1) {
-            logEvent("La stanza $name non esiste", LogLevel::Warning);
+            logEvent("La stanza $name non esiste", LogLevel::Debug);
             return false;
         }
 

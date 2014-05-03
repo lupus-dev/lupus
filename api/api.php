@@ -35,6 +35,8 @@ $apiPaths = array(
     "/^new_game\/($shortName)\/($shortName)$/" => "game/new_game.php",
     "/^checkRoomName$/" => "room/checkRoomName.php",
     "/^checkRoomDescr$/" => "room/checkRoomDescr.php",
+    "/^checkGameName$/" => "game/checkGameName.php",
+    "/^checkGameDescr$/" => "game/checkGameDescr.php",
     "/^debug$/" => "debug.php",    
 );
 

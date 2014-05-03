@@ -20,10 +20,12 @@ function checkRoomName() {
 			var container = $("#room-name").parent();
 			if (status) {
 				container.addClass("has-success").removeClass("has-error");
-				$("#room-name-icon").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+				$("#room-name-icon").addClass("glyphicon-ok").removeClass("glyphicon-remove");				
+				$("#room-name").popover("hide");
 			} else {
 				container.removeClass("has-success").addClass("has-error");
 				$("#room-name-icon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
+				$("#room-name").popover("show");
 			}
 		},
 		error: function() {
@@ -68,15 +70,15 @@ function newRoom() {
 	}
 	var room_name = $("#room-name").val();
 	var room_descr = $("#room-desc").val();
-	
+
 	data = {
 		descr: room_descr
 	};
 	if ($("#private").length > 0 && $("#private").prop("checked"))
-		data.private = true;		
-	
+		data.private = true;
+
 	$.ajax({
-		url: APIdir + "/new_room/"+room_name,
+		url: APIdir + "/new_room/" + room_name,
 		type: 'GET',
 		dataType: 'json',
 		data: data,

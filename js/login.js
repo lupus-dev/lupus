@@ -8,6 +8,7 @@
 function login() {
 	var username = $("#username").val();
 	var password = $("#password").val();
+			$("#status").text("Login in corso...");
 	$.ajax({
 		url: APIdir + "/login",
 		type: 'GET',
@@ -16,11 +17,16 @@ function login() {
 			"username": username,
 			"password": password
 		},
-		success: function(data, textStatus, jqXHR) {
+		success: function(data) {
+			$("#status").text("Login riuscito");
 			document.location.href = "index";
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			console.error(jqXHR);
+			if (jqXHR.status == 401)
+				$("#status").text("Nome utente/Password errati");
+			else
+				$("#status").text("Errore connessione al server");
 		}
 	});
 }
