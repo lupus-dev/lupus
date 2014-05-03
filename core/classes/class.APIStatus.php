@@ -74,13 +74,13 @@ class APIStatus {
     const CheckRoomDescrMissingParameter = 211;
     const CheckRoomDescrMalformed = 212;
     // ---------- CHECK-GAME-NAME ----------
-    const CheckGameNameAccepted = 200;
-    const CheckGameNameMissingParameter = 201;
-    const CheckGameNameMalformed = 202;
-    const CheckGameNameNotFound = 203;
-    const CheckGameNameExisting = 204;
+    const CheckGameNameAccepted = 220;
+    const CheckGameNameMissingParameter = 221;
+    const CheckGameNameMalformed = 222;
+    const CheckGameNameNotFound = 223;
+    const CheckGameNameExisting = 224;
     // ---------- CHECK-GAME-DESCR ----------
-    const CheckGameDescrAccepted = 210;
-    const CheckGameDescrMissingParameter = 211;
-    const CheckGameDescrMalformed = 212;
+    const CheckGameDescrAccepted = 230;
+    const CheckGameDescrMissingParameter = 231;
+    const CheckGameDescrMalformed = 232;
 }

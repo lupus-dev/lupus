@@ -5,6 +5,8 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
+var name_ok = false;
+var descr_ok = false;
 
 function checkGameName() {
 	var game_name = $("#game-name").val();
@@ -23,11 +25,17 @@ function checkGameName() {
 				container.addClass("has-success").removeClass("has-error");
 				$("#game-name-icon").addClass("glyphicon-ok").removeClass("glyphicon-remove");				
 				$("#game-name").popover("hide");
+				name_ok = true;
 			} else {
 				container.removeClass("has-success").addClass("has-error");
 				$("#game-name-icon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
 				$("#game-name").popover("show");
+				name_ok = false;
 			}
+			if (name_ok && descr_ok)
+				$("#create").removeClass("disabled");
+			else
+				$("#create").addClass("disabled");
 		},
 		error: function(data) {
 			console.error(data);
@@ -52,10 +60,18 @@ function checkGameDescr() {
 			if (status) {
 				container.addClass("has-success").removeClass("has-error");
 				$("#game-desc-icon").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+				$("#game-desc").popover("hide");
+				descr_ok = true;
 			} else {
 				container.removeClass("has-success").addClass("has-error");
 				$("#game-desc-icon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
+				$("#game-desc").popover("show");
+				descr_ok = false;
 			}
+			if (name_ok && descr_ok)
+				$("#create").removeClass("disabled");
+			else
+				$("#create").addClass("disabled");
 		},
 		error: function() {
 			var container = $("#game-name").parent();
@@ -66,10 +82,8 @@ function checkGameDescr() {
 }
 
 function newGame() {
-	if ($(".has-error").length > 0) {
-		alert(":(");
+	if (!(name_ok && descr_ok))
 		return;
-	}	
 	var game_name = $("#game-name").val();
 	var game_descr = $("#game-desc").val();
 	var num_players = $("#game-num-player").val();

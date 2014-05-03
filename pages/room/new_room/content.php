@@ -33,16 +33,30 @@ $aviablePrivate = min(array(
             <span>(ancora <?= $aviablePrivate ?>)</span>
         <?php endif; ?>
         <br>
-        <button class="btn btn-success btn-lg" onclick="newRoom()">Crea!</button>
+        <button class="btn btn-success btn-lg disabled" id="create" onclick="newRoom()">Crea!</button>
     </div>
 <?php else: ?>
     <h3>Non puoi creare altre stanze!</h3>
     <p>Gioca e aumenta il tuo livello per sbloccare altre stanze!</p>
 <?php endif; ?>
 <script>
+    var mexName = "<ul><li>Il nome della stanza non può essere più lungo di 10 caratteri\
+<li>E' formato da sole lettere maiuscole/minuscole e numeri\
+<li>Il primo carattere deve essere una lettere\
+<li>Il nome di una stanza è unico";
+    var mexDesc = "<ul><li>La descrizione di una stanza non può essere più lunga di 45 caratteri\
+<li>Deve essere lunga almeno 2 caratteri\
+<li>Può essere formata solo da lettere maiuscole/minuscole e numeri";
     $("#room-name").popover({
         html: true,
-        content: "<ul><li>Il nome della stanza non può essere più lungo di 10 caratteri<li>E' formato da sole lettere maiuscole/minuscole e numeri<li>Il primo carattere deve essere una lettera<li>Il nome di una stanza è unico",
+        content: mexName,
+        title: "Errore nel formato",
+        container: "body",
+        trigger: "manual"
+    });
+    $("#room-desc").popover({
+        html: true,
+        content: mexDesc,
         title: "Errore nel formato",
         container: "body",
         trigger: "manual"

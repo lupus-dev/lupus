@@ -5,6 +5,8 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
+var name_ok = false;
+var descr_ok = false;
 
 function checkRoomName() {
 	var room_name = $("#room-name").val();
@@ -20,13 +22,19 @@ function checkRoomName() {
 			var container = $("#room-name").parent();
 			if (status) {
 				container.addClass("has-success").removeClass("has-error");
-				$("#room-name-icon").addClass("glyphicon-ok").removeClass("glyphicon-remove");				
+				$("#room-name-icon").addClass("glyphicon-ok").removeClass("glyphicon-remove");
 				$("#room-name").popover("hide");
+				name_ok = true;
 			} else {
 				container.removeClass("has-success").addClass("has-error");
 				$("#room-name-icon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
 				$("#room-name").popover("show");
+				name_ok = false;
 			}
+			if (name_ok && descr_ok)
+				$("#create").removeClass("disabled");
+			else
+				$("#create").addClass("disabled");
 		},
 		error: function() {
 			var container = $("#room-name").parent();
@@ -50,10 +58,18 @@ function checkRoomDescr() {
 			if (status) {
 				container.addClass("has-success").removeClass("has-error");
 				$("#room-desc-icon").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+				$("#room-desc").popover("hide");
+				descr_ok = true;
 			} else {
 				container.removeClass("has-success").addClass("has-error");
 				$("#room-desc-icon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
+				$("#room-desc").popover("show");
+				descr_ok = false;
 			}
+			if (name_ok && descr_ok)
+				$("#create").removeClass("disabled");
+			else
+				$("#create").addClass("disabled");
 		},
 		error: function() {
 			var container = $("#room-name").parent();
@@ -64,10 +80,8 @@ function checkRoomDescr() {
 }
 
 function newRoom() {
-	if ($(".has-error").length > 0) {
-		alert(":(");
+	if (!(name_ok && descr_ok))	
 		return;
-	}
 	var room_name = $("#room-name").val();
 	var room_descr = $("#room-desc").val();
 
