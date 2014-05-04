@@ -20,7 +20,7 @@ if (!isset($_GET["game_descr"]))
 
 $game_descr = $_GET["game_descr"];
 
-if (!preg_match("/^[a-zA-Z0-9][a-zA-Z0-9 ]{0,43}[a-zA-Z0-9]$/", $game_descr))
+if (!preg_match("/^$descr_name$/", $game_descr))
     response(200, array(
         "status" => false,
         "code" => APIStatus::CheckGameDescrMalformed

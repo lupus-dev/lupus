@@ -38,6 +38,7 @@ class APIStatus {
     const NewGameAlreadyRunning = 143;
     const NewGameAlreadyExists = 144;
     const NewGameNotEnouthPlayers = 145;
+    const NewGameMalformed = 146;
     // ---------- START ----------
     const StartDone = 150;
     const StartAccessDenied = 151;
@@ -57,6 +58,7 @@ class APIStatus {
     const NewRoomRoomsEnded = 172;
     const NewRoomPrivateRoomsEnded = 173;
     const NewRoomAlreadyExists = 174;
+    const NewRoomMalformed = 175;
     // ---------- ROOM ----------
     const RoomFound = 180;
     const RoomNotFound = 181;
@@ -83,4 +85,9 @@ class APIStatus {
     const CheckGameDescrAccepted = 230;
     const CheckGameDescrMissingParameter = 231;
     const CheckGameDescrMalformed = 232;
+    // ---------- SETUP-GAME ----------
+    const SetupSuccess = 240;
+    const SetupAccessDenied = 241;
+    const SetupNotInSetup = 242;
+    const SetupMissingParameter = 243;
 }

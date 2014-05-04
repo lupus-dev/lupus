@@ -25,6 +25,12 @@ $game_name = $apiMatches[2];
 $game_descr = $_GET["descr"];
 $num_players = intval($_GET["num_players"]);
 
+if (!preg_match("/^$descr_name$/", $game_descr) || intval($num_players) == 0)
+    response (400, array(
+        "error" => "I parametri game_name e game_descr non sono in un formato corretto",
+        "code" => APIStatus::NewGameMalformed
+    ));
+
 $room = Room::fromRoomName($room_name);
 if (!$room)
     response (404, array(

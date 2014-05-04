@@ -15,8 +15,9 @@ $apiReqUri = $_SERVER['REQUEST_URI'];
 $apiReq = substr($apiReqUri, strlen($baseApiDir));
 $apiReq = ($temp = strstr($apiReq, "?", true)) ? $temp : $apiReq;
 
-// espressione regolare per un nome breve
+// espressioni regolari per un nome breve e per una descrizione
 $shortName = "[a-zA-Z][a-zA-Z0-9]{0,9}";
+$descr_name = "[a-zA-Z0-9][a-zA-Z0-9 ]{0,43}[a-zA-Z0-9]";
 
 // lista dei percorsi da redirigere
 $apiPaths = array(
@@ -30,6 +31,7 @@ $apiPaths = array(
     "/^game\/($shortName)\/($shortName)\/vote$/" => "game/vote.php",
     "/^game\/($shortName)\/($shortName)\/join$/" => "game/join.php",
     "/^game\/($shortName)\/($shortName)\/start$/" => "game/start.php",
+    "/^game\/($shortName)\/($shortName)\/setup$/" => "game/setup.php",
     "/^status$/" => "status.php",
     "/^new_room\/($shortName)$/" => "room/new_room.php",
     "/^new_game\/($shortName)\/($shortName)$/" => "game/new_game.php",

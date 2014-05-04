@@ -319,4 +319,24 @@ class Game {
         }
         return false;
     }
+    /**
+     * Modifica i parametri della partita
+     * @param string $game_descr Descrizione della partita
+     * @param int $num_players Numero di giocatori della partita
+     * @return boolean True se l'operazione ha avuto successo, false altrimenti
+     */
+    public function editGame($game_descr, $num_players) {
+        $this->game_descr = $game_descr;
+        $this->players["num_players"] = $num_players;
+        
+        $game_descr = Database::escape($game_descr);
+        $players = Database::escape(json_encode($this->players));
+        $id_game = $this->id_game;
+        
+        $query = "UPDATE game SET game_descr='$game_descr', players='$players' WHERE id_game=$id_game";
+        $res = Database::query($query);
+        if (!$res)
+            return false;
+        return true;
+    }
 }

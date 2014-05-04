@@ -23,6 +23,12 @@ $room_name = $apiMatches[1];
 $room_descr = $_GET["descr"];
 $private = isset($_GET["private"]);
 
+if (!preg_match("/^$descr_name$/", $room_descr))
+    response (400, array(
+        "error" => "Il parametro descr non è in un formato corretto",
+        "code" => APIStatus::NewRoomMalformed
+    ));
+
 $level = Level::getLevel($user->level);
 if (!$level)
     response (500, array(

@@ -22,3 +22,11 @@ function logout() {
 		}
 	});
 }
+function isShortName(name) {
+	var regex = /^[a-zA-Z][a-zA-Z0-9]{0,9}$/;
+	return regex.test(name);
+}
+function isValidDescr(descr) {
+	var regex = /^[a-zA-Z0-9][a-zA-Z0-9 ]{0,43}[a-zA-Z0-9]$/;
+	return regex.test(descr);
+}

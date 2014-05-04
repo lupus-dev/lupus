@@ -404,6 +404,7 @@ I codici riconosciuti sono:
 \apicode{143}{NewGameAlreadyRunning}{Una partita nella stanza è ancora in corso}
 \apicode{144}{NewGameAlreadyExists}{Esiste già una partita con questo nome nella stanza}
 \apicode{145}{NewGameNotEnouthPlayers}{Non è presente il numero minimo di giocatori}
+\apicode{146}{NewGameMalformed}{I parametri \texttt{descr} e \texttt{num\_players} non sono in un formato corretto}
 \hline
 \apicode{150}{StartDone}{La partita è iniziata e i giocatori possono entrare}
 \apicode{151}{StartAccessDenied}{La stanza non appartiene all'utente}
@@ -423,6 +424,7 @@ I codici riconosciuti sono:
 \apicode{172}{NewRoomRoomsEnded}{L'utente ha finito il numero di stanze che può creare}
 \apicode{173}{NewRoomPrivateRoomsEnded}{L'utente ha finito il numero di stanze private che può creare}
 \apicode{174}{NewRoomAlreadyExists}{Esiste già una stanza con questo nome}
+\apicode{175}{NewRoomMalformed}{Il parametro \texttt{descr} non è in un formato corretto}
 \hline
 \apicode{180}{RoomFound}{La stanza è stata trovata e verrà mostrata}
 \apicode{181}{RoomNotFound}{La stanza non è stata trovata}
@@ -449,6 +451,11 @@ I codici riconosciuti sono:
 \apicode{230}{CheckGameDescrAccepted}{La descrizione della partita è accettabile}
 \apicode{231}{CheckGameDescrMissingParameter}{Non è stato specificato il parametro \texttt{game\_descr}}
 \apicode{232}{CheckGameDescrMalformed}{La descrizione della partita ha un formato non corretto}
+\hline
+\apicode{240}{SetupSuccess}{La modifica delle impostazioni di una partita è riuscita}
+\apicode{241}{SetupAccessDenied}{Non si è l'amministratore della stanza}
+\apicode{242}{SetupNotInSetup}{La partita non è in fase di setup}
+\apicode{243}{SetupMissingParameter}{Non è stato specificato il parametro \texttt{descr} o \texttt{num\_players}}
 \hline
 \end{tabular}
 }
