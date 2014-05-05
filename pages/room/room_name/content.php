@@ -32,10 +32,10 @@ else
     <h1><?= $room->room_descr ?> <small><?= $room->room_name ?></small></h1>
 </div>
 <?php if (count($games) > 0): ?>
-    <?php if ($last == "win" || $last == "term"): ?>
+    <?php if (($last == "win" || $last == "term") && $room->id_admin == $user->id_user): ?>
         <h2>
             La stanza è libera! <small>Crea una nuova partita</small> 
-            <button class="btn btn-success btn-lg">Crea!</button>
+            <a class="btn btn-success btn-lg" href="../game/<?= $room_name ?>/_new">Crea!</a>
         </h2>
         <hr>
     <?php endif; ?>
@@ -77,5 +77,5 @@ else
 <?php else: ?>
     <h2>In questa stanza non si sono disputate partite</h2>
     <p>Creane una!</p>
-    <button class="btn btn-success btn-lg">Crea!</button>
+    <a class="btn btn-success btn-lg" href="../game/<?= $room_name ?>/_new">Crea!</a>
 <?php endif; ?>

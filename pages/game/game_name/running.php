@@ -20,10 +20,14 @@ $inGame = $game->inGame($user->id_user);
         <title>Partita in corso - Lupus in Tabula</title>
         <?php insertScript("default.js"); ?>
         <?php insertScript("game.js"); ?>
+        <script>var preDay = <?= $game->day ?></script>
     </head>
     <body class="<?= $body_class ?>">
         <div class="container" role="main">
             <?php include __DIR__ . "/running/navbar.php"; ?>
+            <div class="page-header">
+                <h1><?= $game->game_descr ?> <small><?= $game->game_name ?></small></h1>
+            </div>
             <?php if($inGame): ?>
                 <?php include __DIR__ . "/running/in_game.php"; ?>
             <?php else: ?>

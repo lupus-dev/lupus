@@ -23,3 +23,24 @@ function vote() {
 		}
 	});
 }
+
+function pollDayChanged() {
+	$.ajax({
+		url: APIdir + "/game/"+room_name+"/"+game_name,
+		type: 'GET',
+		dataType: 'json',
+		success: function(data) {
+			if (preDay == undefined)
+				preDay = data.game.day.num_day;
+			if (data.game.day.num_day != preDay)
+				location.reload(true);
+			if (data.game.status != 101)
+				location.reload(true);
+		},
+		error: function() {
+			location.reload(true);
+		}
+	});
+}
+
+setInterval(pollDayChanged, 5000);
