@@ -115,9 +115,8 @@ abstract class Role {
      * applicate. Può essere quindi sfruttata per applicare delle azioni 
      * perventive (ad esempio proteggere). La funzione viene chiamata ad ogni
      * richiesta dell'utente... non appesantire il server...
-     * @return boolean|string False se la partita può continuare, altrimenti
-     * contiene una stringa HTML da aggiungere alla pagina contenente il form da
-     * completare
+     * @return boolean|array False se la partita può continuare, altrimenti
+     * contiene vettore di \User contenente gli utenti votabili
      */
     public function needVoteNight() {
         return false;
@@ -161,9 +160,10 @@ abstract class Role {
      * applicate. Può essere quindi sfruttata per applicare delle azioni 
      * perventive (ad esempio proteggere). La funzione viene chiamata ad ogni
      * richiesta dell'utente... non appesantire il server...
-     * @return boolean|string False se la partita può continuare, altrimenti
-     * contiene una stringa HTML da aggiungere alla pagina contenente il form da
-     * completare
+     * @return boolean|array False se la partita può continuare, altrimenti
+     * contiene vettore associativo. L'indice votable continene un vettore di 
+     * username degli utenti votabili. L'indice pre è una stringa html con delle 
+     * informazioni da inserire prima del menu di selezione del voto
      */
     public function needVoteDay() {
         // un utente morto non vota
@@ -171,8 +171,17 @@ abstract class Role {
             return false;
         $vote = $this->getVote();
         // se l'utente non ha ancora votato la partita rimane in attesa
-        if (is_bool($vote) && !$vote)
-            return "vote";
+        if (is_bool($vote) && !$vote) {
+            $alive = $this->engine->game->getAlive();
+            $votable = array();
+            foreach ($alive as $user)
+                if ($user != $this->user) 
+                    $votable[] = $user->username;
+            return array(
+                "votable" => $votable,
+                "pre" => "<p>Vota chi mettere al rogo come lupo!</p>"
+            );
+        }
         return false;
     }
 

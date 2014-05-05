@@ -339,4 +339,44 @@ class Game {
             return false;
         return true;
     }
+    /**
+     * Ottiene una lista dei giocatori vivi della partita
+     * @return boolean|array Un vettore di \User. False se si verifica un errore
+     */
+    public function getAlive() {
+        $id_game = $this->id_game;
+        $alive = RoleStatus::Alive;
+        
+        $query = "SELECT id_user FROM role WHERE id_game=$id_game AND status=$alive";
+        $res = Database::query($query);
+        if (!$res)
+            return false;
+        
+        $users = array();
+        
+        foreach ($res as $user) 
+            $users[] = User::fromIdUser($user["id_user"]);
+        
+        return $users;
+    }
+    /**
+     * Ottiene una lista dei giocatori morti della partita
+     * @return boolean|array Un vettore di \User. False se si verifica un errore
+     */
+    public function getDead() {
+        $id_game = $this->id_game;
+        $dead = RoleStatus::Dead;
+        
+        $query = "SELECT id_user FROM role WHERE id_game=$id_game AND status=$dead";
+        $res = Database::query($query);
+        if (!$res)
+            return false;
+        
+        $users = array();
+        
+        foreach ($res as $user) 
+            $users[] = User::fromIdUser($user["id_user"]);
+        
+        return $users;
+    }
 }

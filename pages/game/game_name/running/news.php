@@ -7,6 +7,7 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-// dividere la pagina se:
-// - l'utente è già nella partita
-// - l'utente non è nella partita
+?>
+<h2>Giornale</h2>
+<h4>Il giornale verrà implementato quando sarà chiarito il funzionamento degli
+eventi di una partita. A breve...</h4>

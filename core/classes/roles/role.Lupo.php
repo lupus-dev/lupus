@@ -38,8 +38,25 @@ class Lupo extends Role {
             return false;
         $vote = $this->getVote();
         // se l'utente non ha ancora votato la partita rimane in attesa
-        if (is_bool($vote) && !$vote)
-            return "vote";
+        if (is_bool($vote) && !$vote) {
+            $alive = $this->engine->game->getAlive();
+            $votable = array();
+            foreach ($alive as $user)
+                if ($this->getRole($user, $this->engine->game) != Lupo::$role_name) 
+                    $votable[] = $user->username;
+            $pre = "<p>Vota chi sbranare!</p>";
+            $votes = $this->getVoteLupus();
+            if ($votes) {
+                $pre .= "<p>Gli altri lupi hanno votato:</p><ul>";
+                foreach ($votes as $vote)
+                    $pre .= "<li>" . User::fromIdUser ($vote["vote"])->username;
+                $pre .= "</ul>";
+            }
+            return array(
+                "votable" => $votable,
+                "pre" => $pre
+            );
+        }
         return false;
     }
 

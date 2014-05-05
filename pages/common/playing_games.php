@@ -7,7 +7,7 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-require_once __DIR__ . "/game_status.php";
+require_once __DIR__ . "/print_game_status.php";
 require_once __DIR__ . "/print_game.php";
 $activeGames = $user->getActiveGame();
 

@@ -6,7 +6,7 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-require_once __DIR__ . "/../../common/game_status.php";
+require_once __DIR__ . "/../../common/print_game_status.php";
 
 $room_name = $matches[1];
 $room = Room::fromRoomName($room_name);

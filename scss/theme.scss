@@ -10,5 +10,9 @@ body {
     padding-bottom: 30px;
 }
 
+.night {
+	background-color: #ccc;
+}
+
 @import "_login/_login.scss";
 @import "_new-room/_new-room.scss";
