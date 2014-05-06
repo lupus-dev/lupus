@@ -530,7 +530,7 @@ abstract class Role {
 
     /**
      * Ottiene la priorità del ruolo
-     * @return int
+     * @return int La priorità del ruolo
      */
     function getPriority() {
         $class_name = get_class($this);
@@ -538,8 +538,8 @@ abstract class Role {
     }
 
     /**
-     * Ottiene la priorità del ruolo
-     * @return int
+     * Ottiene il nome del ruolo
+     * @return string Il nome breve del ruolo
      */
     function getRoleName() {
         $class_name = get_class($this);

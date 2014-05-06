@@ -133,6 +133,25 @@ class Event {
         return Event::insertEvent($game, EventCode::Death, $data);
     }
 
+    /**
+     * Aggiunge alla lista degli eventi della partita la visione di un medium
+     * @param \Game $game Partita in cui salvare l'evento
+     * @param \User $medium Il medium attore della visione
+     * @param \User $seen L'utente protagonista della visione
+     * @return boolean|\Event Evento creato. False se si verifica un errore
+     */
+    public static function insertMediumAction($game, $medium, $seen) {
+        $engine = new Engine($game);
+        $role = Role::fromUser($seen, $engine);
+        $role = get_class($role);
+        $data = array(
+            "medium" => $medium->username,
+            "seen" => $seen->username,
+            "mana" => $role::$mana
+        );
+        
+        return Event::insertEvent($game, EventCode::MediumAction, $data);
+    }
 
     /**
      * Inserisce un evento nel database
