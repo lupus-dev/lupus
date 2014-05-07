@@ -20,7 +20,7 @@ class Paparazzo extends Role {
     public static $priority = 1000;
     public static $team_name = RoleTeam::Villages;
     public static $mana = Mana::Good;
-    public static $gen_probability = 1;
+    public static $gen_probability = 0.5;
     public static $gen_number = 1;
 
     public function __construct($user, $game) {
@@ -59,6 +59,9 @@ class Paparazzo extends Role {
      * se il giocatore da paparazzare non esiste
      */
     public function performActionNight() {
+        // se l'utente è morto non agisce
+        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) == RoleStatus::Dead)
+            return true;
         $vote = $this->getVote();
         if ($vote == 0)
             return true;

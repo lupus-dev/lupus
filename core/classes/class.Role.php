@@ -280,7 +280,7 @@ abstract class Role {
         $res = Database::query($query);
         if (!$res || count($res) != 1)
             return false;
-        $data = json_decode($res[0], true);
+        $data = json_decode($res[0]["data"], true);
         if (!$data) {
             logEvent("I dati dell'utente {$this->user->username} sono danneggiati", LogLevel::Notice);
             return false;
@@ -328,7 +328,7 @@ abstract class Role {
 
     /**
      * Uccide un personaggio se non è già morto o se non è protetto
-     * @param \User $user Identificativo dell'utente da uccidere
+     * @param \User $user Utente da uccidere
      * @return boolean True se l'uccisione è avvenuta, false altrimenti
      */
     protected function kill($user) {
@@ -360,7 +360,7 @@ abstract class Role {
 
     /**
      * Verifica se il personaggio è ancora vivo
-     * @param int $name Identificativo dell'utente da controllare. Se null, utente
+     * @param int $id_user Identificativo dell'utente da controllare. Se null, utente
      * corrente
      * @return \RoleStatus Ritorna lo stato del personaggio
      */
@@ -375,7 +375,7 @@ abstract class Role {
      * @param \User $visited Utente visitato
      */
     protected function visit($visited) {
-        if (is_array($this->engine->visited[$visited->id_user]))
+        if (isset($this->engine->visited[$visited->id_user]))
             $this->engine->visited[$visited->id_user][] = $this->user->id_user;
         else
             $this->engine->visited[$visited->id_user] = array($this->user->id_user);
@@ -386,7 +386,7 @@ abstract class Role {
      * @param \User $user Utente che ha subito le visite
      */
     protected function getVisited($user) {
-        if (is_array($this->engine->visited[$user->id_user]))
+        if (isset($this->engine->visited[$user->id_user]))
             return $this->engine->visited[$user->id_user];
         return array();
     }

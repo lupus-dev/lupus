@@ -58,6 +58,9 @@ class Guardia extends Role {
      * se il giocatore da proteggere non esiste
      */
     public function performActionNight() {
+        // se l'utente è morto non agisce
+        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) == RoleStatus::Dead)
+            return true;
         $vote = $this->getVote();
         $voted = User::fromIdUser($vote);
         if (!$voted)

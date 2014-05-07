@@ -93,6 +93,9 @@ class Lupo extends Role {
      * se il giocatore da uccidere non esiste
      */
     public function performActionNight() {
+        // se l'utente è morto non agisce
+        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) == RoleStatus::Dead)
+            return true;
         $votes = $this->getVoteLupus();
         // se non è stato l'ultimo a votare, non fa nulla
         // esiste sempre almeno un voto di un lupo. Altrimenti la partita sarebbe 

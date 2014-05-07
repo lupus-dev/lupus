@@ -53,11 +53,14 @@ class Veggente extends Role {
 
     /**
      * Esegue l'azione associata al veggente, inserisce negli eventi della partita
-     * la visione del vegente
+     * la visione del veggente
      * @return boolean Ritorna true se tutto è andato per il verso giusto. False
      * se il giocatore da vedere non esiste
      */
     public function performActionNight() {
+        // se l'utente è morto non agisce
+        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) == RoleStatus::Dead)
+            return true;
         $vote = $this->getVote();
         if ($vote == 0)
             return true;
