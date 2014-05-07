@@ -242,4 +242,30 @@ class User {
         return true;
     }
 
+    /**
+     * Effettua la registrazione di un utente
+     * @param string $username Nome utente
+     * @param string $password Password
+     * @param string $nome Nome
+     * @param string $cognome Cognome
+     * @return \User|boolean False se si verifica un errore. L'utente registrato
+     * altrimenti
+     */
+    public static function signup($username, $password, $nome, $cognome) {
+        $user = User::fromUsername($username);
+        if ($user)
+            return false;
+        
+        $username = $username;
+        $password = Database::escape($password);
+        $nome = Database::escape($nome);
+        $cognome = Database::escape($cognome);
+        
+        $query = "INSERT INTO user (username,password,level,name,surname) VALUE "
+                . "('$username', SHA1('$password'), 1, '$nome', '$cognome')";
+        $res = Database::query($query);
+        if (!$res)
+            return false;
+        return User::fromUsername($username);
+    }
 }

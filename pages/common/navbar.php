@@ -6,6 +6,9 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
+$_login = startsWith($request, "login") ? "active" : "";
+$_signup = startsWith($request, "signup") ? "active" : "";
+
 $_index = startsWith($request, "index") ? "active" : "";
 $_game = startsWith($request, "game") ? "active" : "";
 $_room = startsWith($request, "room") ? "active" : "";
@@ -25,7 +28,8 @@ $_room = startsWith($request, "room") ? "active" : "";
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <?php if (!$login): ?>
-                    <li class="active"><a href="<?= $baseDir ?>/login">Login</a></li>
+                    <li class="<?= $_login ?>"><a href="<?= $baseDir ?>/login">Login</a></li>
+                    <li class="<?= $_signup ?>"><a href="<?= $baseDir ?>/signup">Signup</a></li>
                 <?php else: ?>
                     <li class="<?= $_index ?>"><a href="<?= $baseDir ?>/index">Home</a></li>                    
                     <li class="<?= $_game ?>"><a href="<?= $baseDir ?>/game">Partite</a></li>                    

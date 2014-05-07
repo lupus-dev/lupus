@@ -90,4 +90,9 @@ class APIStatus {
     const SetupAccessDenied = 241;
     const SetupNotInSetup = 242;
     const SetupMissingParameter = 243;
+    // ---------- SIGNUP ----------
+    const SignupSuccess = 250;
+    const SignupMissingParameter = 251;
+    const SignupAlreadyExists = 252;
+    const SignupMalformed = 253;
 }

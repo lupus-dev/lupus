@@ -24,6 +24,7 @@ $apiPaths = array(
     "/^login$/" => "auth/login.php",
     "/^login\/($shortName)$/" => "auth/login.php",
     "/^logout$/" => "auth/logout.php",
+    "/^signup$/" => "auth/signup.php",
     "/^me$/" => "user/me.php",
     "/^user\/($shortName)$/" => "user/user.php",
     "/^room\/($shortName)$/" => "room/room.php",

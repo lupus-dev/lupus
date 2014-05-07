@@ -14,5 +14,68 @@ body {
 
 .label { display: inline !important; }
 
-@import "_login/_login.scss";
-@import "_new-room/_new-room.scss";
+.login-form {	
+	$padding: 15px;
+	$border-radius: 15px;
+	$background-color: #f6f6f6;
+	$h1-margin: 0px;
+	$label-margin-top: 20px;
+	$login-margin-top: 15px;
+	
+	width: 100%;
+	padding: $padding;
+	border-radius: 15px;
+	text-align: center;
+	background-color: $background-color;
+	
+	h1 {
+		margin: $h1-margin;
+	}
+	label {
+		margin-top: $label-margin-top;		
+	}
+	input {
+		text-align: center;
+	}
+	#do-login {
+		margin-top: $login-margin-top;
+	}
+}
+.signup-form {
+	table {
+		vertical-align: central;
+	}
+	$padding: 15px;
+	$border-radius: 15px;
+	$background-color: #f6f6f6;
+	$h1-margin: 0px;
+	//$label-margin-top: 20px;
+	$login-margin-top: 15px;
+	
+	width: 100%;
+	padding: $padding;
+	border-radius: 15px;
+	text-align: center;
+	background-color: $background-color;
+	
+	h1 {
+		margin: $h1-margin;
+	}
+	input {
+		text-align: center;
+	}
+	table {
+		width: 100%;
+		margin-top: $login-margin-top;
+		border-spacing: 3px;
+		border-collapse: separate;
+	}
+	#do-login {
+		margin-top: $login-margin-top;
+	}
+}
+
+.new-room {
+	input { margin-bottom: 5px; }
+	.short-name { width: 200px; }
+}
