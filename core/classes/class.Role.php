@@ -343,7 +343,7 @@ abstract class Role {
             return false;
         }
         if ($this->isProtected($user, $this->user)) {
-            logEvent("Si ha cercato di uccidere un giocatore protetto ({$this->user->username} => {$user->username}", LogLevel::Debug);
+            logEvent("Si ha cercato di uccidere un giocatore protetto ({$this->user->username} => {$user->username})", LogLevel::Debug);
             return false;
         }
 
