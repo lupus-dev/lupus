@@ -20,6 +20,10 @@
 <div class="col-sm-6" class="chat">
     <?php include __DIR__ . "/chat.php"; ?>
 </div>
+
+<div class="clearfix"></div>
+<p><small>Il tuo ruolo è: <?= Role::getRole($user, $game) ?></small></p>
+
 <script>
     var room_name = "<?= $room_name ?>";
     var game_name = "<?= $game_name ?>";
