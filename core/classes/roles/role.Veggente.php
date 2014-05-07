@@ -10,10 +10,10 @@
 /**
  * Classe che rappresenta il ruolo Medium
  */
-class Medium extends Role {
+class Veggente extends Role {
 
-    public static $role_name = "medium";
-    public static $name = "Medium";
+    public static $role_name = "veggente";
+    public static $name = "Veggente";
     public static $debug = false;
     public static $enabled = true;
     public static $priority = 150;
@@ -27,7 +27,7 @@ class Medium extends Role {
     }
 
     /**
-     * Verifica se il medium deve votare. Se è morto o se ha già votato ritorna 
+     * Verifica se il veggente deve votare. Se è morto o se ha già votato ritorna 
      * false. Altrimenti ritorna il form per votare
      * @return boolean|string
      */
@@ -37,13 +37,11 @@ class Medium extends Role {
         $vote = $this->getVote();
         // se l'utente non ha ancora votato la partita rimane in attesa
         if (is_bool($vote) && !$vote) {
-            $dead = $this->engine->game->getDead();
-            // se non c'è nessun morto, non vota
-            if (!$dead)
-                return false;
+            $alive = $this->engine->game->getAlive();
             $votable = array();
-            foreach ($dead as $user)
-                $votable[] = $user->username;            
+            foreach ($alive as $user)
+                if ($user->id_user != $this->user->id_user)
+                    $votable[] = $user->username;    
             $votable = array_merge(array("(nessuno)"), $votable);
             return array(
                 "votable" => $votable,
@@ -54,8 +52,8 @@ class Medium extends Role {
     }
 
     /**
-     * Esegue l'azione associata al medium, inserisce negli eventi della partita
-     * la visione del medium
+     * Esegue l'azione associata al veggente, inserisce negli eventi della partita
+     * la visione del vegente
      * @return boolean Ritorna true se tutto è andato per il verso giusto. False
      * se il giocatore da vedere non esiste
      */
@@ -66,7 +64,7 @@ class Medium extends Role {
         $voted = User::fromIdUser($vote);
         if (!$voted)
             return false;
-        Event::insertMediumAction($this->engine->game, $this->user, $voted);
+        Event::insertVeggenteAction($this->engine->game, $this->user, $voted);
         return true;
     }
 
@@ -89,7 +87,7 @@ class Medium extends Role {
         $user = User::fromUsername($username);
         if (!$user) return false;
         $status = Role::getRoleStatus($this->engine->game, $user->id_user);
-        if ($status == RoleStatus::Alive)
+        if ($status == RoleStatus::Dead)
             return false;
         return $username != $this->user->username;
     }

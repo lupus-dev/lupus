@@ -152,6 +152,25 @@ class Event {
         
         return Event::insertEvent($game, EventCode::MediumAction, $data);
     }
+    /**
+     * Aggiunge alla lista degli eventi della partita la visione di un veggente
+     * @param \Game $game Partita in cui salvare l'evento
+     * @param \User $veggente Il veggente attore della visione
+     * @param \User $seen L'utente protagonista della visione
+     * @return boolean|\Event Evento creato. False se si verifica un errore
+     */
+    public static function insertVeggenteAction($game, $veggente, $seen) {
+        $engine = new Engine($game);
+        $role = Role::fromUser($seen, $engine);
+        $role = get_class($role);
+        $data = array(
+            "medium" => $veggente->username,
+            "seen" => $seen->username,
+            "mana" => $role::$mana
+        );
+        
+        return Event::insertEvent($game, EventCode::MediumAction, $data);
+    }
 
     /**
      * Inserisce un evento nel database

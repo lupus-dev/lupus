@@ -23,6 +23,10 @@ class EventCode {
      * Il medium ha visto il mana di un giocatore
      */
     const MediumAction = 2;
+    /**
+     * Il veggente ha visto il mana di un giocatore
+     */
+    const VeggenteAction = 2;
     
     /**
      * Costruttore privato
