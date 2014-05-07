@@ -146,5 +146,18 @@ abstract class Team {
                 return $team;
         return false;
     }
-
+    
+    /**
+     * Confronta due squadre per ordinarle in base alla loro priorità
+     * @param \Team $teamA 
+     * @param \Team $teamB
+     * @return int Ritorna il valore del contronto delle priorità dei ruoli
+     */
+    static function cmpTeam($teamA, $teamB) {        
+        $priA = $teamA::$priority;
+        $priB = $teamB::$priority;
+        if ($priA == $priB)
+            return 0;
+        return ($priA < $priB) ? -1 : 1;
+    }
 }

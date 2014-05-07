@@ -277,6 +277,7 @@ class Engine {
             $team_name = $role_name::$team_name;
             $teams[$team_name] = $team_name;
         }
+        usort($teams, array("Team", "cmpTeam"));
         foreach ($teams as $team_name) {
             $team_name = firstUpper($team_name);
             // se la squadra non è riconosciuta
@@ -315,5 +316,4 @@ class Engine {
         // se ci sono zero giocatori vivi, la partita termina
         return $res[0]["alive"] == 0;
     }
-
 }

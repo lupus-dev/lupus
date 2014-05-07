@@ -22,7 +22,7 @@ class RoleTeam {
     /**
      * Squadra dei criceti
      */
-    const Hamster = "hamster";
+    const Criceti = "criceti";
     
     /**
      * Costruttore privato
