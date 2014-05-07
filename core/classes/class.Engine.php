@@ -63,6 +63,13 @@ class Engine {
      * @var array
      */
     public $protected;
+    /**
+     * Vettore che contiene l'elenco delle visite dei giocatori
+     * @var array La chiave del vettore è l'utente visitato, il valore è un 
+     * vettore degli utenti che hanno visitato l'utente. Gli utenti sono riferiti
+     * con il loro identificativo
+     */
+    public $visited;
 
     /**
      * Vettore che contiene gli identificativi dei giocatori indicizzati per 
@@ -270,6 +277,7 @@ class Engine {
             $team_name = $role_name::$team_name;
             $teams[$team_name] = $team_name;
         }
+        usort($teams, array("Team", "cmpTeam"));
         foreach ($teams as $team_name) {
             $team_name = firstUpper($team_name);
             // se la squadra non è riconosciuta
@@ -308,5 +316,4 @@ class Engine {
         // se ci sono zero giocatori vivi, la partita termina
         return $res[0]["alive"] == 0;
     }
-
 }

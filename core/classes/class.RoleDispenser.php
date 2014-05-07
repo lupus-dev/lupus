@@ -155,10 +155,11 @@ class RoleDispenser {
             // numero casuale compreso tra 0 e 1
             $rand = rand() / getrandmax();
             $curr_sum = $roles_probability[0];
-            $curr_pos = 0;
+            $curr_pos = 1;
             // cerca quale ruolo è stato generato
             while ($curr_sum < $rand) 
                 $curr_sum += $roles_probability[$curr_pos++];
+            $curr_pos--;
             // nome del ruolo generato
             $role = $roles_name[$curr_pos];
             // se il ruolo prevede di generare troppi utenti, la generazione 

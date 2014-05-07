@@ -19,6 +19,18 @@ class EventCode {
      * Un giocatore è morto
      */
     const Death = 1;
+    /**
+     * Il medium ha visto il mana di un giocatore
+     */
+    const MediumAction = 2;
+    /**
+     * Il veggente ha visto il mana di un giocatore
+     */
+    const VeggenteAction = 3;
+    /**
+     * Il paparazzo ha guardato qualcuno 
+     */
+    const ParapazzoAction = 4;
     
     /**
      * Costruttore privato

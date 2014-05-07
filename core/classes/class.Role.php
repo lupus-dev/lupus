@@ -280,7 +280,7 @@ abstract class Role {
         $res = Database::query($query);
         if (!$res || count($res) != 1)
             return false;
-        $data = json_decode($res[0], true);
+        $data = json_decode($res[0]["data"], true);
         if (!$data) {
             logEvent("I dati dell'utente {$this->user->username} sono danneggiati", LogLevel::Notice);
             return false;
@@ -328,7 +328,7 @@ abstract class Role {
 
     /**
      * Uccide un personaggio se non è già morto o se non è protetto
-     * @param \User $user Identificativo dell'utente da uccidere
+     * @param \User $user Utente da uccidere
      * @return boolean True se l'uccisione è avvenuta, false altrimenti
      */
     protected function kill($user) {
@@ -343,7 +343,7 @@ abstract class Role {
             return false;
         }
         if ($this->isProtected($user, $this->user)) {
-            logEvent("Si ha cercato di uccidere un giocatore protetto ({$this->user->username} => {$user->username}", LogLevel::Debug);
+            logEvent("Si ha cercato di uccidere un giocatore protetto ({$this->user->username} => {$user->username})", LogLevel::Debug);
             return false;
         }
 
@@ -360,7 +360,7 @@ abstract class Role {
 
     /**
      * Verifica se il personaggio è ancora vivo
-     * @param int $name Identificativo dell'utente da controllare. Se null, utente
+     * @param int $id_user Identificativo dell'utente da controllare. Se null, utente
      * corrente
      * @return \RoleStatus Ritorna lo stato del personaggio
      */
@@ -370,6 +370,67 @@ abstract class Role {
         return Role::getRoleStatus($this->engine->game, $id_user);
     }
 
+    /**
+     * Visita un personaggio. Alcuni ruoli necessitano di questa informazione
+     * @param \User $visited Utente visitato
+     */
+    protected function visit($visited) {
+        if (isset($this->engine->visited[$visited->id_user]))
+            $this->engine->visited[$visited->id_user][] = $this->user->id_user;
+        else
+            $this->engine->visited[$visited->id_user] = array($this->user->id_user);
+    }
+    
+    /**
+     * Ottiene la lista degli utenti che hanno visitato un utente
+     * @param \User $user Utente che ha subito le visite
+     */
+    protected function getVisited($user) {
+        if (isset($this->engine->visited[$user->id_user]))
+            return $this->engine->visited[$user->id_user];
+        return array();
+    }
+    
+    /**
+     * Ottiene la lista degli utenti visitati da un utente
+     * @param \User $user Utente che ha effettuato le visite
+     */
+    protected function getVisitedBy($user) {
+        $visited = array();
+        foreach ($this->engine->visited as $visit => $visitors) 
+            if (in_array($user->id_user, $visitors))
+                $visited[] = $visit;
+        return $visited;
+    }
+
+
+    /**
+     * Effettua la votazione di un personaggio
+     * @param int $username Utente votato
+     * @return boolean True se la votazione ha avuto successo, false altrimenti
+     */
+    public function vote($username) {
+        $id_game = $this->engine->game->id_game;
+        $id_user = $this->user->id_user;
+        $day = $this->engine->game->day;
+        
+        $user_voted = User::fromUsername($username);
+        if (!$user_voted) {
+            logEvent("L'utente $id_user ha votato l'utente $username che non esiste. id_game=$id_game", LogLevel::Warning);
+            return false;
+        }
+        $vote = $user_voted->id_user;
+        
+        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE "
+                . "($id_game,$id_user,$vote,$day)";
+        $res = Database::query($query);
+        if (!$res) {
+            logEvent("Impossibile compiere la votazione di $id_user => $username. id_game=$id_game", LogLevel::Warning);
+            return false;
+        }
+        return true;
+    }
+        
     // ---------------- TOOL DI PROTEZIONE -----------------
 
     /**
@@ -488,33 +549,6 @@ abstract class Role {
     }
 
     /**
-     * Effettua la votazione di un personaggio
-     * @param int $username Utente votato
-     * @return boolean True se la votazione ha avuto successo, false altrimenti
-     */
-    public function vote($username) {
-        $id_game = $this->engine->game->id_game;
-        $id_user = $this->user->id_user;
-        $day = $this->engine->game->day;
-        
-        $user_voted = User::fromUsername($username);
-        if (!$user_voted) {
-            logEvent("L'utente $id_user ha votato l'utente $username che non esiste. id_game=$id_game", LogLevel::Warning);
-            return false;
-        }
-        $vote = $user_voted->id_user;
-        
-        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE "
-                . "($id_game,$id_user,$vote,$day)";
-        $res = Database::query($query);
-        if (!$res) {
-            logEvent("Impossibile compiere la votazione di $id_user => $username. id_game=$id_game", LogLevel::Warning);
-            return false;
-        }
-        return true;
-    }
-    
-    /**
      * Confronta due ruoli per ordinarli in base alla loro priorità
      * @param \Role $roleA 
      * @param \Role $roleB
@@ -530,7 +564,7 @@ abstract class Role {
 
     /**
      * Ottiene la priorità del ruolo
-     * @return int
+     * @return int La priorità del ruolo
      */
     function getPriority() {
         $class_name = get_class($this);
@@ -538,8 +572,8 @@ abstract class Role {
     }
 
     /**
-     * Ottiene la priorità del ruolo
-     * @return int
+     * Ottiene il nome del ruolo
+     * @return string Il nome breve del ruolo
      */
     function getRoleName() {
         $class_name = get_class($this);

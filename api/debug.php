@@ -18,7 +18,12 @@ Config::$log_level = LogLevel::Verbose;
 // ^^^^^^^ 
 
 
-$game = Game::fromRoomGameName("room", "game");
-$user = User::fromUsername("user3");
+$game = Game::fromRoomGameName("room", "game2");
+$engine = new Engine($game);
 
-print_r($user->getActiveGame());
+$user = User::fromUsername("user3");
+$user2 = User::fromUsername("root");
+
+$role = Role::fromUser($user, $engine);
+
+Event::insertMediumAction($game, $user, $user2);
