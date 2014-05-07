@@ -25,9 +25,14 @@ else
     <p>Cosa aspetti? <button class="btn btn-success" onclick="vote()">Vota!</button></p>    
 <?php else: ?>
     <?php if ($day): ?>
-        <h2>Grazie per aver votato!</h2>
-        <p>La tua votazione è il frutto di un'attenta politica democratica.</p>
-        <p>Il tuo contributo può aiutare a liberare il villaggio dai lupi!</p>
+        <?php if (Role::getRoleStatus($game, $user->id_user) == RoleStatus::Dead): ?>
+            <h2>Sei morto...</h2>
+            <p>Per ora sei morto...</p>
+        <?php else: ?>
+            <h2>Grazie per aver votato!</h2>
+            <p>La tua votazione è il frutto di un'attenta politica democratica.</p>
+            <p>Il tuo contributo può aiutare a liberare il villaggio dai lupi!</p>
+        <?php endif; ?>
     <?php else: ?>
         <?php if (Role::getRoleStatus($game, $user->id_user) == RoleStatus::Dead): ?>
             <h2>Sei morto...</h2>
