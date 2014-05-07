@@ -78,7 +78,7 @@ class Assassino extends Role {
         if (!$voted)
             return false;
         // aggiungere assassinio!
-        Event::insertDeath($this->engine->game, $voted, "kill-assassino", $this->user);
+        Event::insertDeath($this->engine->game, $voted, "kill-assassino", $this->user->username);
         // uccide e visita il giocatore
         $this->kill($voted);
         $this->visit($voted);

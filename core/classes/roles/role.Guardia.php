@@ -33,7 +33,7 @@ class Guardia extends Role {
      * @return boolean|string
      */
     public function needVoteNight() {        
-        // un lupo morto non vota
+        // una guradia morta non vota
         if ($this->roleStatus() == RoleStatus::Dead)
             return false;
         $vote = $this->getVote();
