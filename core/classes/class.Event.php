@@ -164,14 +164,30 @@ class Event {
         $role = Role::fromUser($seen, $engine);
         $role = get_class($role);
         $data = array(
-            "medium" => $veggente->username,
+            "veggente" => $veggente->username,
             "seen" => $seen->username,
             "mana" => $role::$mana
         );
         
         return Event::insertEvent($game, EventCode::MediumAction, $data);
     }
-
+    /**
+     * Aggiunge alla lista degli eventi della partita le foto del paparazzo
+     * @param \Game $game Partita in cui salvare l'evento
+     * @param \User $paparazzo Il paparazzo autore delle foto
+     * @param \User $seen L'utente protagonista delle foto
+     * @param array $visitors Elenco dei giocatori che sono stati visti con l'utente
+     * @return boolean|\Event Evento creato. False se si verifica un errore
+     */
+    public static function insertPaparazzoAction($game, $paparazzo, $seen, $visitors) {
+        $data = array(
+            "paparazzo" => $paparazzo->username,
+            "seen" => $seen->username,
+            "visitors" => $visitors
+        );
+        
+        return Event::insertEvent($game, EventCode::MediumAction, $data);
+    }
     /**
      * Inserisce un evento nel database
      * @param \Game $game Partita in cui inserire l'evento

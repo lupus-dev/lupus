@@ -8,7 +8,7 @@
  */
 
 /**
- * Classe che rappresenta il ruolo Medium
+ * Classe che rappresenta il ruolo Veggente
  */
 class Veggente extends Role {
 
@@ -65,6 +65,8 @@ class Veggente extends Role {
         if (!$voted)
             return false;
         Event::insertVeggenteAction($this->engine->game, $this->user, $voted);
+        // il veggente visita l'utente quando lo guarda
+        $this->visit($voted);
         return true;
     }
 
@@ -73,7 +75,7 @@ class Veggente extends Role {
      * @return string Stringa HTML da includere nella pagina
      */
     public function splash() {
-        return "Sei una guardia...";
+        return "Sei un veggente...";
     }
 
     /**
@@ -93,7 +95,7 @@ class Veggente extends Role {
     }
 
     /**
-     * Effettua la votazione di un personaggio. Il medium può votare '(nessuno)',
+     * Effettua la votazione di un personaggio. Il veggente può votare '(nessuno)',
      * in questo caso l'utente votato ha identificativo 'zero'
      * @param int $username Utente votato
      * @return boolean True se la votazione ha avuto successo, false altrimenti

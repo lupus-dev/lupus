@@ -8,15 +8,16 @@
  */
 
 /**
- * Classe che rappresenta il ruolo Medium
+ * Classe che rappresenta il ruolo Paparazzo
  */
-class Medium extends Role {
+class Paparazzo extends Role {
 
-    public static $role_name = "medium";
-    public static $name = "Medium";
+    public static $role_name = "paparazzo";
+    public static $name = "Paparazzo";
     public static $debug = false;
     public static $enabled = true;
-    public static $priority = 150;
+    // il paparazzo deve agire dopo gli altri ruoli
+    public static $priority = 1000;
     public static $team_name = RoleTeam::Villages;
     public static $mana = Mana::Good;
     public static $gen_probability = 1;
@@ -27,7 +28,7 @@ class Medium extends Role {
     }
 
     /**
-     * Verifica se il medium deve votare. Se è morto o se ha già votato ritorna 
+     * Verifica se il paparazzo deve votare. Se è morto o se ha già votato ritorna 
      * false. Altrimenti ritorna il form per votare
      * @return boolean|string
      */
@@ -37,27 +38,25 @@ class Medium extends Role {
         $vote = $this->getVote();
         // se l'utente non ha ancora votato la partita rimane in attesa
         if (is_bool($vote) && !$vote) {
-            $dead = $this->engine->game->getDead();
-            // se non c'è nessun morto, non vota
-            if (!$dead)
-                return false;
+            $alive = $this->engine->game->getAlive();
             $votable = array();
-            foreach ($dead as $user)
-                $votable[] = $user->username;            
+            foreach ($alive as $user)
+                if ($user->id_user != $this->user->id_user)
+                    $votable[] = $user->username;
             $votable = array_merge(array("(nessuno)"), $votable);
             return array(
                 "votable" => $votable,
-                "pre" => "<p>Vota chi guardare!</p>"
+                "pre" => "<p>Vota chi paparazzare!</p>"
             );
         }
         return false;
     }
 
     /**
-     * Esegue l'azione associata al medium, inserisce negli eventi della partita
-     * la visione del medium
+     * Esegue l'azione associata al paparazzo, inserisce negli eventi della partita
+     * l'elenco dei giocatori visti
      * @return boolean Ritorna true se tutto è andato per il verso giusto. False
-     * se il giocatore da vedere non esiste
+     * se il giocatore da paparazzare non esiste
      */
     public function performActionNight() {
         $vote = $this->getVote();
@@ -66,8 +65,11 @@ class Medium extends Role {
         $voted = User::fromIdUser($vote);
         if (!$voted)
             return false;
-        Event::insertMediumAction($this->engine->game, $this->user, $voted);
-        // il medium non visita l'utente...
+        $visitors = $this->getVisited($voted);
+        $vis = array();
+        foreach ($visitors as $visitor)
+            $vis[] = User::fromIdUser($visitor)->username;
+        Event::insertPaparazzoAction($this->engine->game, $this->user, $voted, $vis);
         return true;
     }
 
@@ -76,7 +78,7 @@ class Medium extends Role {
      * @return string Stringa HTML da includere nella pagina
      */
     public function splash() {
-        return "Sei un medium...";
+        return "Sei un paparazzo...";
     }
 
     /**
@@ -88,15 +90,16 @@ class Medium extends Role {
         if ($username == "(nessuno)")
             return true;
         $user = User::fromUsername($username);
-        if (!$user) return false;
+        if (!$user)
+            return false;
         $status = Role::getRoleStatus($this->engine->game, $user->id_user);
-        if ($status == RoleStatus::Alive)
+        if ($status == RoleStatus::Dead)
             return false;
         return $username != $this->user->username;
     }
 
     /**
-     * Effettua la votazione di un personaggio. Il medium può votare '(nessuno)',
+     * Effettua la votazione di un personaggio. Il paparazzo può votare '(nessuno)',
      * in questo caso l'utente votato ha identificativo 'zero'
      * @param int $username Utente votato
      * @return boolean True se la votazione ha avuto successo, false altrimenti
@@ -113,9 +116,9 @@ class Medium extends Role {
                 return false;
             }
             $vote = $user_voted->id_user;
-        } else 
-            $vote = 0;            
-                
+        } else
+            $vote = 0;
+
         $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE "
                 . "($id_game,$id_user,$vote,$day)";
         $res = Database::query($query);

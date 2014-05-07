@@ -370,6 +370,67 @@ abstract class Role {
         return Role::getRoleStatus($this->engine->game, $id_user);
     }
 
+    /**
+     * Visita un personaggio. Alcuni ruoli necessitano di questa informazione
+     * @param \User $visited Utente visitato
+     */
+    protected function visit($visited) {
+        if (is_array($this->engine->visited[$visited->id_user]))
+            $this->engine->visited[$visited->id_user][] = $this->user->id_user;
+        else
+            $this->engine->visited[$visited->id_user] = array($this->user->id_user);
+    }
+    
+    /**
+     * Ottiene la lista degli utenti che hanno visitato un utente
+     * @param \User $user Utente che ha subito le visite
+     */
+    protected function getVisited($user) {
+        if (is_array($this->engine->visited[$user->id_user]))
+            return $this->engine->visited[$user->id_user];
+        return array();
+    }
+    
+    /**
+     * Ottiene la lista degli utenti visitati da un utente
+     * @param \User $user Utente che ha effettuato le visite
+     */
+    protected function getVisitedBy($user) {
+        $visited = array();
+        foreach ($this->engine->visited as $visit => $visitors) 
+            if (in_array($user->id_user, $visitors))
+                $visited[] = $visit;
+        return $visited;
+    }
+
+
+    /**
+     * Effettua la votazione di un personaggio
+     * @param int $username Utente votato
+     * @return boolean True se la votazione ha avuto successo, false altrimenti
+     */
+    public function vote($username) {
+        $id_game = $this->engine->game->id_game;
+        $id_user = $this->user->id_user;
+        $day = $this->engine->game->day;
+        
+        $user_voted = User::fromUsername($username);
+        if (!$user_voted) {
+            logEvent("L'utente $id_user ha votato l'utente $username che non esiste. id_game=$id_game", LogLevel::Warning);
+            return false;
+        }
+        $vote = $user_voted->id_user;
+        
+        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE "
+                . "($id_game,$id_user,$vote,$day)";
+        $res = Database::query($query);
+        if (!$res) {
+            logEvent("Impossibile compiere la votazione di $id_user => $username. id_game=$id_game", LogLevel::Warning);
+            return false;
+        }
+        return true;
+    }
+        
     // ---------------- TOOL DI PROTEZIONE -----------------
 
     /**
@@ -487,33 +548,6 @@ abstract class Role {
         return false;
     }
 
-    /**
-     * Effettua la votazione di un personaggio
-     * @param int $username Utente votato
-     * @return boolean True se la votazione ha avuto successo, false altrimenti
-     */
-    public function vote($username) {
-        $id_game = $this->engine->game->id_game;
-        $id_user = $this->user->id_user;
-        $day = $this->engine->game->day;
-        
-        $user_voted = User::fromUsername($username);
-        if (!$user_voted) {
-            logEvent("L'utente $id_user ha votato l'utente $username che non esiste. id_game=$id_game", LogLevel::Warning);
-            return false;
-        }
-        $vote = $user_voted->id_user;
-        
-        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE "
-                . "($id_game,$id_user,$vote,$day)";
-        $res = Database::query($query);
-        if (!$res) {
-            logEvent("Impossibile compiere la votazione di $id_user => $username. id_game=$id_game", LogLevel::Warning);
-            return false;
-        }
-        return true;
-    }
-    
     /**
      * Confronta due ruoli per ordinarli in base alla loro priorità
      * @param \Role $roleA 

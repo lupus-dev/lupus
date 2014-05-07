@@ -26,7 +26,11 @@ class EventCode {
     /**
      * Il veggente ha visto il mana di un giocatore
      */
-    const VeggenteAction = 2;
+    const VeggenteAction = 3;
+    /**
+     * Il paparazzo ha guardato qualcuno 
+     */
+    const ParapazzoAction = 4;
     
     /**
      * Costruttore privato

@@ -62,7 +62,9 @@ class Guardia extends Role {
         $voted = User::fromIdUser($vote);
         if (!$voted)
             return false;
-        $this->protectUserFromRole($vote, Lupo::$role_name);
+        $this->protectUserFromRole($voted->id_user, Lupo::$role_name);
+        // la guardia visita un giocatore quando lo protegge
+        $this->visit($voted);
         return true;
     }
 

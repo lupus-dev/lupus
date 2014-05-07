@@ -63,6 +63,13 @@ class Engine {
      * @var array
      */
     public $protected;
+    /**
+     * Vettore che contiene l'elenco delle visite dei giocatori
+     * @var array La chiave del vettore è l'utente visitato, il valore è un 
+     * vettore degli utenti che hanno visitato l'utente. Gli utenti sono riferiti
+     * con il loro identificativo
+     */
+    public $visited;
 
     /**
      * Vettore che contiene gli identificativi dei giocatori indicizzati per 

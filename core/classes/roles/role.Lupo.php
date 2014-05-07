@@ -122,13 +122,16 @@ class Lupo extends Role {
         }
         
         // quorum
-        if ($num_votes >= (int) (count($votes) * 0.5) + 1)
+        if ($num_votes >= (int) (count($votes) * 0.5) + 1) {
             if ($this->kill($dead)) {
                 logEvent("Il giocatore {$dead->username} è stato sbranato", LogLevel::Debug);
                 Event::insertDeath($this->engine->game, $dead, "kill-lupo", $this->user->username);
             }
             else
                 logEvent("Il giocatore {$dead->username} non è stato sbranato", LogLevel::Debug);
+            // il lupo visita il giocatore sia se lo uccide, sia se non lo uccide
+            $this->visit($dead);
+        }
         else
             logEvent("Non è stato raggiunto il quorum per l'uccisione dal lupo", LogLevel::Debug);
         
