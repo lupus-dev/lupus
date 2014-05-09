@@ -95,4 +95,7 @@ class APIStatus {
     const SignupMissingParameter = 251;
     const SignupAlreadyExists = 252;
     const SignupMalformed = 253;
+    // ---------- CHAT ----------
+    const ChatSuccess = 260;
+    const ChatAccessDenied = 261;
 }

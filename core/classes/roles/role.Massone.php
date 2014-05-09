@@ -16,6 +16,7 @@ class Massone extends Role {
     public static $priority = 10000;
     public static $team_name = RoleTeam::Villages;
     public static $mana = Mana::Good;
+    public static $chat_groups = array(ChatGroup::Game, ChatGroup::Massoni);
     public static $gen_probability = 0.5;
     // i massoni vengono generati a coppie
     public static $gen_number = 2;

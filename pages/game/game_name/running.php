@@ -10,7 +10,8 @@
 $day = GameTime::fromDay($game->day) == GameTime::Day;
 $body_class = $day ? "day" : "night";
 
-$inGame = $game->inGame($user->id_user);
+// verifica se il giocatore è nella partita ed ha un ruolo valido
+$inGame = $game->inGame($user->id_user) && Role::getRole($user, $game);
 
 ?>
 <!doctype html>

@@ -19,6 +19,7 @@ class Lupo extends Role {
     public static $priority = 100;
     public static $team_name = RoleTeam::Antagonists;
     public static $mana = Mana::Bad;
+    public static $chat_groups = array(ChatGroup::Game, ChatGroup::Lupi);
     // i lupi non vengono mai scelti nella generazione
     public static $gen_probability = 0; 
     public static $gen_number = 0;

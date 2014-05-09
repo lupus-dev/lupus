@@ -309,6 +309,8 @@ class Game {
             return false;
         $engine = new Engine($this);
         $role = Role::fromUser($user, $engine);
+        if (!$role)
+            return false;
         switch (GameTime::fromDay($this->day)) {
             case GameTime::Start:
                 return false;

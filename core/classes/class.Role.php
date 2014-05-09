@@ -61,6 +61,12 @@ abstract class Role {
     public static $mana = Mana::Good;
     
     /**
+     * Lista delle chat a cui l'utente può accedere
+     * @var array
+     */
+    public static $chat_groups = array(ChatGroup::Game);
+
+    /**
      * Probabilità che il ruolo venga scelto durante l'assegnazione dei ruoli
      * all'inizio della partita. Non è necessario che sia minore di 1
      * @var float
