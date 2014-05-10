@@ -98,4 +98,7 @@ class APIStatus {
     // ---------- CHAT ----------
     const ChatSuccess = 260;
     const ChatAccessDenied = 261;
+    const ChatMissingParameter = 262;
+    const ChatUserNotInGame = 263;
+    const ChatInvalidUser = 264;
 }

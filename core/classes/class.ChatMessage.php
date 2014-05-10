@@ -47,6 +47,12 @@ class ChatMessage {
      * @var string
      */
     public $text;
+    
+    /**
+     * Timestamp dell'invio del messaggio
+     * @var string
+     */
+    public $timestamp;
 
     /**
      * Crea una istanza di \ChatMessage dai dati contenuti in una riga del database
@@ -62,6 +68,7 @@ class ChatMessage {
         $message->dest = $data["dest"];
         $message->group = $data["group"];
         $message->text = $data["text"];
+        $message->timestamp = $data["timestamp"];
 
         return $message;
     }
@@ -104,7 +111,8 @@ class ChatMessage {
                 "from" => $username,
                 "group" => $group,
                 "to" => $dest,
-                "text" => $mex->text
+                "text" => $mex->text,
+                "timestamp" => strtotime($mex->timestamp) 
             );
         }
 

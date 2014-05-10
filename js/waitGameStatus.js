@@ -19,7 +19,7 @@ function pollGameStatus() {
 			if (data.game.status != preStatus)
 				location.reload(true);
 			numPlayers = data.game.num_players;
-			regPlayers = data.game.registred_players;
+			regPlayers = data.game.registred_players.length;
 			pollSuccess();
 		},
 		error: function() {

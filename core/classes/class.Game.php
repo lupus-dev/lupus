@@ -149,7 +149,7 @@ class Game {
             "status" => (int) $game->status,
             "game_descr" => $game->game_descr,
             "num_players" => $game->players["num_players"],
-            "registred_players" => count($game->players["players"])
+            "registred_players" => $game->players["players"]
         );
         return $res;
     }

@@ -27,12 +27,19 @@ if (!$game)
         "code" => APIStatus::GameNotFound));
 
 $role = firstUpper(Role::getRole($user, $game));
+if (!$role)
+    response (401, array(
+        "error" => "L'utente non fa parte della partita",
+        "code" => APIStatus::ChatAccessDenied
+    ));
+
 $groups = $role::$chat_groups;
 
 $res = array();
 
 foreach ($groups as $group)
     $res[] = ChatGroup::getChatName ($group);
+$res[] = "User";
 
 response(200, array(
     "chat" => $res,

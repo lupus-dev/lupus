@@ -8,7 +8,7 @@
  */
 
 /*
- * API per inviare un messaggio in chat
+ * API per ottenere il timestamp dell'ultimo messaggio inviato
  */
 
 if (!$login)
@@ -28,6 +28,12 @@ if (!$game)
         "code" => APIStatus::GameNotFound));
 
 $role = firstUpper(Role::getRole($user, $game));
+if (!$role)
+    response (401, array(
+        "error" => "L'utente non fa parte della partita",
+        "code" => APIStatus::ChatAccessDenied
+    ));
+
 $groups = $role::$chat_groups;
 $groups[] = ChatGroup::User;
 
@@ -38,23 +44,13 @@ if (!in_array($group, $groups))
         "code" => APIStatus::ChatAccessDenied
     ));
 
-if (!isset($_GET["text"]))
-    response (400, array(
-        "error" => "Non è stato specificato il parametro text",
-        "code" => APIStatus::ChatMissingParameter
-    ));
-
-$text = $_GET["text"];
-
-if ($group != ChatGroup::User)
-    $dest = 0;
-else {
-    if (!isset($_GET["dest"]))
+if ($group == ChatGroup::User) {
+    if (!isset($_GET["user"]))
         response (400, array(
-            "error" => "Non è stato specificato il parametro dest",
+            "error" => "Non è stato specificato il parametro user",
             "code" => APIStatus::ChatMissingParameter
         ));
-    $dest_user = User::fromUsername($_GET["dest"]);
+    $dest_user = User::fromUsername($_GET["user"]);
     if (!$dest_user)
         response (404, array(
             "error" => "L'utente destinatario non esiste",
@@ -71,17 +67,12 @@ else {
             "error" => "Non puoi inviarti un messaggio",
             "code" => APIStatus::ChatInvalidUser
         ));
-}
+} else
+    $dest = 0;
 
-$res = Chat::sendMessage($game, $user->id_user, $dest, $group, $text);
+$last = Chat::getLastTimestamp($game, $user->id_user, $group, $dest);
 
-if (!$res)
-    response (500, array(
-        "error" => "Non è stato possibile inviare il messaggio",
-        "code" => APIStatus::FatalError
-    ));
-
-response(201, array(
-    "ok" => "Messaggio spedito!",
+response(200, array(
+    "timestamp" => $last,
     "code" => APIStatus::ChatSuccess
 ));

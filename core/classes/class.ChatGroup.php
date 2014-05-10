@@ -15,19 +15,19 @@ class ChatGroup {
     /**
      * Il messaggio è diretto ad un utente specifico
      */
-    const User = 0;
+    const User = 1;
     /**
      * La chat è visibile a tutti i membri della partita
      */
-    const Game = 1;
+    const Game = 2;
     /**
      * La chat è visibile solo ai lupi
      */
-    const Lupi = 2;
+    const Lupi = 3;
     /**
      * La chat è visibile solo ai massoni
      */
-    const Massoni = 3;
+    const Massoni = 4;
 
     /**
      * Costruttore privato

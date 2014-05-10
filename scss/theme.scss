@@ -21,13 +21,13 @@ body {
 	$h1-margin: 0px;
 	$label-margin-top: 20px;
 	$login-margin-top: 15px;
-	
+
 	width: 100%;
 	padding: $padding;
 	border-radius: 15px;
 	text-align: center;
 	background-color: $background-color;
-	
+
 	h1 {
 		margin: $h1-margin;
 	}
@@ -51,13 +51,13 @@ body {
 	$h1-margin: 0px;
 	//$label-margin-top: 20px;
 	$login-margin-top: 15px;
-	
+
 	width: 100%;
 	padding: $padding;
 	border-radius: 15px;
 	text-align: center;
 	background-color: $background-color;
-	
+
 	h1 {
 		margin: $h1-margin;
 	}
@@ -78,4 +78,33 @@ body {
 .new-room {
 	input { margin-bottom: 5px; }
 	.short-name { width: 200px; }
+}
+
+.chat-panel {
+	.chat-body {
+		width: 100%;
+		height: 300px;
+		border: 1px #ddd solid;
+		border-top: 0px;
+		overflow-y: auto;
+		padding: 7px;
+		.chat-message {		
+			.chat-from {
+				color: gray;
+				//width: 9em;
+				margin-right: 5px;
+				display: inline-block;
+			}
+			.chat-time {
+				color: #28a4c9;
+				font-size: 13px;
+			}
+			.chat-mex {
+				font-family: sans-serif;
+			}
+		}
+	}
+	.chat-form {
+		margin-top: 3px;
+	}
 }
