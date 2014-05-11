@@ -1,0 +1,79 @@
+<?php
+
+/*
+ * Lupus in Tabula
+ * ...un progetto di Edoardo Morassutto
+ * Contributors:
+ * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
+ */
+
+/*
+ * API per ottenere li numero di messaggi successivi ad un istante di ogni gruppo
+ */
+
+function getChatUsersInfo($game, $user, $dest, $after, $min) {
+    if ($min)
+        return array(
+            "after" => (int) Chat::getNumAfterTimestamp($game, $user->id_user, ChatGroup::User, $after, $dest->id_user)
+        );
+    return array(        
+        "last" => (int) Chat::getLastTimestamp($game, $user->id_user, ChatGroup::User, $dest->id_user),
+        "after" => (int) Chat::getNumAfterTimestamp($game, $user->id_user, ChatGroup::User, $after, $dest->id_user)
+    );
+}
+
+function getChatGroupInfo($game, $user, $group, $after, $min) {
+    $last = (int) Chat::getLastTimestamp($game, $user->id_user, $group);
+    if ($min)
+        return array(
+            "last" => $last
+        );
+    
+    $num_after = (int) Chat::getNumAfterTimestamp($game, $user->id_user, $group, $after);
+
+    $info = array(
+        "last" => $last,
+        "after" => $num_after
+    );
+    return $info;
+}
+
+if (!$login)
+    response(401, array(
+        "error" => "Utente non connesso",
+        "code" => APIStatus::NotLoggedIn));
+
+$room_name = $apiMatches[1];
+$game_name = $apiMatches[2];
+
+$game = Game::fromRoomGameName($room_name, $game_name);
+
+if (!$game)
+    response(404, array(
+        "error" => "Partita non trovata",
+        "code" => APIStatus::GameNotFound));
+
+$role = firstUpper(Role::getRole($user, $game));
+if (!$role)
+    response(401, array(
+        "error" => "L'utente non fa parte della partita",
+        "code" => APIStatus::ChatAccessDenied
+    ));
+
+$min = isset($_GET["min"]);
+
+$res = array();
+
+$chat_info = Chat::getUserChatInfo($game, $user);
+
+foreach ($chat_info["groups"] as $group => $time) {
+    $group_name = ChatGroup::getChatName($group);
+    $res["groups"][$group_name] = getChatGroupInfo($game, $user, $group, $time, $min);
+}
+foreach ($chat_info["users"] as $id_user => $time) {
+    $dest = User::fromIdUser($id_user);
+    $res["users"][$dest->username] = getChatUsersInfo($game, $user, $dest, $time, $min);
+}
+$res["code"] = APIStatus::ChatSuccess;
+
+response(200, $res, $min);

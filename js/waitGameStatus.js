@@ -29,4 +29,7 @@ function pollGameStatus() {
 }
 var pollSuccess = function() {};
 
-setInterval(pollGameStatus, 5000);
+if (!pollFreq)
+	pollFreq = 5000;
+
+setInterval(pollGameStatus, pollFreq);

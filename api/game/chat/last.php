@@ -71,8 +71,14 @@ if ($group == ChatGroup::User) {
     $dest = 0;
 
 $last = Chat::getLastTimestamp($game, $user->id_user, $group, $dest);
-
-response(200, array(
+$response = array(
     "timestamp" => $last,
     "code" => APIStatus::ChatSuccess
-));
+);
+
+if (isset($_GET["after"])) {
+    $timestamp = intval($_GET["after"]);
+    $response["after"] = (int)Chat::getNumAfterTimestamp($game, $user->id_user, $group, $timestamp, $dest);
+}
+
+response(200, $response);

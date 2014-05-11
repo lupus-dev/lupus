@@ -20,8 +20,9 @@ $inGame = $game->inGame($user->id_user) && Role::getRole($user, $game);
         <?php include __DIR__ . "/../../common/head.php"; ?>
         <title>Partita in corso - Lupus in Tabula</title>
         <?php insertScript("default.js"); ?>
-        <?php insertScript("game.js"); ?>
-        <script>var preDay = <?= $game->day ?></script>
+        <script>
+            var preDay = <?= $game->day ?>
+        </script>
     </head>
     <body class="<?= $body_class ?>">
         <div class="container" role="main">
@@ -29,7 +30,7 @@ $inGame = $game->inGame($user->id_user) && Role::getRole($user, $game);
             <div class="page-header">
                 <h1><?= $game->game_descr ?> <small><?= $game->game_name ?></small></h1>
             </div>
-            <?php if($inGame): ?>
+            <?php if ($inGame): ?>
                 <?php include __DIR__ . "/running/in_game.php"; ?>
             <?php else: ?>
                 <?php include __DIR__ . "/running/not_in_game.php"; ?>

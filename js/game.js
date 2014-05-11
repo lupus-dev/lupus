@@ -43,4 +43,7 @@ function pollDayChanged() {
 	});
 }
 
-setInterval(pollDayChanged, 5000);
+if (!pollFreq)
+	pollFreq = 5000;
+
+setInterval(pollDayChanged, pollFreq);

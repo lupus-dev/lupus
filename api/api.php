@@ -34,6 +34,7 @@ $apiPaths = array(
     "/^game\/($shortName)\/($shortName)\/start\/?$/" => "game/start.php",
     "/^game\/($shortName)\/($shortName)\/setup\/?$/" => "game/setup.php",
     "/^game\/($shortName)\/($shortName)\/chat\/?$/" => "game/chat/chat.php",
+    "/^game\/($shortName)\/($shortName)\/chat\/after\/?$/" => "game/chat/after.php",
     "/^game\/($shortName)\/($shortName)\/chat\/($shortName)\/?$/" => "game/chat/group.php",
     "/^game\/($shortName)\/($shortName)\/chat\/($shortName)\/post\/?$/" => "game/chat/post.php",
     "/^game\/($shortName)\/($shortName)\/chat\/($shortName)\/last\/?$/" => "game/chat/last.php",

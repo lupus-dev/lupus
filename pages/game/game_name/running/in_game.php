@@ -1,12 +1,10 @@
 <?php
-
-/* 
+/*
  * Lupus in Tabula
  * ...un progetto di Edoardo Morassutto
  * Contributors:
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
-
 ?>
 <div class="col-sm-6" class="vote">
     <?php include __DIR__ . "/vote.php"; ?>
@@ -27,4 +25,7 @@
 <script>
     var room_name = "<?= $room_name ?>";
     var game_name = "<?= $game_name ?>";
+    var pollFreq = <?= $needVote ? 10000 : 5000 ?>;
 </script>
+
+<?php insertScript("game.js"); ?>
