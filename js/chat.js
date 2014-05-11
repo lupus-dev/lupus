@@ -83,8 +83,16 @@ function loadNav() {
 function getDate(date) {
 	var d = new Date();
 	d.setTime(date*1000);
-	//return d.toDateString() + " - " + d.toTimeString() + " ";
-	return "1 gen - 12:32:45 ";
+	var day = d.getDate();
+	var month = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'][d.getMonth()];
+	var hour = d.getHours();
+	var minute = d.getMinutes();
+	var second = d.getSeconds();
+	return ((day<10) ? '0'+day : day) + ' ' +
+			month + ' - ' +
+			((hour < 10) ? '0'+hour : hour) + ':' +
+			((minute < 10) ? '0'+minute : minute) + ':' +
+			((second < 10) ? '0'+second : second) + ' ';
 }
 function getMessage(mex) {
 	var time = $("<span>").addClass("chat-time").text(getDate(mex.timestamp));

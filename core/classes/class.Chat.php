@@ -87,7 +87,9 @@ class Chat {
      */
     public static function sendMessage($game, $id_user, $dest, $group, $text) {
         $id_game = $game->id_game;
-        $text = Database::escape($text);
+        $text = Database::escape(trim($text));
+        if (!$text)
+            return true;
         
         $query = "INSERT INTO chat (id_game,id_user_from,dest,`group`,text) "
                 . "VALUE ($id_game, $id_user, $dest, $group, '$text')";
