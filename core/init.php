@@ -13,6 +13,8 @@
  * index delle api, ecc...)
  */
 
+require_once __DIR__ . "/porting.php";
+
 // include tutte le classi
 require_once __DIR__ . "/requireDir.php";
 requireDir(__DIR__ . "/classes");

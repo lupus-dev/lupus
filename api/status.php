@@ -13,5 +13,6 @@
 
 response(200, array(
     "version" => "0.1-alpha",
-    "online" => true
+    "online" => true,
+    "edoardo" => "the best"
 ));
