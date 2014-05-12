@@ -9,7 +9,7 @@
 function vote() {
 	var vote = $("#vote").val();
 	$.ajax({
-		url: APIdir + "/game/"+room_name+"/"+game_name+"/vote",
+		url: APIdir + "/game/" + room_name + "/" + game_name + "/vote",
 		type: 'GET',
 		dataType: 'json',
 		data: {
@@ -26,7 +26,7 @@ function vote() {
 
 function pollDayChanged() {
 	$.ajax({
-		url: APIdir + "/game/"+room_name+"/"+game_name,
+		url: APIdir + "/game/" + room_name + "/" + game_name,
 		type: 'GET',
 		dataType: 'json',
 		success: function(data) {
@@ -43,7 +43,24 @@ function pollDayChanged() {
 	});
 }
 
-if (!pollFreq)
-	pollFreq = 5000;
+$(function() {
+	if (!pollFreq)
+		pollFreq = 5000;
 
-setInterval(pollDayChanged, pollFreq);
+	$(".show-role").click(function() {
+		var status = $(this).attr("data-status");
+		if (status == "invisible") {
+			$(".show-role div").first().stop().animate({
+				"margin-top": 0
+			}, 500);
+			$(this).attr("data-status", "visible");
+		} else {
+			$(".show-role div").first().stop().animate({
+				"margin-top": -30
+			}, 500);
+			$(this).attr("data-status", "invisible");
+		}
+	});
+
+	setInterval(pollDayChanged, pollFreq);
+});

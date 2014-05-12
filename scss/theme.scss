@@ -136,3 +136,16 @@ body {
 		margin-top: $chat-form-margin-top;
 	}
 }
+
+.show-role {
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	background: #eee;
+	border-radius: 7px;
+	overflow: hidden;
+	cursor: pointer;	
+	.active {
+		margin-top: -30px;
+	}
+}

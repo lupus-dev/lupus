@@ -6,6 +6,11 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 ?>
+<div class="col-sm-3 show-role">
+    <div>Premi per il tuo ruolo</div>
+    <div>Il tuo ruolo: <?= Role::getRole($user, $game) ?></div>
+</div>
+<div class="clearfix"></div>
 <div class="col-sm-6" class="vote">
     <?php include __DIR__ . "/vote.php"; ?>
 </div>
@@ -18,9 +23,6 @@
 <div class="col-sm-6" class="chat">
     <?php include __DIR__ . "/chat.php"; ?>
 </div>
-
-<div class="clearfix"></div>
-<p><small>Il tuo ruolo è: <?= Role::getRole($user, $game) ?></small></p>
 
 <script>
     var room_name = "<?= $room_name ?>";
