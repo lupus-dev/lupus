@@ -22,6 +22,10 @@ if ($game_status < GameStatus::TermByAdmin) {
 
 $alive = $game->getAlive();
 $dead = $game->getDead();
+
+$events = Event::getGameEvent($game);
+$curr_day = -1;
+
 ?>
 <div class="page-header">
     <h1><?= $game->game_descr ?> <small><?= $game->game_name ?></small></h1>
@@ -71,4 +75,15 @@ $dead = $game->getDead();
 <div class="clearfix"></div>
 <hr>
 <h2>Lo storico del villaggio</h2>
-<p>Qui ci sarà qualcosa quando verrà implementato il giornale...</p>
+<div class="newspaper">
+    <?php foreach ($events as $event): ?>    
+        <?php $news = Event::getNewsFromEvent($event, $user); ?>        
+        <?php if ($news): ?>
+            <?php if ($news["day"] != $curr_day): ?>
+                <h1><?= GameTime::getNameFromDay($news["day"], true) ?></h1>
+            <?php endif; ?>
+            <?php $curr_day = $news["day"]; ?>
+            <div class="news"><?= $news["news"] ?></div>
+        <?php endif; ?>
+    <?php endforeach; ?>
+</div>

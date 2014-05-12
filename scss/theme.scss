@@ -106,7 +106,7 @@ body {
 	$chat-time-size: 12px;
 	$chat-time-width: 105px;
 	$chat-form-margin-top: 3px;
-	
+
 	.chat-body {
 		width: 100%;
 		height: $chat-height;
@@ -148,4 +148,21 @@ body {
 	.active {
 		margin-top: -30px;
 	}
+}
+
+.newspaper {
+	$news-height: 300px + 40px + 1;
+	$news-padding: 7px;
+	$border-color: #ddd;
+	$border-radius: 4px;	
+
+	width: 100%;
+	height: $news-height;
+	padding: $news-padding;
+	border: 1px $border-color solid;
+	border-radius: $border-radius;
+	overflow-y: auto;
+	
+	h1 { font-size: 25px; }
+	.news { font-family: cursive; }
 }
