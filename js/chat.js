@@ -8,15 +8,7 @@
 var players = [];
 var groups = [];
 var curr_group, curr_user;
-/*var timestamps = {
- group: {},
- user: {}
- };*/
-/*
- function getTimestamp() {
- return new Date().getTime() / 1000;
- }
- */
+
 function loadPlayers() {
 	$.ajax({
 		url: APIdir + "/game/" + room_name + "/" + game_name,
@@ -51,8 +43,6 @@ function loadNav() {
 
 	$(".chat-groups").html("");
 	for (i in groups) {
-		//timestamps.group[groups[i]] = 0;
-
 		var a = $("<a>");
 		a.attr("href", "#chat");
 		a.text(groups[i] + " ");
@@ -60,7 +50,6 @@ function loadNav() {
 
 		var li = $("<li>");
 		li.attr("data-group", groups[i]);
-		//li.attr("data-timestamp", getTimestamp());
 		li.click(clickGroup);
 		if (groups[i] == "Game")
 			a.text("Partita ");
@@ -143,6 +132,7 @@ function loadChat(group, user) {
 				loadUserMessages(data.messages, user);
 			else
 				loadGroupMessages(data.messages);
+			$(".chat-body").scrollTop($(".chat-body")[0].scrollHeight);
 		},
 		error: function(error) {
 			console.error(error);
@@ -157,10 +147,10 @@ function switchToChat(group, user) {
 		var badge = $("li[data-group=User] > a > .badge");
 		var dec = $("li[data-user=" + user + "] .badge").text();
 		var pre = badge.text();
-		badge.text(pre-dec);
-		if (pre-dec <= 0)
+		badge.text(pre - dec);
+		if (pre - dec <= 0)
 			badge.hide();
-		
+
 		$("li[data-user=" + user + "] .badge").hide();
 	} else {
 		$("li[data-group=" + group + "] .badge").hide();
@@ -189,11 +179,14 @@ function pollMessages() {
 		},
 		dataType: 'json',
 		success: function(data) {
-			for (var i in data.groups) {
-				if (data.groups[i].after > 0)
-					$("li[data-group=" + i + "] .badge").text(data.groups[i].after).show();
+			for (var k in data.groups) {
+				if (data.groups[k].after > 0) {
+					$("li[data-group=" + k + "] .badge").text(data.groups[k].after).show();
+					if (k == curr_group)
+						loadChat(curr_group, curr_user);
+				}
 				else
-					$("li[data-group=" + i + "] .badge").hide();
+					$("li[data-group=" + k + "] .badge").hide();
 			}
 			var users_count = 0;
 			for (var j in data.users) {
@@ -203,7 +196,7 @@ function pollMessages() {
 				else
 					$("li[data-user=" + j + "] .badge").hide();
 			}
-			if (users_count > 0) 
+			if (users_count > 0)
 				$("li[data-group=User] > a > .badge").text(users_count).show();
 			else
 				$("li[data-group=User] > a > .badge").hide();
@@ -238,4 +231,8 @@ $(function() {
 	switchToChat("Game");
 	pollMessages();
 	setInterval(pollMessages, 5000);
+	$("#chat-form").submit(function() {
+		sendMessage();
+		return false;
+	});
 });

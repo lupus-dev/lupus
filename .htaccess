@@ -12,5 +12,6 @@
 	RewriteCond %{REQUEST_URI} !fonts/
 	# Inoltra tutte le richieste a index.php e mette l'url in request, NON è 
 	# presente la parte di RewriteBase
-	RewriteRule ^(.*)$ wrapper.php?request=$1 [QSA,NC,L]
+	#RewriteRule ^(.*)$ wrapper.php?request=$1 [QSA,NC,L]
+	RewriteRule ^(.*)$ wrapper.php [QSA,NC,L]
 </IfModule>

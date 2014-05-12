@@ -14,10 +14,10 @@
  * @param array $response Vettore con i dati della risposta
  * @param boolean $min Comprime l'output togliendo la formattazione
  */
-function response($code, array $response, $min = false) {
+function response($code, $response, $min = false) {
     $httpCode = response_code($code);
     header("HTTP/1.0 $code $httpCode");
-    header("content-type: application/json");
+    header("content-type: application/json");    
     echo json_encode($response, $min ? 0 : JSON_PRETTY_PRINT);
     exit;
 }

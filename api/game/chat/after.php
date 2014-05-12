@@ -12,30 +12,29 @@
  */
 
 function getChatUsersInfo($game, $user, $dest, $after, $min) {
+    $num_after = (int) Chat::getNumAfterTimestamp($game, $user->id_user, ChatGroup::User, $after, $dest->id_user);
     if ($min)
-        return array(
-            "after" => (int) Chat::getNumAfterTimestamp($game, $user->id_user, ChatGroup::User, $after, $dest->id_user)
-        );
+        return array("after" => $num_after);
+    
+    $last = (int) Chat::getLastTimestamp($game, $user->id_user, ChatGroup::User, $dest->id_user);
+    
     return array(        
-        "last" => (int) Chat::getLastTimestamp($game, $user->id_user, ChatGroup::User, $dest->id_user),
-        "after" => (int) Chat::getNumAfterTimestamp($game, $user->id_user, ChatGroup::User, $after, $dest->id_user)
+        "last" => $last,
+        "after" => $num_after
     );
 }
 
 function getChatGroupInfo($game, $user, $group, $after, $min) {
-    $last = (int) Chat::getLastTimestamp($game, $user->id_user, $group);
-    if ($min)
-        return array(
-            "last" => $last
-        );
-    
     $num_after = (int) Chat::getNumAfterTimestamp($game, $user->id_user, $group, $after);
+    if ($min)
+        return array("after" => $num_after);
+    
+    $last = (int) Chat::getLastTimestamp($game, $user->id_user, $group);
 
-    $info = array(
+    return array(
         "last" => $last,
         "after" => $num_after
     );
-    return $info;
 }
 
 if (!$login)

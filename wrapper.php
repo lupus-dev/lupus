@@ -10,7 +10,9 @@
 // inizializza tutto
 require_once __DIR__ . "/core/init.php";
 
-$request = isset($_GET["request"]) ? $_GET["request"] : "";
+//$request = isset($_GET["request"]) ? $_GET["request"] : "";
+$request = $_SERVER['REQUEST_URI'];
+$request = substr($request, strlen($baseDir)+1);  // +1 perchè va aggiunto /
 
 // espressione regolare per un nome breve
 $shortName = "[a-zA-Z][a-zA-Z0-9]*";
