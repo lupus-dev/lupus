@@ -62,6 +62,23 @@ class Game {
     }
 
     /**
+     * Ottiene una istanza di Game dai dati di una riga del database
+     * @param type $data
+     * @return \Game
+     */
+    private static function fromDBdata($data) {
+        $game = new Game();
+        $game->id_game = $data["id_game"];
+        $game->id_room = $data["id_room"];
+        $game->day = $data["day"];
+        $game->status = $data["status"];
+        $game->game_name = $data["game_name"];
+        $game->game_descr = $data["game_descr"];
+        $game->players = json_decode($data["players"], true);
+        return $game;
+    }
+
+        /**
      * Crea un'istanza di \Game dal suo identificativo
      * @param int $id Identificativo della partita
      * @return boolean|\Game La partita con l'identitificativo speficifato. False
@@ -77,19 +94,8 @@ class Game {
             logEvent("Partita non trovata. id_game=$id", LogLevel::Warning);
             return false;
         }
-        $game = new Game();
-        $game->id_game = $res[0]["id_game"];
-        $game->id_room = $res[0]["id_room"];
-        $game->day = $res[0]["day"];
-        $game->status = $res[0]["status"];
-        $game->game_name = $res[0]["game_name"];
-        $game->game_descr = $res[0]["game_descr"];
-        if (intval($res[0]["players"]) > 0)
-            $game->players = $res[0]["players"];
-        else
-            $game->players = json_decode($res[0]["players"], true);
-
-        return $game;
+        
+        return Game::fromDBdata($res[0]);
     }
 
     /**
@@ -116,19 +122,8 @@ class Game {
             logEvent("Partita non trovata. room_name={$room->room_name} game_name=$game", LogLevel::Warning);
             return false;
         }
-        $game = new Game();
-        $game->id_game = $res[0]["id_game"];
-        $game->id_room = $res[0]["id_room"];
-        $game->day = $res[0]["day"];
-        $game->status = $res[0]["status"];
-        $game->game_name = $res[0]["game_name"];
-        $game->game_descr = $res[0]["game_descr"];
-        if (intval($res[0]["players"]) > 0)
-            $game->players = $res[0]["players"];
-        else
-            $game->players = json_decode($res[0]["players"], true);
-
-        return $game;
+        
+        return Game::fromDBdata($res[0]);
     }
 
     /**
@@ -191,6 +186,33 @@ class Game {
         if (!$res)
             return false;
         return Game::fromRoomGameName($room->room_name, $name);
+    }
+
+    /**
+     * Ottiene una lista delle 100 partita aperte in attesa ordinate per numero
+     * di giocatori entrati
+     * @param \User $user Utente che fa la richiesta
+     * @return array Ritorna un vettore di \Game. False se si verifica un errore
+     */
+    public static function getOpenGames($user) {
+        $username = $user->username;
+        $notStarted = GameStatus::NotStarted;
+        
+        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,players FROM game "
+                . "WHERE status=$notStarted AND players NOT LIKE '%\"$username\"%' "
+                . "AND (SELECT private FROM room WHERE room.id_room=game.id_room)=0 "
+                . "ORDER BY (LENGTH(players) - LENGTH(REPLACE(players, ',', ''))) DESC "
+                . "LIMIT 100";
+        
+        $res = Database::query($query);
+        if (!$res)
+            return false;
+        
+        $games = array();
+        foreach ($res  as $game)
+            $games[] = Game::fromDBdata ($game);
+        
+        return $games;
     }
 
     /**
@@ -266,18 +288,18 @@ class Game {
      */
     public function joinGame($user) {
         $id_game = $this->id_game;
-        
+
         if ($this->inGame($user->id_user))
             return false;
         if ($this->status != GameStatus::NotStarted)
             return false;
-        if (count($this->players["players"])+1 > $this->players["num_players"])
+        if (count($this->players["players"]) + 1 > $this->players["num_players"])
             return false;
-        
+
         $this->players["players"][] = $user->username;
-        
+
         $players = Database::escape(json_encode($this->players));
-        
+
         $query = "UPDATE game SET players='$players' WHERE id_game=$id_game";
         $res = Database::query($query);
         if (!$res)
@@ -297,7 +319,7 @@ class Game {
         $this->status(GameStatus::NotStarted);
         return true;
     }
-    
+
     /**
      * Verifica se l'utente deve votare nella partita oppure è in attesa
      * @param \User $user Utente da verificare
@@ -321,6 +343,7 @@ class Game {
         }
         return false;
     }
+
     /**
      * Modifica i parametri della partita
      * @param string $game_descr Descrizione della partita
@@ -330,17 +353,18 @@ class Game {
     public function editGame($game_descr, $num_players) {
         $this->game_descr = $game_descr;
         $this->players["num_players"] = $num_players;
-        
+
         $game_descr = Database::escape($game_descr);
         $players = Database::escape(json_encode($this->players));
         $id_game = $this->id_game;
-        
+
         $query = "UPDATE game SET game_descr='$game_descr', players='$players' WHERE id_game=$id_game";
         $res = Database::query($query);
         if (!$res)
             return false;
         return true;
     }
+
     /**
      * Ottiene una lista dei giocatori vivi della partita
      * @return boolean|array Un vettore di \User. False se si verifica un errore
@@ -348,19 +372,20 @@ class Game {
     public function getAlive() {
         $id_game = $this->id_game;
         $alive = RoleStatus::Alive;
-        
+
         $query = "SELECT id_user FROM role WHERE id_game=$id_game AND status=$alive";
         $res = Database::query($query);
         if (!$res)
             return false;
-        
+
         $users = array();
-        
-        foreach ($res as $user) 
+
+        foreach ($res as $user)
             $users[] = User::fromIdUser($user["id_user"]);
-        
+
         return $users;
     }
+
     /**
      * Ottiene una lista dei giocatori morti della partita
      * @return boolean|array Un vettore di \User. False se si verifica un errore
@@ -368,17 +393,18 @@ class Game {
     public function getDead() {
         $id_game = $this->id_game;
         $dead = RoleStatus::Dead;
-        
+
         $query = "SELECT id_user FROM role WHERE id_game=$id_game AND status=$dead";
         $res = Database::query($query);
         if (!$res)
             return false;
-        
+
         $users = array();
-        
-        foreach ($res as $user) 
+
+        foreach ($res as $user)
             $users[] = User::fromIdUser($user["id_user"]);
-        
+
         return $users;
     }
+
 }

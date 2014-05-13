@@ -12,12 +12,12 @@
  * @param \Room $room Stanza della partita
  * @param \User $user Utente corrente
  */
-function printGame($game, $room, $user) {
+function printGame($game, $room, $user, $status = true) {
     global $baseDir;
     ?>
     <?= $game->game_descr ?>
     <?php $hasToVote = $game->hasToVote($user); ?>
-    <?php printGameStatus($game, $room, $hasToVote); ?>
+    <?php if($status) printGameStatus($game, $room, $hasToVote); ?>
     <small>
         <a href="<?= $baseDir ?>/room/<?= $room->room_name ?>"><?= $room->room_name ?></a>
         /

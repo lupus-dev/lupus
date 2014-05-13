@@ -16,12 +16,13 @@ echo "Questo &egrave; il debug....<br><br>";
 echo "<pre>";
 Config::$log_level = LogLevel::Verbose;
 // ^^^^^^^ 
+$user = User::fromUsername("user3");
+print_r(Game::getOpenGames($user));
 
-
+exit;
 $game = Game::fromRoomGameName("room", "game2");
 $engine = new Engine($game);
 
-$user = User::fromUsername("user3");
 $user2 = User::fromUsername("root");
 
 $role = Role::fromUser($user, $engine);
