@@ -262,7 +262,7 @@ class User {
         $cognome = Database::escape($cognome);
         
         $query = "INSERT INTO user (username,password,level,name,surname) VALUE "
-                . "('$username', SHA1('$password'), 1, '$nome', '$cognome')";
+                . "('$username', SHA1('$password'), 2, '$nome', '$cognome')";
         $res = Database::query($query);
         if (!$res)
             return false;
