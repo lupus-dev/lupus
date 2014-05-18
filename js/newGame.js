@@ -103,8 +103,9 @@ function newGame() {
 		success: function() {
 			document.location.href = game_name;
 		},
-		error: function(jqXHR) {
-			console.error(jqXHR);
+		error: function(error) {
+			console.error(error);
+			showError(getErrorMessage(error));
 		}
 	});
 }

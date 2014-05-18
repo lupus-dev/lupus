@@ -26,9 +26,10 @@ function login() {
 			$("#status").text("Registrazione riuscita");
 			document.location.href = "index";
 		},
-		error: function(jqXHR) {
-			console.error(jqXHR);
+		error: function(error) {
+			console.error(error);
 			$("#status").text("Registrazione fallita");
+			showError(getErrorMessage(error));
 		}
 	});
 }

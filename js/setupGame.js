@@ -40,6 +40,7 @@ function saveGame(start) {
 		},
 		error: function(error) {
 			console.error(error);
+			showError(getErrorMessage(error));
 		}
 	});
 }
@@ -51,11 +52,12 @@ function ajaxStart() {
 		url: APIdir + "/game/"+room_name+"/"+game_name+"/start",
 		type: 'GET',
 		dataType: 'json',
-		success: function(data) {
+		success: function() {
 			location.reload(true);
 		},
 		error: function(error) {
 			console.error(error);
+			showError(getErrorMessage(error));
 		}
 	});
 }

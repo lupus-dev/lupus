@@ -22,8 +22,9 @@ function pollGameStatus() {
 			regPlayers = data.game.registred_players.length;
 			pollSuccess();
 		},
-		error: function() {
+		error: function(error) {
 			location.reload(true);
+			showError(getErrorMessage(error));
 		}
 	});
 }

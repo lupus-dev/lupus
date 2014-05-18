@@ -16,6 +16,7 @@ function joinGame() {
 		},
 		error: function(error) {
 			console.error(error);
+			showError(getErrorMessage(error));
 		}
 	});
 }

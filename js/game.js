@@ -20,6 +20,7 @@ function vote() {
 		},
 		error: function(error) {
 			console.error(error);
+			showError(getErrorMessage(error));
 		}
 	});
 }
@@ -37,8 +38,9 @@ function pollDayChanged() {
 			if (data.game.status != 101)
 				location.reload(true);
 		},
-		error: function() {
+		error: function(error) {
 			location.reload(true);
+			showError(getErrorMessage(error));
 		}
 	});
 }

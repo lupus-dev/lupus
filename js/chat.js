@@ -19,7 +19,8 @@ function loadPlayers() {
 			players = data.game.registred_players;
 		},
 		error: function(error) {
-			console.error(error);
+			console.error(error);	
+			showError(getErrorMessage(error));
 		}
 	});
 }
@@ -34,6 +35,7 @@ function loadGroups() {
 		},
 		error: function(error) {
 			console.error(error);
+			showError(getErrorMessage(error));
 		}
 	});
 }
@@ -136,6 +138,7 @@ function loadChat(group, user) {
 		},
 		error: function(error) {
 			console.error(error);
+			showError(getErrorMessage(error));
 		}
 	});
 }
@@ -203,6 +206,7 @@ function pollMessages() {
 		},
 		error: function(jqXHR) {
 			console.error(jqXHR);
+			showError(getErrorMessage(error));
 		}
 	});
 }
@@ -222,6 +226,7 @@ function sendMessage() {
 		},
 		error: function(jqXHR) {
 			console.error(jqXHR);
+			showError(getErrorMessage(error));
 		}
 	});
 }

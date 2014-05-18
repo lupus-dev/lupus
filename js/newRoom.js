@@ -99,8 +99,9 @@ function newRoom() {
 		success: function() {
 			document.location.href = room_name;
 		},
-		error: function(jqXHR) {
-			console.error(jqXHR);
+		error: function(error) {
+			console.error(error);
+			showError(getErrorMessage(error));
 		}
 	});
 }
