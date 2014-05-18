@@ -9,6 +9,9 @@
 require_once __DIR__ . "/print_game_status.php";
 require_once __DIR__ . "/print_game.php";
 $activeGames = $user->getActiveGame();
+$level = Level::getLevel($user->level);
+$joinable = (count($user->getActiveGame()) + 1) <= $level->aviableGame;
+
 ?>
 <?php if (count($activeGames) > 0): ?>
     <div class="page-header">
@@ -27,6 +30,11 @@ $activeGames = $user->getActiveGame();
         <h1>Non stai giocando...</h1>
     </div>    
 <?php endif; ?>
+<?php if ($joinable): ?>
 <p>Per un divertimento ancora maggiore, cerca una partita!
     <a href="<?= $baseDir ?>/join" class="btn btn-success">Cerca</a>
 </p>
+<?php else: ?>
+<p>Hai finito il numero di partite in cui puoi giocare... aumenta di livello
+    per giocare ancora di più!</p>
+<?php endif; ?>

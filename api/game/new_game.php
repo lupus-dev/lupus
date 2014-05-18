@@ -57,6 +57,13 @@ if ($num_players < RoleDispenser::MinPlayers)
         "error" => "Il numero di giocatori è insufficiente",
         "code" => APIStatus::NewGameNotEnouthPlayers));
 
+$level = Level::getLevel($user->level);
+if (count($user->getActiveGame()) + 1 > $level->aviableGame)
+    response (401, array(        
+        "error" => "L'utente ha finito le partite di cui può far parte",
+        "code" => APIStatus::JoinFailedGamesEnded
+    ));
+
 $res = Game::createGame($room_name, $game_name, $game_descr, $num_players);
 
 if (!$res)

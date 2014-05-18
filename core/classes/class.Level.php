@@ -27,6 +27,11 @@ class Level {
      */
     public $privateRoom;
     /**
+     * Numero di partite in cui giocare contemporaneamente
+     * @var int
+     */
+    public $aviableGame;
+    /**
      * Indica se le funzioni BETA sono disponibili
      * @var boolean
      */
@@ -35,10 +40,11 @@ class Level {
     /**
      * Costruttore privato
      */
-    private function __construct($name, $aviableRoom, $privateRoom, $betaFeature) {
+    private function __construct($name, $aviableRoom, $privateRoom, $aviableGame, $betaFeature) {
         $this->name = $name;
         $this->aviableRoom = $aviableRoom;
         $this->privateRoom = $privateRoom;
+        $this->aviableGame = $aviableGame;
         $this->betaFeature = $betaFeature;
     }
 
@@ -49,16 +55,16 @@ class Level {
      */
     public static function getLevels() {
         $levels = array();
-        $levels[1] = new Level("Neofita", 0, 0, false);
-        $levels[2] = new Level("Principiante", 1, 0, false);
-        $levels[3] = new Level("Gamer", 3, 1, false);
-        $levels[4] = new Level("Esperto", 5, 3, false);
-        $levels[5] = new Level("Maestro", 5, 5, false);
-        $levels[6] = new Level("Progamer", 10, 5, false);
-        $levels[7] = new Level("Dottore", 10, 10, true);
-        $levels[8] = new Level("Generale", 100, 10, true);
-        $levels[9] = new Level("Guru", 100, 100, true);
-        $levels[10] = new Level("GameMaster", 100, 100, true);
+        $levels[1] = new Level("Neofita", 0, 0, 3, false);
+        $levels[2] = new Level("Principiante", 1, 0, 5, false);
+        $levels[3] = new Level("Gamer", 3, 1, 5, false);
+        $levels[4] = new Level("Esperto", 5, 3, 5, false);
+        $levels[5] = new Level("Maestro", 5, 5, 7, false);
+        $levels[6] = new Level("Progamer", 10, 5, 10, false);
+        $levels[7] = new Level("Dottore", 10, 10, 15, true);
+        $levels[8] = new Level("Generale", 100, 10, 50, true);
+        $levels[9] = new Level("Guru", 100, 100, 100, true);
+        $levels[10] = new Level("GameMaster", 100, 100, 1000, true);
         return $levels;
     }
     /**

@@ -31,6 +31,7 @@ class APIStatus {
     const JoinFailedAlreadyIn = 132;
     const JoinFailedGameClose = 133;
     const JoinFailedGameFull = 134;
+    const JoinFailedGamesEnded = 135;
     // ---------- NEW GAME ----------
     const NewGameDone = 140;
     const NewGameMissingParameter = 141;

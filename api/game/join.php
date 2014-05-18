@@ -42,6 +42,13 @@ if (count($game->players["players"]) + 1 > $game->players["num_players"])
         "error" => "La partita è già al completo",
         "code" => APIStatus::JoinFailedGameFull));
 
+$level = Level::getLevel($user->level);
+if (count($user->getActiveGame()) + 1 > $level->aviableGame)
+    response (401, array(        
+        "error" => "L'utente ha finito le partite di cui può far parte",
+        "code" => APIStatus::JoinFailedGamesEnded
+    ));
+
 $game->joinGame($user);
 
 $engine = new Engine($game);
