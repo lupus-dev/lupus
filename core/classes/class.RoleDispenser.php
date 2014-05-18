@@ -50,6 +50,7 @@ class RoleDispenser {
             logEvent("L'amministratore della stanza {$room->room_name} non esiste", LogLevel::Warning);
             return false;
         }
+
         // verifica se l'amministratore dispone dei ruoli beta
         $debugEnabled = Level::getLevel($admin->level)->betaFeature;
         // ottiene tutti i ruoli disponibili
@@ -61,14 +62,14 @@ class RoleDispenser {
         // genera i ruoli casualmente e li mescola
         $rand_roles = RoleDispenser::generateRoles($roles, $game->num_players);
         if (!$rand_roles) {
-            logEvent("Impossibile generare i ruoli", LogLevel::Warning);
+            logEvent("Impossibile generare i ruoli", LogLevel::Error);
             return false;
         }
         shuffle($rand_roles);
-        // assegnai ruoli ai giocatori
+        // assegna i ruoli ai giocatori
         $status = RoleDispenser::assignRoles($rand_roles, $game);
         if (!$status) {
-            logEvent("Errore nell'assegnazione dei ruoli", LogLevel::Warning);
+            logEvent("Errore nell'assegnazione dei ruoli", LogLevel::Error);
             return false;
         }
         return true;
@@ -157,7 +158,7 @@ class RoleDispenser {
             $curr_sum = $roles_probability[0];
             $curr_pos = 1;
             // cerca quale ruolo è stato generato
-            while ($curr_sum < $rand) 
+            while ($curr_sum < $rand)
                 $curr_sum += $roles_probability[$curr_pos++];
             $curr_pos--;
             // nome del ruolo generato
@@ -185,28 +186,30 @@ class RoleDispenser {
      */
     private static function assignRoles($roles, $game) {
         $usernames = $game->getPlayers();
+        $id_game = $game->id_game;
+        
         if (count($roles) != count($usernames)) {
             logEvent("Il numero di ruoli generati non corrisponde con il numero di giocatori", LogLevel::Error);
             return false;
         }
-        $query = "INSERT INTO role (id_game,id_user,role,status,data) VALUES ";
-        $values = array();
-
-        $id_game = $game->id_game;
-        $alive = RoleStatus::Alive;
-
+        
+        /*
+         * UPDATE role SET role = CASE id_user
+         *      WHEN 102 THEN 'Lupo'
+         *      WHEN 105 THEN 'Contadino'
+         *      WHEN 108 THEN 'Lupo'
+         * END
+         * WHERE id_game = 5
+         */
+        
+        $query = "UPDATE role SET role=CASE id_user ";
         for ($i = 0; $i < count($roles); $i++) {
-            $user = User::fromUsername($usernames[$i]);
-            if (!$user) {
-                logEvent("L'utente {$usernames[$i]} non esiste", LogLevel::Warning);
-                return false;
-            }
-            $id_user = $user->id_user;
+            $id_user = User::fromUsername($usernames[$i])->id_user;
             $role = $roles[$i]::$role_name;
-            $values[] = "($id_game,$id_user,'$role',$alive,'')";
+            $query .= "WHEN $id_user THEN '$role' ";
         }
-
-        $query .= implode(", ", $values);
+        $query .= "END WHERE id_game=$id_game";
+        
         $res = Database::query($query);
         if (!$res)
             return false;

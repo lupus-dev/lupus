@@ -46,7 +46,7 @@ class Engine {
      * La partita non è in corso. Nessuna azione è stata compiuta
      */
     const BadGameStatus = 503;
-    
+
     /**
      * La partita è terminata perchè i ruoli non sono stati generati correttamente
      */
@@ -63,6 +63,7 @@ class Engine {
      * @var array
      */
     public $protected;
+
     /**
      * Vettore che contiene l'elenco delle visite dei giocatori
      * @var array La chiave del vettore è l'utente visitato, il valore è un 
@@ -105,33 +106,33 @@ class Engine {
         if ($gameStatus == GameStatus::Running) {
             $roles = $this->getAllRoles();
             if (!$roles) {
-                logEvent("Impossibile recuperare i ruoli. Partita terminata: codice " . Engine::BadRole, LogLevel::Warning);
+                logEvent("Impossibile recuperare i ruoli. Partita terminata: codice " . Engine::BadRole, LogLevel::Error);
                 $this->game->status(GameStatus::TermByBug);
                 return Engine::BadRole;
             }
-        } 
-        else if ($gameStatus == GameStatus::NotStarted) 
+        } else if ($gameStatus == GameStatus::NotStarted)
             $roles = array();
-        
+
         // controlla se qualcuno deve ancora votare
         $voteStatus = $this->checkVotes($roles);
         if ($voteStatus) {
             logEvent("Alcuni giocatori non hanno votato: codice $voteStatus", LogLevel::Debug);
             return $voteStatus;
         }
-        
+
         // ordina i ruoli per priorità. Quelli con priorità uguale hanno ordine
         // casuale
         shuffle($roles);
         usort($roles, array("Role", "cmpRole"));
-        
+
         // esegue le azioni associate agli utenti
         $performStatus = $this->performAction($roles);
         if ($performStatus) {
-            logEvent("Un'azione non è terminata correttamente. Partita terminata: codice $performStatus", LogLevel::Warning);
+            logEvent("Un'azione non è terminata correttamente. Partita terminata: codice $performStatus", LogLevel::Error);
+            $this->game->status(GameStatus::TermByBug);
             return $performStatus;
         }
-                
+
         // verifica se la partita termina
         $endStatus = $this->checkEnd();
         // se il giorno/notte è finito correttamente
@@ -148,6 +149,7 @@ class Engine {
         }
         // se se verifica un errore
         $this->game->status(GameStatus::TermByBug);
+        logEvent("Un errore strano è accaduto, la partita è stata terminata", LogLevel::Error);
         return $endStatus;
     }
 
@@ -212,9 +214,9 @@ class Engine {
                 if ($this->game->getNumPlayers() < $this->game->num_players)
                     return Engine::NeedVote;
                 // altrimenti può continuare
-                return false;                
+                return false;
             default:
-                logEvent("Tempo non riconosciuto ({$this->game->day} => $time)", LogLevel::Notice);
+                logEvent("Tempo non riconosciuto ({$this->game->day} => $time)", LogLevel::Warning);
                 break;
         }
         logEvent("Tutti i giocatori hanno votato", LogLevel::Debug);
@@ -236,7 +238,7 @@ class Engine {
             case GameTime::Night:
                 foreach ($roles as $role)
                     if (!$role->performActionNight()) {
-                        logEvent("L'azione notturna di '{$role->user->username}' ({$role->getRoleName()}) è fallita", LogLevel::Warning);
+                        logEvent("L'azione notturna di '{$role->user->username}' ({$role->getRoleName()}) è fallita", LogLevel::Error);
                         $this->game->status(GameStatus::TermByBug);
                         return Engine::BadAction;
                     }
@@ -244,19 +246,21 @@ class Engine {
             case GameTime::Day:
                 foreach ($roles as $role)
                     if (!$role->performActionDay()) {
-                        logEvent("L'azione diurna di '{$role->user->username}' ({$role->getRoleName()}) è fallita", LogLevel::Warning);
+                        logEvent("L'azione diurna di '{$role->user->username}' ({$role->getRoleName()}) è fallita", LogLevel::Error);
                         $this->game->status(GameStatus::TermByBug);
                         return Engine::BadAction;
                     }
                 break;
             case GameTime::Start:
+                // distribuisce i ruoli
                 if (!RoleDispenser::Compute($this->game))
                     return Engine::BadRoleAssign;
+                // ottiene i ruoli renerati e avvia la partita
                 $this->getAllRoles();
                 $this->game->status(GameStatus::Running);
                 break;
             default:
-                logEvent("Tempo non riconosciuto ({$this->game->day} => $time)", LogLevel::Notice);
+                logEvent("Tempo non riconosciuto ({$this->game->day} => $time)", LogLevel::Warning);
                 break;
         }
         logEvent("Tutti i giocatori hanno eseguito", LogLevel::Debug);
@@ -274,6 +278,11 @@ class Engine {
         // estrae i nomi delle squadre della partita
         foreach ($roles as $role) {
             $role_name = firstUpper($role);
+            // se c'è un ruolo non riconosciuto
+            if (!class_exists($role_name) || !in_array("Role", class_parents($role_name))) {
+                logEvent("Ruolo $role_name non riconosciuto, skipped", LogLevel::Warning);
+                continue;
+            }
             $team_name = $role_name::$team_name;
             $teams[$team_name] = $team_name;
         }
@@ -294,7 +303,7 @@ class Engine {
         }
         // se tutti i giocatori sono morti, forza la fine della partita
         if ($this->checkDeadEnd()) {
-            logEvent("La partita è terminata perchè sono tutti morti", LogLevel::Debug);
+            logEvent("La partita è terminata perchè sono tutti morti", LogLevel::Notice);
             return GameStatus::DeadWin;
         }
         return Engine::NextDay;
@@ -316,4 +325,5 @@ class Engine {
         // se ci sono zero giocatori vivi, la partita termina
         return $res[0]["alive"] == 0;
     }
+
 }

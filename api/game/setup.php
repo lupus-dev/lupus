@@ -19,18 +19,25 @@ if (!$login)
 $room_name = $apiMatches[1];
 $game_name = $apiMatches[2];
 
-if (!isset($_GET["descr"]) || !isset($_GET["num_players"]))
+if (!isset($_GET["descr"]) || !isset($_GET["gen_info"]))
     response (400, array(
-        "error" => "Specificare descr e num_players in GET",
+        "error" => "Specificare descr e gen_info in GET",
         "code" => APIStatus::SetupMissingParameter
     ));
 
 $game_descr = $_GET["descr"];
-$num_players = intval($_GET["num_players"]);
+$gen_info = $_GET["gen_info"];
 
-if (!preg_match("/^$descr_name$/", $game_descr) || intval($num_players) == 0)
+if (!preg_match("/^$descr_name$/", $game_descr))
     response (400, array(
-        "error" => "I parametri game_name e game_descr non sono in un formato corretto",
+        "error" => "I parametri descr e gen_info non sono in un formato corretto",
+        "code" => APIStatus::NewGameMalformed
+    ));
+if (!isset($gen_info["gen_mode"]) || 
+        !isset($gen_info["auto"]) || !isset($gen_info["auto"]["num_players"]) || !isset($gen_info["auto"]["aviable_roles"]) ||
+        !isset($gen_info["manual"]) || !isset($gen_info["manual"]["roles"]))
+    response (400, array(
+        "error" => "I parametri descr e gen_info non sono in un formato corretto",
         "code" => APIStatus::NewGameMalformed
     ));
 
@@ -55,7 +62,7 @@ if ($game->status != GameStatus::Setup)
         "error" => "La partita non è in fase di setup",
         "code" => APIStatus::SetupNotInSetup));
 
-$res = $game->editGame($game_descr, $num_players);
+$res = $game->editGame($game_descr, $gen_info);
 
 if (!$res)
     response (500, array(

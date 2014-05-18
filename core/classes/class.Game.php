@@ -49,11 +49,11 @@ class Game {
     public $game_descr;
 
     /**
-     * Lista dei ruoli registrati nella partita
-     * @var array
+     * Numero di giocatori nella partita
+     * @var int
      */
     public $num_players;
-    
+
     /**
      * Informazioni sulla generazione dei ruoli per i giocatori
      * @var array
@@ -85,7 +85,7 @@ class Game {
         return $game;
     }
 
-        /**
+    /**
      * Crea un'istanza di \Game dal suo identificativo
      * @param int $id Identificativo della partita
      * @return boolean|\Game La partita con l'identitificativo speficifato. False
@@ -101,7 +101,7 @@ class Game {
             logEvent("Partita non trovata. id_game=$id", LogLevel::Warning);
             return false;
         }
-        
+
         return Game::fromDBdata($res[0]);
     }
 
@@ -129,7 +129,7 @@ class Game {
             logEvent("Partita non trovata. room_name={$room->room_name} game_name=$game", LogLevel::Warning);
             return false;
         }
-        
+
         return Game::fromDBdata($res[0]);
     }
 
@@ -178,16 +178,12 @@ class Game {
         }
         $name = Database::escape($name);
         $descr = Database::escape($descr);
-        $players = json_encode(array(
-            "num_players" => $num_players,
-            "players" => array($admin->username)
-        ));
-        $players = Database::escape($players);
+        $num_players = intval($num_players);
 
         $id_room = $room->id_room;
 
-        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,players,gen_info) VALUE "
-                . "($id_room,0,0,'$name','$descr','$players','{}')";
+        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,num_players,gen_info) VALUE "
+                . "($id_room,0,0,'$name','$descr',$num_players,'{}')";
 
         $res = Database::query($query);
         if (!$res)
@@ -204,27 +200,27 @@ class Game {
     public static function getOpenGames($user) {
         $username = $user->username;
         $notStarted = GameStatus::NotStarted;
-        
+
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,players FROM game "
                 . "WHERE status=$notStarted AND players NOT LIKE '%\"$username\"%' "
                 . "AND (SELECT private FROM room WHERE room.id_room=game.id_room)=0 "
                 . "ORDER BY (LENGTH(players) - LENGTH(REPLACE(players, ',', ''))) DESC "
                 . "LIMIT 100";
-        
+
         $res = Database::query($query);
         if (!$res)
             return false;
-        
+
         $games = array();
-        foreach ($res  as $game)
-            $games[] = Game::fromDBdata ($game);
-        
+        foreach ($res as $game)
+            $games[] = Game::fromDBdata($game);
+
         return $games;
     }
 
     /**
      * Cerca tutti gli utenti della partita
-     * @return array Vettore di \User
+     * @return array Vettore di username
      */
     public function getPlayers() {
         $id_game = $this->id_game;
@@ -240,6 +236,7 @@ class Game {
         }
         return $users;
     }
+
     /**
      * Ottieme il numero di giocatori iscritti nella partita. E' molto più veloce
      * di contare il numero di elementi di 'getPlayers()'
@@ -315,19 +312,17 @@ class Game {
             return false;
         if ($this->getNumPlayers() + 1 > $this->num_players)
             return false;
-        /**
-         * @todo IMPLEMENTARE IL JOIN NELLA PARTITA
-         */
-        /*
-        $this->players["players"][] = $user->username;
 
-        $players = Database::escape(json_encode($this->players));
+        $id_user = $user->id_user;
+        $alive = RoleStatus::Alive;
 
-        $query = "UPDATE game SET players='$players' WHERE id_game=$id_game";
+        $query = "INSERT INTO role (id_game,id_user,role,status) VALUES "
+                . "($id_game,$id_user,'unknown',$alive)";
+
         $res = Database::query($query);
         if (!$res)
             return false;
-         */
+
         return true;
     }
 
@@ -371,26 +366,25 @@ class Game {
     /**
      * Modifica i parametri della partita
      * @param string $game_descr Descrizione della partita
-     * @param int $num_players Numero di giocatori della partita
+     * @param array $gen_info Informazioni sulla generazione della partita
      * @return boolean True se l'operazione ha avuto successo, false altrimenti
      */
-    public function editGame($game_descr, $num_players) {
-        /**
-         * @todo IMPLEMENTARE MODIFICA DELLA PARTITA
-         */
-        /*
-        $this->game_descr = $game_descr;
-        $this->players["num_players"] = $num_players;
-
+    public function editGame($game_descr, $gen_info) {
+        $num_players = intval($gen_info["gen_mode"] == "auto" ?
+                $gen_info["auto"]["num_players"] :
+                array_sum($gen_info["manual"]["roles"]));
         $game_descr = Database::escape($game_descr);
-        $players = Database::escape(json_encode($this->players));
+        $gen_info = Database::escape(json_encode($gen_info));
         $id_game = $this->id_game;
 
-        $query = "UPDATE game SET game_descr='$game_descr', players='$players' WHERE id_game=$id_game";
+        $this->game_descr = $game_descr;
+        $this->num_players = $num_players;
+        $this->gen_info = $gen_info;
+
+        $query = "UPDATE game SET game_descr='$game_descr', num_players=$num_players, gen_info='$gen_info' WHERE id_game=$id_game";
         $res = Database::query($query);
         if (!$res)
             return false;
-         */
         return true;
     }
 
