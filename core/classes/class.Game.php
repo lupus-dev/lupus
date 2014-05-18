@@ -225,13 +225,13 @@ class Game {
      * @return array Ritorna un vettore di \Game. False se si verifica un errore
      */
     public static function getOpenGames($user) {
-        $username = $user->username;
+        $id_user = $user->id_user;
         $notStarted = GameStatus::NotStarted;
-        // @todo Togliere %
-        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,players FROM game "
-                . "WHERE status=$notStarted AND players NOT LIKE '%\"$username\"%' "
+        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game "
+                . "WHERE status=$notStarted "
+                . "AND (SELECT COUNT(*) FROM role WHERE role.id_game=game.id_game AND id_user=$id_user)=0 "
                 . "AND (SELECT private FROM room WHERE room.id_room=game.id_room)=0 "
-                . "ORDER BY (LENGTH(players) - LENGTH(REPLACE(players, ',', ''))) DESC "
+                . "ORDER BY (SELECT COUNT(*) FROM role WHERE role.id_game=game.id_game) DESC "
                 . "LIMIT 100";
 
         $res = Database::query($query);
