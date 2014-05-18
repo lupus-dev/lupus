@@ -238,7 +238,7 @@ class Event {
             case EventCode::GameStart:
                 return Event::getNewsFromGameStart($event);
             case EventCode::Death:
-                return Event::getNewsFromDeath($event, $user);
+                return Event::getNewsFromDeath($event);
             case EventCode::MediumAction:
                 return Event::getNewsFromMediumAction($event, $user);
             case EventCode::VeggenteAction:
@@ -256,22 +256,35 @@ class Event {
      * @return array Ritorna le informazioni dell'inizio della partita
      */
     private static function getNewsFromGameStart($event) {
+        $game = Game::fromIdGame($event->id_game);
+
         $timestamp = $event->event_data["start"];
         $date = date("d-m-Y", $timestamp);
         $hour = date("H:i:s", $timestamp);
+        $news = "La partita è iniziata il $date alle $hour";
+
+        if ($game->status >= GameStatus::Winy || $game->gen_info["gen_mode"] == "manual") {
+            $roles = $game->gen_info["manual"]["roles"];
+            $news .= "<pre>I ruoli nella partita sono:";
+            $news .= "<table>";
+            foreach ($roles as $role => $freq)
+                if ($freq > 0)
+                    $news .= "<tr><td>$role: </td><td>$freq</td></tr>";
+            $news .= "</table></pre>";
+        }
+
         return array(
             "day" => 0,
-            "news" => "La partita è iniziata il $date alle $hour"
+            "news" => $news
         );
     }
 
     /**
      * Formatta la morte di un giocatore
      * @param \Event $event Evento dell'inizio della partita
-     * @param \User $user Utente che partecipa alla partita
      * @return array Ritorna le informazioni della morte
      */
-    private static function getNewsFromDeath($event, $user) {
+    private static function getNewsFromDeath($event) {
         $game = Game::fromIdGame($event->id_game);
         $username = $event->event_data["dead"];
         $killer = $event->event_data["actor"];
@@ -342,7 +355,7 @@ class Event {
             "news" => "Il giocatore $username ha un mana $mana"
         );
     }
-    
+
     /**
      * Formatta le foto di un paparazzo
      * @param \Event $event Evento da formattare
@@ -351,25 +364,26 @@ class Event {
     private static function getNewsFromPaparazzoAction($event) {
         $game = Game::fromIdGame($event->id_game);
         $username = $event->event_data["seen"];
-        
+
         $news = "Il giocatore $username è stato paparazzato ";
         $visitors = $event->event_data["visitors"];
-        
+
         if (count($visitors) == 0)
             $news .= "da solo";
         else if (count($visitors) == 1)
             $news .= "insieme a " . $visitors[0];
         else {
-            $chunk = array_chunk($visitors, count($visitors)-1);
+            $chunk = array_chunk($visitors, count($visitors) - 1);
             $news .= "insieme a " . implode(", ", $chunk[0]) . " e " . $chunk[1][0];
         }
-        
+
         if ($game->status >= GameStatus::Winy)
             $news .= " da " . $event->event_data["paparazzo"];
-        
+
         return array(
             "day" => $event->day,
             "news" => $news
         );
     }
+
 }
