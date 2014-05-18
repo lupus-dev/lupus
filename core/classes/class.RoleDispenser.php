@@ -51,16 +51,17 @@ class RoleDispenser {
             return false;
         }
 
-        // verifica se l'amministratore dispone dei ruoli beta
-        $debugEnabled = Level::getLevel($admin->level)->betaFeature;
-        // ottiene tutti i ruoli disponibili
-        $roles = RoleDispenser::getAviableRoles($debugEnabled);
-        if (!$roles) {
-            logEvent("Impossibile recuperare i nomi dei ruoli", LogLevel::Error);
+        $gen_info = $game->gen_info;
+
+        if ($gen_info["gen_mode"] == "auto")
+            $rand_roles = RoleDispenser::generateAutoRoles($gen_info["auto"]["roles"], $gen_info["auto"]["num_players"], $admin);
+        else if ($gen_info["gen_mode"] == "manual")
+            $rand_roles = RoleDispenser::generateManualRoles($gen_info["manual"]["roles"], $admin);
+        else {
+            logEvent("Modalità di generazione non riconosciuta ({$gen_info["gen_mode"]})", LogLevel::Warning);
             return false;
         }
-        // genera i ruoli casualmente e li mescola
-        $rand_roles = RoleDispenser::generateRoles($roles, $game->num_players);
+
         if (!$rand_roles) {
             logEvent("Impossibile generare i ruoli", LogLevel::Error);
             return false;
@@ -115,10 +116,11 @@ class RoleDispenser {
      * @param array $roles_name Vettore con i nomi dei ruoli disponibili. Ogni
      * nome deve essere il nome corretto di una classe derivata da \Role.
      * @param int $num_players Numero di giocatori nella partita
+     * @param \User $user L'amministratore della stanza
      * @return boolean|array Ritorna un vettore parzialmente disordinato (da 
      * mescolare) con i nomi dei ruoli generati. False se si verifica un errore.
      */
-    private static function generateRoles($roles_name, $num_players) {
+    private static function generateAutoRoles($roles_name, $num_players, $user) {
         if ($num_players < RoleDispenser::MinPlayers) {
             logEvent("La partita non ha un numero sufficiente di giocatori ($num_players)", LogLevel::Warning);
             return false;
@@ -129,6 +131,8 @@ class RoleDispenser {
 
         $prob_sum = 0;
         foreach ($roles_name as $role) {
+            if (!Role::roleExists($role, $user))
+                return false;
             $role_prob = $role::$gen_probability;
             $roles_probability[] = $role_prob;
             $prob_sum += $role_prob;
@@ -179,6 +183,35 @@ class RoleDispenser {
     }
 
     /**
+     * Genera una serie di ruoli in base ai parametri specificati 
+     * @param array $roles Un array associativo: la chiave è il nome del ruolo, 
+     * il valore è la frequenza del ruolo
+     * @param \User $user L'amministratore della stanza
+     * @return boolean|array Ritorna un vettore ordinato (da mescolare) con i 
+     * nomi dei ruoli generati. False se si verifica un errore.
+     */
+    private static function generateManualRoles($roles, $user) {
+        $num_players = array_sum($roles);
+
+        if ($num_players < RoleDispenser::MinPlayers) {
+            logEvent("La partita non ha un numero sufficiente di giocatori ($num_players)", LogLevel::Warning);
+            return false;
+        }
+
+        $res = array();
+        
+        // espande i ruoli aggiungendo le ripetizioni
+        foreach ($roles as $role => $freq) {
+            if (!Role::roleExists($role, $user))
+                return false;
+            for ($i = 0; $i < $freq; $i++)
+                $res[] = $role;
+        }
+        
+        return $res;
+    }
+
+    /**
      * Assegna i ruoli agli utenti nella partita
      * @param array $roles Elenco mescolato dei ruoli della partita
      * @param \Game $game Partita a cui appartengono i ruoli
@@ -187,12 +220,12 @@ class RoleDispenser {
     private static function assignRoles($roles, $game) {
         $usernames = $game->getPlayers();
         $id_game = $game->id_game;
-        
+
         if (count($roles) != count($usernames)) {
             logEvent("Il numero di ruoli generati non corrisponde con il numero di giocatori", LogLevel::Error);
             return false;
         }
-        
+
         /*
          * UPDATE role SET role = CASE id_user
          *      WHEN 102 THEN 'Lupo'
@@ -201,7 +234,7 @@ class RoleDispenser {
          * END
          * WHERE id_game = 5
          */
-        
+
         $query = "UPDATE role SET role=CASE id_user ";
         for ($i = 0; $i < count($roles); $i++) {
             $id_user = User::fromUsername($usernames[$i])->id_user;
@@ -209,7 +242,7 @@ class RoleDispenser {
             $query .= "WHEN $id_user THEN '$role' ";
         }
         $query .= "END WHERE id_game=$id_game";
-        
+
         $res = Database::query($query);
         if (!$res)
             return false;

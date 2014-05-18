@@ -647,4 +647,28 @@ abstract class Role {
         return $res[0]["status"];
     }
 
+    /**
+     * Verifica se un ruolo esiste ed è utilizzabile
+     * @param string $roleName Nome della classe del ruolo
+     * @param \User $user [Optional]<br> Utente che deve usare il ruolo. Per il
+     * controllo delle funzioni di debug
+     * @return boolean True se il ruolo è disponibile, false se non esiste o 
+     * non è utilizzabile
+     */
+    public static function roleExists($roleName, $user = null) {
+        // verifica se esiste la classe e se deriva da Role
+        if (!class_exists($roleName) || !in_array("Role", class_parents($roleName)))
+            return false;
+        // verifica che il ruolo sia abilitato
+        if (!$roleName::$enabled)
+            return false;
+        // se il ruolo è in debug allora controllo se l'utente ha i permessi per usarlo
+        if ($roleName::$debug && $user) {
+            $level = Level::getLevel($user->level);
+            if ($level->betaFeature)
+                return true;
+            return false;
+        }
+        return true;
+    }
 }
