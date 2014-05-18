@@ -166,7 +166,7 @@ class Chat {
         
         foreach ($groups as $group)
             $data["groups"][$group] = 0;
-        foreach ($game->players["players"] as $player) {
+        foreach ($game->getPlayers() as $player) {
             $user = User::fromUsername($player);
             $data["users"][$user->id_user] = 0;
         }

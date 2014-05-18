@@ -8,7 +8,7 @@
 
 for ($i = 8; $i <= 18; $i++) {
     $var = "s$i";
-    if ($game->players["num_players"] == $i)
+    if ($game->num_players == $i)
         $$var = "selected";
     else
         $$var = "";

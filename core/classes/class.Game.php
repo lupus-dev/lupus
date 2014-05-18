@@ -52,7 +52,13 @@ class Game {
      * Lista dei ruoli registrati nella partita
      * @var array
      */
-    public $players;
+    public $num_players;
+    
+    /**
+     * Informazioni sulla generazione dei ruoli per i giocatori
+     * @var array
+     */
+    public $gen_info;
 
     /**
      * Costruttore privato
@@ -74,7 +80,8 @@ class Game {
         $game->status = $data["status"];
         $game->game_name = $data["game_name"];
         $game->game_descr = $data["game_descr"];
-        $game->players = json_decode($data["players"], true);
+        $game->num_players = $data["num_players"];
+        $game->gen_info = json_decode($data["gen_info"], true);
         return $game;
     }
 
@@ -87,7 +94,7 @@ class Game {
     public static function fromIdGame($id) {
         $id = intval($id);
 
-        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,players FROM game WHERE id_game=$id";
+        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game WHERE id_game=$id";
         $res = Database::query($query);
 
         if (count($res) != 1) {
@@ -115,7 +122,7 @@ class Game {
         }
         $id_room = $room->id_room;
 
-        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,players FROM game WHERE id_room=$id_room AND game_name='$game'";
+        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game WHERE id_room=$id_room AND game_name='$game'";
         $res = Database::query($query);
 
         if (count($res) != 1) {
@@ -143,8 +150,8 @@ class Game {
             ),
             "status" => (int) $game->status,
             "game_descr" => $game->game_descr,
-            "num_players" => $game->players["num_players"],
-            "registred_players" => $game->players["players"]
+            "num_players" => $game->num_players,
+            "registred_players" => $game->getPlayers()
         );
         return $res;
     }
@@ -179,8 +186,8 @@ class Game {
 
         $id_room = $room->id_room;
 
-        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,players) VALUE "
-                . "($id_room,0,0,'$name','$descr','$players')";
+        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,players,gen_info) VALUE "
+                . "($id_room,0,0,'$name','$descr','$players','{}')";
 
         $res = Database::query($query);
         if (!$res)
@@ -219,7 +226,7 @@ class Game {
      * Cerca tutti gli utenti della partita
      * @return array Vettore di \User
      */
-    public function getUsers() {
+    public function getPlayers() {
         $id_game = $this->id_game;
 
         $query = "SELECT id_user FROM role WHERE id_game=$id_game";
@@ -229,9 +236,22 @@ class Game {
 
         foreach ($res as $id_user) {
             $user = User::fromIdUser($id_user["id_user"]);
-            $users[] = $user;
+            $users[] = $user->username;
         }
         return $users;
+    }
+    /**
+     * Ottieme il numero di giocatori iscritti nella partita. E' molto più veloce
+     * di contare il numero di elementi di 'getPlayers()'
+     * @return int
+     */
+    public function getNumPlayers() {
+        $id_game = $this->id_game;
+
+        $query = "SELECT COUNT(*) AS num_players FROM role WHERE id_game=$id_game";
+        $res = Database::query($query);
+
+        return $res[0]["num_players"];
     }
 
     /**
@@ -277,7 +297,7 @@ class Game {
         $user = User::fromIdUser($id_user);
         if (!$user)
             return false;
-        return in_array($user->username, $this->players["players"]);
+        return in_array($user->username, $this->getPlayers());
     }
 
     /**
@@ -293,9 +313,12 @@ class Game {
             return false;
         if ($this->status != GameStatus::NotStarted)
             return false;
-        if (count($this->players["players"]) + 1 > $this->players["num_players"])
+        if ($this->getNumPlayers() + 1 > $this->num_players)
             return false;
-
+        /**
+         * @todo IMPLEMENTARE IL JOIN NELLA PARTITA
+         */
+        /*
         $this->players["players"][] = $user->username;
 
         $players = Database::escape(json_encode($this->players));
@@ -304,6 +327,7 @@ class Game {
         $res = Database::query($query);
         if (!$res)
             return false;
+         */
         return true;
     }
 
@@ -351,6 +375,10 @@ class Game {
      * @return boolean True se l'operazione ha avuto successo, false altrimenti
      */
     public function editGame($game_descr, $num_players) {
+        /**
+         * @todo IMPLEMENTARE MODIFICA DELLA PARTITA
+         */
+        /*
         $this->game_descr = $game_descr;
         $this->players["num_players"] = $num_players;
 
@@ -362,6 +390,7 @@ class Game {
         $res = Database::query($query);
         if (!$res)
             return false;
+         */
         return true;
     }
 

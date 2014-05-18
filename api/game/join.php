@@ -37,7 +37,7 @@ if ($gameStatus != GameStatus::NotStarted)
         "error" => "La partita non accetta ingressi",
         "code" => APIStatus::JoinFailedGameClose));
 
-if (count($game->players["players"]) + 1 > $game->players["num_players"])
+if ($game->getNumPlayers() + 1 > $game->num_players)
     response(401, array(
         "error" => "La partita è già al completo",
         "code" => APIStatus::JoinFailedGameFull));

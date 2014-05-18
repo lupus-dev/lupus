@@ -6,7 +6,7 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-$players = count($game->players["players"]) . "/" . $game->players["num_players"];
+$players = $game->getNumPlayers() . "/" . $game->num_players;
 $level = Level::getLevel($user->level);
 $joinable = (count($user->getActiveGame()) + 1) <= $level->aviableGame;
 ?>

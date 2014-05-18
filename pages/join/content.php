@@ -21,8 +21,8 @@ $rooms = array();
     foreach ($games as $game) {
         if (!isset($rooms[$game->id_room]))
             $rooms[$game->id_room] = Room::fromIdRoom ($game->id_room);
-        $numPlayers = $game->players["num_players"];
-        $conPlayers = count($game->players["players"]);
+        $numPlayers = $game->num_players;
+        $conPlayers = $game->getNumPlayers();
         
         echo "<h3>";
         printGame($game, $rooms[$game->id_room], $user, false);

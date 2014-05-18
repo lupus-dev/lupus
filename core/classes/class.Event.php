@@ -115,10 +115,7 @@ class Event {
             "start" => time()
         );
 
-        $users = $game->getUsers();
-        foreach ($users as $user) {
-            $data["players"][] = $user->username;
-        }
+        $data["players"] = $game->getPlayers();
 
         return Event::insertEvent($game, EventCode::GameStart, $data);
     }

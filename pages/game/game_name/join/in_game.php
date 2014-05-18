@@ -7,7 +7,7 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-$players = count($game->players["players"]) . "/" . $game->players["num_players"];
+$players = $game->getNumPlayers() . "/" . $game->num_players;
 
 ?>
 <div class="page-header">

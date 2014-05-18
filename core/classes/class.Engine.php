@@ -209,7 +209,7 @@ class Engine {
                 break;
             case GameTime::Start:
                 // se la partita non è al completo allora aspetta altri giocatori
-                if (count($this->game->players["players"]) < $this->game->players["num_players"])
+                if ($this->game->getNumPlayers() < $this->game->num_players)
                     return Engine::NeedVote;
                 // altrimenti può continuare
                 return false;                

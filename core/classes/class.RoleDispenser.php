@@ -40,7 +40,6 @@ class RoleDispenser {
      */
     public static function Compute($game) {
 
-        // verifica se l'amministratore dispone dei ruoli beta
         $room = Room::fromIdRoom($game->id_room);
         if (!$room) {
             logEvent("La stanza {$game->id_room} non esiste", LogLevel::Warning);
@@ -51,15 +50,16 @@ class RoleDispenser {
             logEvent("L'amministratore della stanza {$room->room_name} non esiste", LogLevel::Warning);
             return false;
         }
+        // verifica se l'amministratore dispone dei ruoli beta
         $debugEnabled = Level::getLevel($admin->level)->betaFeature;
         // ottiene tutti i ruoli disponibili
-        $roles = RoleDispenser::getRoles($debugEnabled);
+        $roles = RoleDispenser::getAviableRoles($debugEnabled);
         if (!$roles) {
             logEvent("Impossibile recuperare i nomi dei ruoli", LogLevel::Error);
             return false;
         }
         // genera i ruoli casualmente e li mescola
-        $rand_roles = RoleDispenser::generateRoles($roles, $game->players["num_players"]);
+        $rand_roles = RoleDispenser::generateRoles($roles, $game->num_players);
         if (!$rand_roles) {
             logEvent("Impossibile generare i ruoli", LogLevel::Warning);
             return false;
@@ -80,7 +80,7 @@ class RoleDispenser {
      * @return boolean|array Ritorna un vettore di string con i nomi dei ruoli 
      * utilizzabili. False se si verifica un errore
      */
-    private static function getRoles($debugEnabled) {
+    private static function getAviableRoles($debugEnabled) {
         // i ruoli sono nella cartella /core/classes/roles
         $dir = __DIR__ . "/roles/";
 
@@ -184,7 +184,7 @@ class RoleDispenser {
      * @return boolean Ritorna true se l'operazione è riuscita. False altrimenti
      */
     private static function assignRoles($roles, $game) {
-        $usernames = $game->players["players"];
+        $usernames = $game->getPlayers();
         if (count($roles) != count($usernames)) {
             logEvent("Il numero di ruoli generati non corrisponde con il numero di giocatori", LogLevel::Error);
             return false;
