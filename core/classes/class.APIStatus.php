@@ -38,7 +38,7 @@ class APIStatus {
     const NewGameAccessDenied = 142;
     const NewGameAlreadyRunning = 143;
     const NewGameAlreadyExists = 144;
-    const NewGameNotEnouthPlayers = 145;
+    const NewGameInvalidNumPlayers = 145;
     const NewGameMalformed = 146;
     // ---------- START ----------
     const StartDone = 150;
@@ -91,6 +91,8 @@ class APIStatus {
     const SetupAccessDenied = 241;
     const SetupNotInSetup = 242;
     const SetupMissingParameter = 243;
+    const SetupInvalidNumPlayers = 244;
+    const SetupMalformed = 245;
     // ---------- SIGNUP ----------
     const SignupSuccess = 250;
     const SignupMissingParameter = 251;

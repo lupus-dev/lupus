@@ -6,13 +6,18 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-for ($i = 8; $i <= 18; $i++) {
-    $var = "s$i";
-    if ($game->num_players == $i)
-        $$var = "selected";
-    else
-        $$var = "";
-}
+$gen_info = $game->gen_info;
+
+$auto = ($gen_info["gen_mode"] == "auto") ? "checked" : "";
+$manual = ($gen_info["gen_mode"] == "manual") ? "checked" : "";
+
+$autoNumPlayers = $gen_info["auto"]["num_players"];
+$autoRoles = $gen_info["auto"]["roles"];
+
+$manualRoles = $gen_info["manual"]["roles"];
+
+$level = Level::getLevel($user->level);
+$aviableRoles = RoleDispenser::getAviableRoles($level->betaFeature);
 ?>
 <div class="col-md-6">
     <div class="short-name">
@@ -24,24 +29,72 @@ for ($i = 8; $i <= 18; $i++) {
         <input class="form-control" id="game-desc" onchange="checkGameDescr()" value="<?= $game->game_descr ?>">
         <span class="glyphicon glyphicon-ok form-control-feedback" id="game-desc-icon"></span>
     </div>
-    <div class="short-name">
-        <label for="game-num-player">Numero di giocatori</label>
-        <select class="form-control" id="game-num-player">
-            <option value="8" <?= $s8 ?>>8</option>
-            <option value="9" <?= $s9 ?>>9</option>
-            <option value="10" <?= $s10 ?>>10</option>
-            <option value="11" <?= $s11 ?>>11</option>
-            <option value="12" <?= $s12 ?>>12</option>
-            <option value="13" <?= $s13 ?>>13</option>
-            <option value="14" <?= $s14 ?>>14</option>
-            <option value="15" <?= $s15 ?>>15</option>
-            <option value="16" <?= $s16 ?>>16</option>
-            <option value="17" <?= $s17 ?>>17</option>
-            <option value="18" <?= $s18 ?>>18</option>
-        </select>
-    </div>    
+    <div class="radio">
+        <label>
+            <input type="radio" name="gen_mode" id="gen-auto" value="auto" <?= $auto ?>>
+            Generazione automatica dei ruoli
+        </label>
+    </div>
+    <div class="radio">
+        <label>
+            <input type="radio" name="gen_mode" id="gen-manual" value="manual" <?= $manual ?>>
+            Generazione manuale dei ruoli
+        </label>
+    </div>
+    <div id="gen-auto-form">
+        <div class="short-name">
+            <label for="gen-auto-numplayers">Numero di giocatori</label>
+            <select class="form-control" id="auto-num-players">
+                <?php
+                for ($i = RoleDispenser::MinPlayers; $i <= 18; $i++)
+                    echo "<option value='$i' " . (($i == $autoNumPlayers) ? "selected" : "") . ">$i</option>";
+                ?>
+            </select>
+        </div>
+        <div class="short-name">
+            <label>Ruoli utilizzabili</label>
+            <table class="table table-condensed first-col-small">
+                <thead>
+                    <tr><th></th><th>Ruolo</th></tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($aviableRoles as $role): ?>
+                        <tr>
+                            <td>
+                                <input type="checkbox" data-role="<?= $role ?>" class="auto-role"
+                                <?= in_array($role, $autoRoles) ? "checked" : "" ?>
+                                       <?= ($role == "Lupo") ? "disabled" : "" ?>>
+                            </td>
+                            <td><?= $role ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>        
+    </div>
+    <div id="gen-manual-form">
+        <div class="short-name">
+            <table class="table table-condensed">
+                <thead>
+                    <tr><th>Ruolo</th><th>Frequenza</th></tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($aviableRoles as $role): ?>
+                        <tr>
+                            <td><?= $role ?></td>
+                            <td>
+                                <input type="number" data-role="<?= $role ?>" class="form-control input-sm manual-role"
+                                       value="<?= (isset($manualRoles[$role])) ? $manualRoles[$role] : "0" ?>">
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>   
+    </div>
+
     <br>
-    <button class="btn btn-info" id="save" onclick="saveGame()">Salva</button>
+    <button class="btn btn-info" id="save" onclick="saveGame(false)">Salva</button>
     <button class="btn btn-success pull-right" id="start" onclick="startGame()">Avvia</button>
 </div>
 <script>

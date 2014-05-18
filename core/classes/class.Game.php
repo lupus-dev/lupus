@@ -161,11 +161,11 @@ class Game {
      * @param string $room Nome della stanza
      * @param string $name Nome della partita
      * @param string $descr Descrizione della partita
-     * @param int $num_players Numero di giocatori nella partita
+     * @param \User $user Utente che deve creare la partita
      * @return boolean|\Game Ritorna la partita creata. False se si verifica un
      * errore
      */
-    public static function createGame($room, $name, $descr, $num_players) {
+    public static function createGame($room, $name, $descr, $user) {
         $room = Room::fromRoomName($room);
         if (!$room) {
             logEvent("Stanza non trovata. room_name=$room", LogLevel::Warning);
@@ -178,17 +178,44 @@ class Game {
         }
         $name = Database::escape($name);
         $descr = Database::escape($descr);
-        $num_players = intval($num_players);
 
         $id_room = $room->id_room;
 
+        $gen_info = array(
+            "gen_mode" => "auto",
+            "auto" => array(
+                "num_players" => 8,
+                "roles" => array(
+                    Lupo::$name, Contadino::$name, Veggente::$name,
+                    Medium::$name, Paparazzo::$name, Guardia::$name,
+                    Criceto::$name
+                )
+            ),
+            "manual" => array(
+                "roles" => array(
+                    Lupo::$name => 2,
+                    Contadino::$name => 1,
+                    Veggente::$name => 1,
+                    Medium::$name => 1,
+                    Paparazzo::$name => 1,
+                    Guardia::$name => 1,
+                    Criceto::$name => 1
+                )
+            )
+        );
+        $gen_info = Database::escape(json_encode($gen_info));
+
         $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,num_players,gen_info) VALUE "
-                . "($id_room,0,0,'$name','$descr',$num_players,'{}')";
+                . "($id_room,0,0,'$name','$descr',8,'$gen_info')";
 
         $res = Database::query($query);
         if (!$res)
             return false;
-        return Game::fromRoomGameName($room->room_name, $name);
+        
+        $game = Game::fromRoomGameName($room->room_name, $name);
+        $game->joinGame($user);
+        
+        return $game;
     }
 
     /**
@@ -200,7 +227,7 @@ class Game {
     public static function getOpenGames($user) {
         $username = $user->username;
         $notStarted = GameStatus::NotStarted;
-
+        // @todo Togliere %
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,players FROM game "
                 . "WHERE status=$notStarted AND players NOT LIKE '%\"$username\"%' "
                 . "AND (SELECT private FROM room WHERE room.id_room=game.id_room)=0 "
@@ -371,8 +398,8 @@ class Game {
      */
     public function editGame($game_descr, $gen_info) {
         $num_players = intval($gen_info["gen_mode"] == "auto" ?
-                $gen_info["auto"]["num_players"] :
-                array_sum($gen_info["manual"]["roles"]));
+                        $gen_info["auto"]["num_players"] :
+                        array_sum($gen_info["manual"]["roles"]));
         $game_descr = Database::escape($game_descr);
         $gen_info = Database::escape(json_encode($gen_info));
         $id_game = $this->id_game;

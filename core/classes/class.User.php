@@ -160,7 +160,7 @@ class User {
         $username = Database::escape($this->username);
         $notStarted = GameStatus::NotStarted;
         $running = GameStatus::Running;
-
+        // @todo Togliere %
         // ottiene il game_name e la room_name
         $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
                 . "FROM game WHERE (status=$notStarted OR status=$running) AND players LIKE '%\"$username\"%'";
@@ -201,7 +201,7 @@ class User {
     public function getEndedGame() {
         $username = Database::escape($this->username);
         $winy = GameStatus::Winy;
-
+        // @todo Togliere %
         // ottiene il game_name e la room_name
         $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
                 . "FROM game WHERE status>=$winy AND players LIKE '%\"$username\"%'";

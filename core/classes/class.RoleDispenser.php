@@ -81,7 +81,7 @@ class RoleDispenser {
      * @return boolean|array Ritorna un vettore di string con i nomi dei ruoli 
      * utilizzabili. False se si verifica un errore
      */
-    private static function getAviableRoles($debugEnabled) {
+    public static function getAviableRoles($debugEnabled) {
         // i ruoli sono nella cartella /core/classes/roles
         $dir = __DIR__ . "/roles/";
 

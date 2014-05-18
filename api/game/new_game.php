@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Lupus in Tabula
  * ...un progetto di Edoardo Morassutto
  * Contributors:
@@ -14,60 +14,55 @@ if (!$login)
     response(401, array(
         "error" => "Utente non connesso",
         "code" => APIStatus::NotLoggedIn));
-if (!isset($_GET["descr"]) || !isset($_GET["num_players"]))
-    response(400, array(
-        "error" => "Specificare una descrizione e il numero di giocatori",
-        "code" => APIStatus::NewGameMissingParameter));
 
 $room_name = $apiMatches[1];
 $game_name = $apiMatches[2];
 
-$game_descr = $_GET["descr"];
-$num_players = intval($_GET["num_players"]);
+if (!isset($_GET["descr"]))
+    response(400, array(
+        "error" => "Specificare descr in GET",
+        "code" => APIStatus::NewGameMissingParameter));
 
-if (!preg_match("/^$descr_name$/", $game_descr) || intval($num_players) == 0)
-    response (400, array(
-        "error" => "I parametri game_name e game_descr non sono in un formato corretto",
+$game_descr = $_GET["descr"];
+
+if (!preg_match("/^$descr_name$/", $game_descr))
+    response(400, array(
+        "error" => "Il parametro descr non è in un formato corretto",
         "code" => APIStatus::NewGameMalformed
     ));
 
 $room = Room::fromRoomName($room_name);
 if (!$room)
-    response (404, array(
+    response(404, array(
         "error" => "La stanza cercata non esiste",
         "code" => APIStatus::RoomNotFound));
 if ($room->id_admin != $user->id_user)
-    response (401, array(
+    response(401, array(
         "error" => "La stanza non appartiene all'utente",
         "code" => APIStatus::NewGameAccessDenied));
 
 if (!$room->isAllTerminated())
-    response (401, array(
+    response(401, array(
         "error" => "C'è ancora una partita in corso in questa stanza",
         "code" => APIStatus::NewGameAlreadyRunning));
 
 $existGame = Game::fromRoomGameName($room_name, $game_name);
 if ($existGame)
-    response (409, array(
+    response(409, array(
         "error" => "Esiste già una partita in questa stanza di nome '$game_name'",
         "code" => APIStatus::NewGameAlreadyExists));
 
-if ($num_players < RoleDispenser::MinPlayers)
-    response (400, array(
-        "error" => "Il numero di giocatori è insufficiente",
-        "code" => APIStatus::NewGameNotEnouthPlayers));
-
 $level = Level::getLevel($user->level);
 if (count($user->getActiveGame()) + 1 > $level->aviableGame)
-    response (401, array(        
+    response(401, array(
         "error" => "L'utente ha finito le partite di cui può far parte",
         "code" => APIStatus::JoinFailedGamesEnded
     ));
 
-$res = Game::createGame($room_name, $game_name, $game_descr, $num_players);
+$res = Game::createGame($room_name, $game_name, $game_descr, $user);
 
 if (!$res)
-    response (500, array(
+    response(500, array(
         "error" => "Non è stato possibile creare la partita",
         "code" => APIStatus::FatalError));
 

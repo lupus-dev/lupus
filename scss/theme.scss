@@ -166,3 +166,9 @@ body {
 	h1 { font-size: 25px; }
 	.news { font-family: cursive; }
 }
+
+table.first-col-small {
+	tr td:first-child {
+		width: 20px;
+	}
+}

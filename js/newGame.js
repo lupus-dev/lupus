@@ -86,11 +86,9 @@ function newGame() {
 		return;
 	var game_name = $("#game-name").val();
 	var game_descr = $("#game-desc").val();
-	var num_players = $("#game-num-player").val();
 
 	data = {
 		descr: game_descr,
-		num_players: num_players
 	};
 	if ($("#private").length > 0 && $("#private").prop("checked"))
 		data.private = true;

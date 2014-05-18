@@ -22,16 +22,48 @@ function checkGameDescr() {
 	}
 }
 
+function getAutoRoles() {
+	var auto_roles = $(".auto-role:checked");
+	var res = [];
+	auto_roles.each(function(i,e) {
+		var input = $(e);
+		res.push(input.data("role"));
+	});
+	return res;
+}
+function getManualRoles() {
+	var manual_roles = $(".manual-role");
+	var res = {};
+	manual_roles.each(function(i,e) {
+		var input = $(e);
+		res[input.data("role")] = input.val();
+	});		
+	return res;
+}
+
 function saveGame(start) {
 	var game_descr = $("#game-desc").val();
-	var num_players = $("#game-num-player").val();
+	var auto_roles = getAutoRoles();
+	var manual_roles = getManualRoles();
+	console.log(auto_roles);
+	
+	var gen_info = {
+		gen_mode: $("input[name=gen_mode]:checked").val(),
+		auto: {
+			num_players: $("#auto-num-players").val(),
+			roles: auto_roles
+		},
+		manual: {
+			roles: manual_roles
+		}
+	};
 	$.ajax({
 		url: APIdir + "/game/"+room_name+"/"+game_name+"/setup",
 		type: 'GET',
 		dataType: 'json',
 		data: {
 			descr: game_descr,
-			num_players: num_players
+			gen_info: gen_info
 		},
 		success: function(data) {
 			console.log(data);
@@ -61,3 +93,20 @@ function ajaxStart() {
 		}
 	});
 }
+
+$(function(){
+	var changeFunc = function() {
+		if ($("input[name=gen_mode]:checked").val() == "auto") {
+			$("#gen-auto-form").show();
+			$("#gen-manual-form").hide();
+		} else {
+			$("#gen-auto-form").hide();
+			$("#gen-manual-form").show();
+		}			
+	};
+	
+	$("#gen-auto").change(changeFunc);
+	$("#gen-manual").change(changeFunc);
+	
+	changeFunc();
+});
