@@ -64,7 +64,7 @@ class Level {
         $levels[7] = new Level("Dottore", 10, 10, 15, true);
         $levels[8] = new Level("Generale", 100, 10, 50, true);
         $levels[9] = new Level("Guru", 100, 100, 100, true);
-        $levels[10] = new Level("GameMaster", 100, 100, 1000, true);
+        $levels[10] = new Level("GameMaster", 1000, 1000, 1000, true);
         return $levels;
     }
     /**

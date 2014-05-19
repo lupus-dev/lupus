@@ -162,7 +162,7 @@ body {
 	border: 1px $border-color solid;
 	border-radius: $border-radius;
 	overflow-y: auto;
-	
+
 	h1 { font-size: 25px; }
 	.news { font-family: cursive; }
 }
@@ -171,4 +171,72 @@ table.first-col-small {
 	tr td:first-child {
 		width: 20px;
 	}
+}
+
+$background-neofita:		grey;
+$background-principiante:	#aaa;
+$background-gamer:			#c44;
+$background-esperto:		#d60;
+$background-maestro:		#7bb;
+$background-progamer:		#0195bd;
+$background-dottore:		#dbdac7;
+$background-generale:		#1ece77;
+$background-guru:			gold;
+$background-gamemaster:		gold;
+
+.label-neofita {		background: $background-neofita; }
+.label-principiante {	background: $background-principiante; }
+.label-gamer {			background: $background-gamer; }
+.label-esperto {		background: $background-esperto; }
+.label-maestro {		background: $background-maestro; }
+.label-progamer {		background: $background-progamer; }
+.label-dottore {		background: $background-dottore; color: #e9945e; }
+.label-generale {		background: $background-generale; }
+.label-guru {			background: $background-guru; color: #333; }
+.label-gamemaster { 
+	/* se le animazioni non sono supportate */
+	background: $background-gamemaster; 
+	/* Chrome, Safari, Opera */
+	-webkit-animation-name: gamemaster;
+	-webkit-animation-duration: 15s;
+	-webkit-animation-timing-function: linear;
+	-webkit-animation-delay: 2s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-direction: normal;
+	-webkit-animation-play-state: running;
+	/* STANDARD */
+	animation-name: gamemaster;
+	animation-duration: 15s;
+	animation-timing-function: linear;
+	animation-delay: 2s;
+	animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-play-state: running;
+}
+
+@keyframes gamemaster {
+	0%  { background: $background-gamemaster; }
+	10% { background: $background-neofita; }
+	20% { background: $background-principiante; }
+	30% { background: $background-gamer; }
+	40% { background: $background-esperto; }
+	50% { background: $background-maestro; }
+	60% { background: $background-progamer; }
+	70% { background: $background-dottore; }
+	80% { background: $background-generale; }
+	90% { background: $background-guru; }
+	100% { background: $background-gamemaster; }
+}
+@-webkit-keyframes gamemaster {
+	0%  { background: $background-gamemaster; }
+	10% { background: $background-neofita; }
+	20% { background: $background-principiante; }
+	30% { background: $background-gamer; }
+	40% { background: $background-esperto; }
+	50% { background: $background-maestro; }
+	60% { background: $background-progamer; }
+	70% { background: $background-dottore; }
+	80% { background: $background-generale; }
+	90% { background: $background-guru; }
+	100% { background: $background-gamemaster; }
 }

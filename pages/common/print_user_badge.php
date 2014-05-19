@@ -14,6 +14,6 @@
 function printUserBadge($user) {
     $level = Level::getLevel($user->level)->name;
     ?>
-<span class="label label-default"><?= $level ?></span>
+<span class="label label-<?= strtolower($level) ?>"><?= $level ?></span>
     <?php
 }
