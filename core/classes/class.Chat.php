@@ -188,7 +188,7 @@ class Chat {
         $id_game = $game->id_game;
         $id_user = $user->id_user;
 
-        $query = "SELECT chat_info FROM role WHERE id_game=$id_game AND id_user=$id_user";
+        $query = "SELECT chat_info FROM player WHERE id_game=$id_game AND id_user=$id_user";
         $res = Database::query($query);
         if (!$res)
             return false;
@@ -212,7 +212,7 @@ class Chat {
         
         $data = Database::escape(json_encode($data));
 
-        $query = "UPDATE role SET chat_info='$data' WHERE id_game=$id_game AND id_user=$id_user";
+        $query = "UPDATE player SET chat_info='$data' WHERE id_game=$id_game AND id_user=$id_user";
         $res = Database::query($query);
         if (!$res)
             return false;

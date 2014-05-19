@@ -30,7 +30,7 @@ function pollGameStatus() {
 }
 var pollSuccess = function() {};
 
-if (!pollFreq)
+if (typeof pollFreq == "undefined")
 	pollFreq = 5000;
 
 setInterval(pollGameStatus, pollFreq);

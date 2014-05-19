@@ -282,7 +282,7 @@ abstract class Role {
         $id_game = $this->engine->game->id_game;
         $id_user = $this->user->id_user;
 
-        $query = "SELECT data FROM role WHERE id_game=$id_game AND id_user=$id_user";
+        $query = "SELECT data FROM player WHERE id_game=$id_game AND id_user=$id_user";
         $res = Database::query($query);
         if (!$res || count($res) != 1)
             return false;
@@ -307,7 +307,7 @@ abstract class Role {
         $id_game = $this->engine->game->id_game;
         $id_user = $this->user->id_user;
 
-        $query = "UPDATE role SET data='$json' WHERE id_game=$id_game AND id_user=$id_user";
+        $query = "UPDATE player SET data='$json' WHERE id_game=$id_game AND id_user=$id_user";
         $res = Database::query($query);
         if (!$res)
             return false;
@@ -357,7 +357,7 @@ abstract class Role {
         $id_user = $user->id_user;
         $status = RoleStatus::Dead;
 
-        $query = "UPDATE role SET status=$status WHERE id_game=$id_game AND id_user=$id_user";
+        $query = "UPDATE player SET status=$status WHERE id_game=$id_game AND id_user=$id_user";
         $res = Database::query($query);
         if (!$res)
             return false;
@@ -596,7 +596,7 @@ abstract class Role {
         $id_user = $user->id_user;
         $id_game = $game->id_game;
 
-        $query = "SELECT role FROM role WHERE id_user=$id_user AND id_game=$id_game";
+        $query = "SELECT role FROM player WHERE id_user=$id_user AND id_game=$id_game";
         $res = Database::query($query);
 
         if (!$res || count($res) != 1) {
@@ -638,7 +638,7 @@ abstract class Role {
     public static function getRoleStatus($game, $id_user) {
         $id_game = $game->id_game;
 
-        $query = "SELECT status FROM role WHERE id_game=$id_game AND id_user=$id_user";
+        $query = "SELECT status FROM player WHERE id_game=$id_game AND id_user=$id_user";
         $res = Database::query($query);
         if (!$res || count($res) != 1) {
             logEvent("L'utente $id_user non è nella partita $id_game", LogLevel::Warning);

@@ -212,9 +212,6 @@ class Game {
         if (!$res)
             return false;
         
-        $game = Game::fromRoomGameName($room->room_name, $name);
-        $game->joinGame($user);
-        
         return $game;
     }
 
@@ -229,9 +226,9 @@ class Game {
         $notStarted = GameStatus::NotStarted;
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game "
                 . "WHERE status=$notStarted "
-                . "AND (SELECT COUNT(*) FROM role WHERE role.id_game=game.id_game AND id_user=$id_user)=0 "
+                . "AND (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=$id_user)=0 "
                 . "AND (SELECT private FROM room WHERE room.id_room=game.id_room)=0 "
-                . "ORDER BY (SELECT COUNT(*) FROM role WHERE role.id_game=game.id_game) DESC "
+                . "ORDER BY (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game) DESC "
                 . "LIMIT 100";
 
         $res = Database::query($query);
@@ -252,7 +249,7 @@ class Game {
     public function getPlayers() {
         $id_game = $this->id_game;
 
-        $query = "SELECT id_user FROM role WHERE id_game=$id_game";
+        $query = "SELECT id_user FROM player WHERE id_game=$id_game";
         $res = Database::query($query);
 
         $users = array();
@@ -272,7 +269,7 @@ class Game {
     public function getNumPlayers() {
         $id_game = $this->id_game;
 
-        $query = "SELECT COUNT(*) AS num_players FROM role WHERE id_game=$id_game";
+        $query = "SELECT COUNT(*) AS num_players FROM player WHERE id_game=$id_game";
         $res = Database::query($query);
 
         return $res[0]["num_players"];
@@ -343,7 +340,7 @@ class Game {
         $id_user = $user->id_user;
         $alive = RoleStatus::Alive;
 
-        $query = "INSERT INTO role (id_game,id_user,role,status) VALUES "
+        $query = "INSERT INTO player (id_game,id_user,role,status) VALUES "
                 . "($id_game,$id_user,'unknown',$alive)";
 
         $res = Database::query($query);
@@ -363,6 +360,9 @@ class Game {
         logEvent("La partita {$this->game_name} è iniziata", LogLevel::Debug);
         Event::insertGameStart($this);
         $this->status(GameStatus::NotStarted);
+        $room = Room::fromIdRoom($this->id_room);
+        $admin = User::fromIdUser($room->id_admin);
+        $this->joinGame($admin);
         return true;
     }
 
@@ -423,7 +423,7 @@ class Game {
         $id_game = $this->id_game;
         $alive = RoleStatus::Alive;
 
-        $query = "SELECT id_user FROM role WHERE id_game=$id_game AND status=$alive";
+        $query = "SELECT id_user FROM player WHERE id_game=$id_game AND status=$alive";
         $res = Database::query($query);
         if (!$res)
             return false;
@@ -444,7 +444,7 @@ class Game {
         $id_game = $this->id_game;
         $dead = RoleStatus::Dead;
 
-        $query = "SELECT id_user FROM role WHERE id_game=$id_game AND status=$dead";
+        $query = "SELECT id_user FROM player WHERE id_game=$id_game AND status=$dead";
         $res = Database::query($query);
         if (!$res)
             return false;

@@ -73,7 +73,7 @@ class Lupo extends Role {
         
         $query = "SELECT id_user,vote FROM vote WHERE "
                 . "id_game=$id_game AND day=$day AND "
-                . "(SELECT role FROM role WHERE vote.id_user=role.id_user AND role.id_game=$id_game)='$role_name' "
+                . "(SELECT role FROM player WHERE vote.id_user=player.id_user AND player.id_game=$id_game)='$role_name' "
                 . "ORDER BY id_vote DESC";
         $res = Database::query($query);
         if (!$res)

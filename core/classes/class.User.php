@@ -163,7 +163,7 @@ class User {
         // ottiene il game_name e la room_name
         $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
                 . "FROM game WHERE (status=$notStarted OR status=$running) AND "
-                . "(SELECT COUNT(*) FROM role WHERE role.id_game=game.id_game AND id_user=$id_user)=1";
+                . "(SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=$id_user)=1";
         $res = Database::query($query);
 
         $games = array();
@@ -204,7 +204,7 @@ class User {
         // ottiene il game_name e la room_name
         $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
                 . "FROM game WHERE status>=$winy AND "
-                . "(SELECT COUNT(*) FROM role WHERE role.id_game=game.id_game AND id_user=$id_user)=1";
+                . "(SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=$id_user)=1";
         $res = Database::query($query);
 
         $games = array();

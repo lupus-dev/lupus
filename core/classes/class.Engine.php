@@ -161,7 +161,7 @@ class Engine {
     private function getAllRoles() {
         $id_game = $this->game->id_game;
         // query unica per estrarre tutti i ruoli
-        $query = "SELECT id_user,role FROM role WHERE id_game=$id_game";
+        $query = "SELECT id_user,role FROM player WHERE id_game=$id_game";
         $res = Database::query($query);
         if (!$res)
             return false;
@@ -317,7 +317,7 @@ class Engine {
         $id_game = $this->game->id_game;
         $alive = RoleStatus::Alive;
 
-        $query = "SELECT COUNT(*) AS alive FROM role WHERE id_game=$id_game AND status=$alive";
+        $query = "SELECT COUNT(*) AS alive FROM player WHERE id_game=$id_game AND status=$alive";
         $res = Database::query($query);
         if (!$res || count($res) != 1)
             return false;

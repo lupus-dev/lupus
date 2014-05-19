@@ -227,7 +227,7 @@ class RoleDispenser {
         }
 
         /*
-         * UPDATE role SET role = CASE id_user
+         * UPDATE player SET role = CASE id_user
          *      WHEN 102 THEN 'Lupo'
          *      WHEN 105 THEN 'Contadino'
          *      WHEN 108 THEN 'Lupo'
@@ -235,7 +235,7 @@ class RoleDispenser {
          * WHERE id_game = 5
          */
 
-        $query = "UPDATE role SET role=CASE id_user ";
+        $query = "UPDATE player SET role=CASE id_user ";
         for ($i = 0; $i < count($roles); $i++) {
             $id_user = User::fromUsername($usernames[$i])->id_user;
             $role = $roles[$i]::$role_name;
