@@ -8,6 +8,9 @@
 var path = "/lupus";
 var APIdir = path + "/api";
 
+var errorCount = 0;
+var lastError = 0;
+
 function logout() {
 	$.ajax({
 		url: APIdir+"/logout",
@@ -31,11 +34,21 @@ function isValidDescr(descr) {
 	return regex.test(descr);
 }
 function showError(message) {
-	var div = $("<div>").addClass("alert").addClass("alert-danger").addClass("alert-dismissable");
+	var div = $("<div>")			
+			.addClass("alert")
+			.addClass("alert-danger")
+			.addClass("alert-dismissable")
+			.attr("id", "error-"+(errorCount++));
 	div.append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>');
 	div.append(message.error);
 	$("nav.navbar").after(div);
+	setTimeout(removeError, 2000);
 }
 function getErrorMessage(jqError) {
 	return JSON.parse(jqError.responseText);
+}
+function removeError() {
+	$("#error-"+(lastError++)).fadeTo(500, 0).slideUp(500, function(){
+		$(this).remove();	
+});
 }
