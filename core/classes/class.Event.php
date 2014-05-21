@@ -197,6 +197,23 @@ class Event {
     }
 
     /**
+     * Inserisce l'evento della risurrezione di un utente da parte di un becchino
+     * @param \Game $game Partita in cui salvare l'evento
+     * @param \User $becchino Becchino che ha risorto l'utente
+     * @param \User $dead Utente risorto
+     * @return boolean|\Event Evento creato. False se si verifica un errore
+     */
+    public static function insertBecchinoAction($game, $becchino, $dead) {
+        $data = array(
+            "becchino" => $becchino->username,
+            "dead" => $dead->username
+        );
+        
+        return Event::insertEvent($game, EventCode::BecchinoAction, $data);
+    }
+
+
+    /**
      * Inserisce un evento nel database
      * @param \Game $game Partita in cui inserire l'evento
      * @param \EventCode $event_code Codice dell'evento da inserire
@@ -245,6 +262,8 @@ class Event {
                 return Event::getNewsFromVeggenteAction($event, $user);
             case EventCode::ParapazzoAction:
                 return Event::getNewsFromPaparazzoAction($event, $user);
+            case EventCode::BecchinoAction:
+                return Event::getNewsFromBecchinoAction($event, $user);
             default:
                 return false;
         }
@@ -386,4 +405,30 @@ class Event {
         );
     }
 
+    /**
+     * Formatta la resurrezione di un becchino
+     * @param \Event $event Evento da formattare
+     * @param \User $user Utente che dovrebbe vedere l'evento
+     * @return array|boolean Ritorna le informazioni della resurrezione. False se non la può
+     * vedere
+     */
+    private static function getNewsFromBecchinoAction($event, $user) {
+        $becchino = $event->event_data["becchino"];
+        $dead = $event->event_data["dead"];
+        
+        if ($becchino == $user->username)
+            $news = "Hai resuscitato $dead";
+        else {
+            $game = Game::fromIdGame($event->id_game);
+            if ($game->status >= GameStatus::Winy)
+                $news = "Il giocatore $becchino ha resuscitato $dead";
+            else
+                $news = "Miracolo! Il giocatore $dead è tornato in vita!";
+        }
+        
+        return array(
+            "day" => $event->day,
+            "news" => $news
+        );
+    }
 }

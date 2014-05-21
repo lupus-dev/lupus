@@ -161,11 +161,10 @@ class Game {
      * @param string $room Nome della stanza
      * @param string $name Nome della partita
      * @param string $descr Descrizione della partita
-     * @param \User $user Utente che deve creare la partita
      * @return boolean|\Game Ritorna la partita creata. False se si verifica un
      * errore
      */
-    public static function createGame($room, $name, $descr, $user) {
+    public static function createGame($room, $name, $descr) {
         $room = Room::fromRoomName($room);
         if (!$room) {
             logEvent("Stanza non trovata. room_name=$room", LogLevel::Warning);
@@ -211,7 +210,12 @@ class Game {
         $res = Database::query($query);
         if (!$res)
             return false;
-        
+        $id_game = Database::$mysqli->insert_id;
+        $game = Game::fromIdGame($id_game);
+        if (!$game) {
+            logEvent("Partita creata ma non trovata...", LogLevel::Warning);
+            return false;
+        }
         return $game;
     }
 

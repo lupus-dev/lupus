@@ -31,6 +31,10 @@ class EventCode {
      * Il paparazzo ha guardato qualcuno 
      */
     const ParapazzoAction = 4;
+    /**
+     * Il becchino ha resuscitato qualcuno
+     */
+    const BecchinoAction = 5;
     
     /**
      * Costruttore privato

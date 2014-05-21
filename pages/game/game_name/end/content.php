@@ -15,6 +15,8 @@ if ($game_status < GameStatus::TermByAdmin) {
     $team = $game_status - GameStatus::Winy;
     if ($team != 99) {
         $winner = Team::fromTeamCode($team);
+        if (!$winner)
+            die ("La partita non ha uno stato valido...");
         $winner = $winner::$name;
     } else
         $winner = "Morte";
