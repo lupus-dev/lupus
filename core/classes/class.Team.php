@@ -68,7 +68,7 @@ abstract class Team {
         $roles = $this->engine->roles;
         $team_name = $this->getTeamName();
         $users = array();
-
+        
         foreach ($roles as $role_name => $role_users) {
             $team = $role_name::$team_name;
             if ($team == $team_name)
@@ -86,7 +86,6 @@ abstract class Team {
         $team = $this->getAllTeam();
         if (!$team)
             return false;
-
         $alive = array();
 
         foreach ($team as $id_user)
@@ -102,6 +101,24 @@ abstract class Team {
     public function getTeamName() {
         $class_name = get_class($this);
         return $class_name::$team_name;
+    }
+    
+    /**
+     * Ottiene una lista dei nomi delle classi dei ruoli che appartengono ad
+     * una squadra
+     * @param string $team_name Nome della squadra
+     * @return boolean|array False se si verifica un errore, un vettore dei
+     * nomi dei ruoli altrimenti
+     */
+    public static function getRoles($team_name) {
+        $roles = array();
+        // tutti i ruoli disponibili
+        $all_roles = RoleDispenser::getAviableRoles(true);
+        // cerca tra i ruoli quelli che appartengono ad una squadra
+        foreach ($all_roles as $role)
+            if ($role::$team_name == $team_name)
+                $roles[] = strtolower ($role);
+        return $roles;
     }
 
     /**

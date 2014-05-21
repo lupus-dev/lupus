@@ -388,6 +388,18 @@ abstract class Role {
     }
     
     /**
+     * Rimuove la visita di un personaggio
+     * @param \User $visited Utente già visitato
+     */
+    protected function unvisit($visited) {
+        if (!isset($this->engine->visited[$visited->id_user]))
+            return;
+        $this->engine->visited[$visited->id_user] = 
+                array_diff($this->engine->visited[$visited->id_user], array($this->user->id_user));
+    }
+
+
+    /**
      * Ottiene la lista degli utenti che hanno visitato un utente
      * @param \User $user Utente che ha subito le visite
      */

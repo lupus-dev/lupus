@@ -11,7 +11,7 @@
  * Classe che rappresenta il ruolo Lupo
  */
 class Lupo extends Role {
-    
+
     public static $role_name = "lupo";
     public static $name = "Lupo";
     public static $debug = false;
@@ -21,8 +21,11 @@ class Lupo extends Role {
     public static $mana = Mana::Bad;
     public static $chat_groups = array(ChatGroup::Game, ChatGroup::Lupi);
     // i lupi non vengono mai scelti nella generazione
-    public static $gen_probability = 0; 
+    public static $gen_probability = 0;
     public static $gen_number = 0;
+
+    // memorizza il giocatore che deve essere ucciso. Evita una ricomputazione
+    protected $voted = null;
 
     public function __construct($user, $game) {
         parent::__construct($user, $game);
@@ -33,7 +36,7 @@ class Lupo extends Role {
      * false. Altrimenti ritorna il form per votare
      * @return boolean|string
      */
-    public function needVoteNight() {        
+    public function needVoteNight() {
         // un lupo morto non vota
         if ($this->roleStatus() == RoleStatus::Dead)
             return false;
@@ -43,14 +46,14 @@ class Lupo extends Role {
             $alive = $this->engine->game->getAlive();
             $votable = array();
             foreach ($alive as $user)
-                if ($this->getRole($user, $this->engine->game) != Lupo::$role_name) 
+                if ($this->getRole($user, $this->engine->game) != Lupo::$role_name)
                     $votable[] = $user->username;
             $pre = "<p>Vota chi sbranare!</p>";
             $votes = $this->getVoteLupus();
             if ($votes) {
                 $pre .= "<p>Gli altri lupi hanno votato:</p><ul>";
                 foreach ($votes as $vote)
-                    $pre .= "<li>" . User::fromIdUser ($vote["vote"])->username;
+                    $pre .= "<li>" . User::fromIdUser($vote["vote"])->username;
                 $pre .= "</ul>";
             }
             return array(
@@ -69,18 +72,25 @@ class Lupo extends Role {
     private function getVoteLupus() {
         $id_game = $this->engine->game->id_game;
         $day = $this->engine->game->day;
-        $role_name = Lupo::$role_name;
         
+        $roles = Team::getRoles(RoleTeam::Antagonists);
+        for ($i = 0; $i < count($roles); $i++)
+            $roles[$i] = "'" . strtolower ($roles[$i]) . "'";
+        
+        // unisce i ruoli per essere usati nella query
+        $roles = implode(",", $roles);
+        
+        // cerca tutti i voti della parita e nel giorno che appartengono ai lupi
         $query = "SELECT id_user,vote FROM vote WHERE "
                 . "id_game=$id_game AND day=$day AND "
-                . "(SELECT role FROM player WHERE vote.id_user=player.id_user AND player.id_game=$id_game)='$role_name' "
+                . "(SELECT role FROM player WHERE vote.id_user=player.id_user AND player.id_game=$id_game) IN ($roles) "
                 . "ORDER BY id_vote DESC";
         $res = Database::query($query);
         if (!$res)
             return false;
         return $res;
     }
-    
+
     /**
      * Esegue l'azione associata ai lupi:
      * <ol>
@@ -103,42 +113,43 @@ class Lupo extends Role {
         // terminata
         if ($votes[0]["id_user"] != $this->user->id_user)
             return true;
-        
+
         logEvent("L'utente {$this->user->username} è stato scelto per sbranare", LogLevel::Debug);
-        
+
         $candidates = array();
         foreach ($votes as $vote)
-            if (!isset ($candidates[$vote["vote"]]))
+            if (!isset($candidates[$vote["vote"]]))
                 $candidates[$vote["vote"]] = 1;
             else
-                $candidates[$vote["vote"]]++;
-        
+                $candidates[$vote["vote"]] ++;
+
         arsort($candidates);
-        
+
         $num_votes = reset($candidates);
         $id_dead = key($candidates);
         $dead = User::fromIdUser($id_dead);
+
+        // memorizzo l'utente votato
+        $this->voted = $dead;
         
         // se il giocatore votato non esiste, c'è un bug nella votazione...
         if (!$dead) {
             logEvent("E' stato votato un giocatore inesistente ($id_dead x$num_votes)", LogLevel::Warning);
             return false;
         }
-        
+
         // quorum
         if ($num_votes >= (int) (count($votes) * 0.5) + 1) {
             if ($this->kill($dead)) {
                 logEvent("Il giocatore {$dead->username} è stato sbranato", LogLevel::Debug);
                 Event::insertDeath($this->engine->game, $dead, "kill-lupo", $this->user->username);
-            }
-            else
+            } else
                 logEvent("Il giocatore {$dead->username} non è stato sbranato", LogLevel::Debug);
             // il lupo visita il giocatore sia se lo uccide, sia se non lo uccide
             $this->visit($dead);
-        }
-        else
+        } else
             logEvent("Non è stato raggiunto il quorum per l'uccisione dal lupo", LogLevel::Debug);
-        
+
         return true;
     }
 
@@ -163,4 +174,5 @@ class Lupo extends Role {
         $role = Role::getRole($user, $this->engine->game);
         return $role != Lupo::$role_name;
     }
+
 }

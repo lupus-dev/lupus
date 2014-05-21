@@ -30,7 +30,7 @@ class EventCode {
     /**
      * Il paparazzo ha guardato qualcuno 
      */
-    const ParapazzoAction = 4;
+    const PaparazzoAction = 4;
     /**
      * Il becchino ha resuscitato qualcuno
      */

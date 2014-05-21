@@ -193,7 +193,7 @@ class Event {
             "visitors" => $visitors
         );
 
-        return Event::insertEvent($game, EventCode::MediumAction, $data);
+        return Event::insertEvent($game, EventCode::PaparazzoAction, $data);
     }
 
     /**
@@ -260,7 +260,7 @@ class Event {
                 return Event::getNewsFromMediumAction($event, $user);
             case EventCode::VeggenteAction:
                 return Event::getNewsFromVeggenteAction($event, $user);
-            case EventCode::ParapazzoAction:
+            case EventCode::PaparazzoAction:
                 return Event::getNewsFromPaparazzoAction($event, $user);
             case EventCode::BecchinoAction:
                 return Event::getNewsFromBecchinoAction($event, $user);

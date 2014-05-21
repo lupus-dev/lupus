@@ -7,6 +7,9 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
+/**
+ * Classe che rappresenta il ruolo Becchino
+ */
 class Becchino extends Role {
 
     public static $role_name = "becchino";
