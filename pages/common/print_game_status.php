@@ -31,9 +31,11 @@ function printGameStatus($game, $room, $waiting) {
     } else if ($status >= GameStatus::Winy && $status < GameStatus::TermByAdmin) {
         $mex = "Finita";
         $color = "primary";
+        $waiting = false;
     } else if ($status >= GameStatus::TermByAdmin) {
         $mex = "Bloccata";
         $color = "danger";
+        $waiting = false;
     }
     ?>
     <?php if ($waiting): ?>
