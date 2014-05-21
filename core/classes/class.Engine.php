@@ -102,6 +102,11 @@ class Engine {
             logEvent("La partita non è in corso", LogLevel::Notice);
             return Engine::BadGameStatus;
         }
+        if ($gameStatus == GameStatus::NotStarted && $this->game->day != 0) {
+            logEvent("La partita non è ancora iniziata ma il giorno non è zero. Day={$this->game->day}", LogLevel::Error);
+            $this->game->status(GameStatus::TermByBug);
+            return Engine::BadGameStatus;
+        }
 
         if ($gameStatus == GameStatus::Running) {
             $roles = $this->getAllRoles();

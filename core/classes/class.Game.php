@@ -139,6 +139,17 @@ class Game {
      * @return array Vettore contenente le informazioni della partita
      */
     public static function makeResponse($game) {
+        $num_players = $game->num_players;
+        $registred_players = $game->getPlayers();
+        
+        // se la partita non è iniziata ma sono arrivati tutti gli utenti,
+        // allora cerca di far iniziare la partita
+        if ($game->status == GameStatus::NotStarted && $num_players == count($registred_players)) {
+            $engine = new Engine($game);
+            $engine->run();
+            $game = Game::fromIdGame($game->id_game);
+        }            
+        
         $room = Room::fromIdRoom($game->id_room);
         $res = array(
             "room_name" => $room->room_name,
@@ -150,8 +161,8 @@ class Game {
             ),
             "status" => (int) $game->status,
             "game_descr" => $game->game_descr,
-            "num_players" => $game->num_players,
-            "registred_players" => $game->getPlayers()
+            "num_players" => $num_players,
+            "registred_players" => $registred_players
         );
         return $res;
     }

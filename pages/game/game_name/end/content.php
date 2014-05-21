@@ -20,6 +20,19 @@ if ($game_status < GameStatus::TermByAdmin) {
         $winner = $winner::$name;
     } else
         $winner = "Morte";
+} else {
+    if ($game_status == GameStatus::TermByAdmin)
+        $message = "Partita terminata dall'amministartore";
+    else if ($game_status == GameStatus::TermBySolitude)
+        $message = "Partita terminata per solitudine";
+    else if ($game_status == GameStatus::TermByVote)
+        $message = "Partita terminata per votazione";
+    else if ($game_status == GameStatus::TermByBug)
+        $message = "Partita terminata a causa di un bug :(";
+    else if ($game_status == GameStatus::TermByGameMaster)
+        $message = "Partita terminata dal GameMaster";
+    else
+        $message = "Partita terminata male :(";
 }
 
 $alive = $game->getAlive();
@@ -32,9 +45,11 @@ $curr_day = -1;
 <div class="page-header">
     <h1><?= $game->game_descr ?> <small><?= $game->game_name ?></small></h1>
 </div>
-<h1>La partita si è conclusa</h1>
 <?php if (isset($winner)): ?>
+    <h1>La partita si è conclusa</h1>
     <h3>Ha vinto la fazione <span class="label label-info"><?= $winner ?></span></h3>
+<?php else: ?>
+    <h1><?= $message ?></h1>
 <?php endif; ?>
 <hr>
 <h2>Al termine della parita, i giocatori...</h2>
