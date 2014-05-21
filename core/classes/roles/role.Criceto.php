@@ -20,12 +20,8 @@ class Criceto extends Role {
     public static $gen_probability = 0.5;
     // i contadini non vengono generati in gruppo
     public static $gen_number = 1;
-    
-    /**
-     * Ritornerà l'HTML dello splash all'arrivo al villaggio
-     * @return string Stringa HTML da includere nella pagina
-     */
+
     public function splash() {
-        return "Sei un criceto...";
+        return "Sei un criceto";
     }
 }

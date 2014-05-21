@@ -5,10 +5,14 @@
  * Contributors:
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
+
+$engine = new Engine($game);
+$role = Role::fromUser($user, $engine);
+
 ?>
 <div class="col-sm-3 show-role">
     <div>Premi per il tuo ruolo</div>
-    <div>Il tuo ruolo: <?= Role::getRole($user, $game) ?></div>
+    <div><?= $role->splash() ?></div>
 </div>
 <div class="clearfix"></div>
 <div class="col-sm-6" class="vote">

@@ -71,12 +71,8 @@ class Guardia extends Role {
         return true;
     }
 
-    /**
-     * Ritornerà l'HTML dello splash all'arrivo al villaggio
-     * @return string Stringa HTML da includere nella pagina
-     */
     public function splash() {
-        return "Sei una guardia...";
+        return "Sei una guardia";
     }
 
     /**

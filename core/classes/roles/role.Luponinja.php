@@ -43,4 +43,8 @@ class Luponinja extends Lupo {
         return true;
     }
     
+    public function splash() {
+        // Muahahaah I lied!
+        return "Sei un lupo";
+    }
 }

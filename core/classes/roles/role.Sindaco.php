@@ -18,13 +18,9 @@ class Sindaco extends Role {
     public static $mana = Mana::Good;
     public static $gen_probability = 0.5;
     public static $gen_number = 1;
-    
-    /**
-     * Ritornerà l'HTML dello splash all'arrivo al villaggio
-     * @return string Stringa HTML da includere nella pagina
-     */
+
     public function splash() {
-        return "Sei un massone...";
+        return "Sei un sindaco";
     }
     /**
      * Verifica se il sindaco deve votare di giorno. Il sindaco viene anche 

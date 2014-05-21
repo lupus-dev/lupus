@@ -21,11 +21,7 @@ class Massone extends Role {
     // i massoni vengono generati a coppie
     public static $gen_number = 2;
     
-    /**
-     * Ritornerà l'HTML dello splash all'arrivo al villaggio
-     * @return string Stringa HTML da includere nella pagina
-     */
     public function splash() {
-        return "Sei un massone...";
+        return "Sei un massone";
     }
 }

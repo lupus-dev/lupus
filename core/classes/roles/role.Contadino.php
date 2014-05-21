@@ -24,12 +24,8 @@ class Contadino extends Role {
     // i contadini non vengono generati in gruppo
     public static $gen_number = 1;
     
-    /**
-     * Ritornerà l'HTML dello splash all'arrivo al villaggio
-     * @return string Stringa HTML da includere nella pagina
-     */
     public function splash() {
-        return "Sei un contadino...";
+        return "Sei un contadino";
     }
 
 }

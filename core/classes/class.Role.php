@@ -104,10 +104,9 @@ abstract class Role {
     }
 
     /**
-     * Questa funzione viene chiamata solo durante l'arrivo al villaggio. Mostra
-     * all'utente delle informazioni utili riguardo il ruolo.
-     * @return boolean|string False se non è necessario mostrare alcun messaggio.
-     * Altrimenti contiene una stringa HTML da includere nella pagina
+     * Questa funzione deve mostrare all'utente il proprio ruolo
+     * @return string Un messaggio testuale che verrà incluso nella pagina 
+     * nella zona per visualizzare il proprio ruolo
      */
     public abstract function splash();
 

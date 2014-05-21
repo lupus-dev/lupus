@@ -23,7 +23,7 @@ class Becchino extends Role {
     public static $gen_number = 1;
 
     public function splash() {
-        return "Sei un becchino...";
+        return "Sei un becchino";
     }
 
     /**

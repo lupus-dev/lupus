@@ -120,7 +120,7 @@ class Pastore extends Role {
     }
 
     public function splash() {
-        return "Sei un pastore...";
+        return "Sei un pastore";
     }
 
 }
