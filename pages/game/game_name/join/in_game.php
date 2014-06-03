@@ -13,7 +13,7 @@ $players = $game->getNumPlayers() . "/" . $game->num_players;
 <div class="page-header">
     <h1>La partita <small><?= $room_name ?>/<?= $game_name ?></small> non è pronta!</h1>
 </div>
-<h3>Attenti che arrivino tutti i giocatori</h3>
+<h3>Attendi che arrivino tutti i giocatori</h3>
 <h3>La pagina si aggiornerà automaticamente...</h3>
 <h4>Giocatori iscritti <span id="player-left"><?= $players ?></span></h4>
 <script>
