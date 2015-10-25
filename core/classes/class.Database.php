@@ -47,6 +47,7 @@ class Database {
         $result = Database::$mysqli->query($query);
         if (Database::$mysqli->errno) {
             logEvent("Query fallita: " . Database::$mysqli->error, LogLevel::Error);
+            logEvent("Query errata: " . $query, LogLevel::Error);
             return false;
         }
         if ($result === TRUE || $result === FALSE)
