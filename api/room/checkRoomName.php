@@ -30,7 +30,7 @@ if (!preg_match("/^$shortName$/", $room_name))
         "code" => APIStatus::CheckRoomNameMalformed
     ));
 
-$room = Room::fromRoomName($room_name);
+$room = Room::checkIfExists($room_name);
 if ($room)
     response(200, array(
         "status" => false,

@@ -17,3 +17,5 @@ echo "<pre>";
 Config::$log_level = LogLevel::Verbose;
 // ^^^^^^^ 
 
+$sql = "SELECT 1 FROM game JOIN room ON game.id_room=room.id_room WHERE room.room_name='room' AND game.game_name='game';";
+print_r(Database::query($sql));

@@ -31,14 +31,14 @@ if (!preg_match("/^$shortName$/", $room_name) || !preg_match("/^$shortName$/", $
         "code" => APIStatus::CheckGameNameMalformed
     ));
 
-$room = Room::fromRoomName($room_name);
+$room = Room::checkIfExists($room_name);
 if (!$room)
     response(200, array(
         "status" => false,
         "code" => APIStatus::CheckGameNameNotFound
     ));
 
-$game = Game::fromRoomGameName($room_name, $game_name);
+$game = Game::checkIfExists($room_name, $game_name);
 if ($game) 
     response (200, array(
         "status" => false,

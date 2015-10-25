@@ -134,6 +134,23 @@ class Game {
     }
 
     /**
+     * Controlla se una partita esiste
+     * @param \string $room Nome breve della stanza
+     * @param \string $game Nome breve della partita
+     * @return \boolean True se la partita esiste, False altrimenti
+     */
+    public static function checkIfExists($room, $game) {
+        $room = Database::escape($room);
+        $game = Database::escape($game);
+
+        $query = "SELECT 1 FROM game JOIN room ON game.id_room=room.id_room WHERE room.room_name='$room' AND game.game_name='$game'";
+
+        $res = Database::query($query);
+
+        return count($res) == 1;
+    }
+
+    /**
      * Genera la risposta da dare come informazioni nelle API
      * @param \Game $game Partita da ritornare
      * @return array Vettore contenente le informazioni della partita

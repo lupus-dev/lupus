@@ -79,8 +79,8 @@ class Room {
 
     /**
      * Crea un'istanza di \Room dal suo identificativo
-     * @param int $id Identitificativo della stanza
-     * @return \Room|boolean La stanza con l'identitificativo speficifato. False
+     * @param \string $name Nome breve della stanza
+     * @return \Room|boolean La stanza con il nome speficifato. False
      * se non trovata
      */
     public static function fromRoomName($name) {
@@ -102,6 +102,20 @@ class Room {
         $room->private = (boolean) $res[0]["private"];
 
         return $room;
+    }
+
+    /**
+     * Restituisce true se la stanza cercata esiste nel database
+     * @param \string $name Nome breve della stanza
+     * @return \boolean True se la stanza esiste, False altrimenti
+     */
+    public static function checkIfExists($name) {
+        $name = Database::escape($name);
+
+        $query = "SELECT 1 FROM room WHERE room_name='$name'";
+        $res = Database::query($query);
+
+        return count($res) == 1;
     }
 
     /**
