@@ -85,6 +85,9 @@ CREATE TABLE `vote` (
 ALTER TABLE `chat`
   ADD PRIMARY KEY (`id_chat`);
 
+ALTER TABLE `event`
+  ADD PRIMARY KEY (`id_event`);
+
 ALTER TABLE `game`
   ADD PRIMARY KEY (`id_game`);
 
