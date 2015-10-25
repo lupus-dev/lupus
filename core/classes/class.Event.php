@@ -236,6 +236,7 @@ class Event {
 
         $id_event = Database::$mysqli->insert_id;
         if (!$id_event) {
+            throw Exception;
             logEvent("Impossibile recuperare l'evento creato", LogLevel::Warning);
             return false;
         }

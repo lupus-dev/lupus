@@ -46,7 +46,7 @@ if (!$room->isAllTerminated())
         "error" => "C'è ancora una partita in corso in questa stanza",
         "code" => APIStatus::NewGameAlreadyRunning));
 
-$existGame = Game::fromRoomGameName($room_name, $game_name);
+$existGame = Game::checkIfExists($room_name, $game_name);
 if ($existGame)
     response(409, array(
         "error" => "Esiste già una partita in questa stanza di nome '$game_name'",

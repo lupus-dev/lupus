@@ -47,7 +47,7 @@ if ($private && $numPrivateRooms+1 > $level->privateRoom)
         "error" => "L'utente ha esaurito il numero di stanze private disponibili",
         "code" => APIStatus::NewRoomPrivateRoomsEnded));
 
-$existRoom = Room::fromRoomName($room_name);
+$existRoom = Room::checkIfExists($room_name);
 if ($existRoom)
     response (409, array(
         "error" => "Esiste già una stanza di nome '$room_name'",
