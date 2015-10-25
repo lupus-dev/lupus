@@ -625,6 +625,8 @@ abstract class Role {
      */
     public static function fromUser($user, $engine) {
         $role_name = Role::getRole($user, $engine->game);
+        if ($role_name == "unknown")
+            return false;
         // deve esistere una classe con quel nome e deve derivare da "Role"
         if (!class_exists($role_name) || !in_array("Role", class_parents($role_name))) {
             logEvent("Il ruolo '$role_name' di '{$user->username}' nella partita {$engine->game->id_game} non è valido", LogLevel::Error);
