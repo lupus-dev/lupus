@@ -83,26 +83,37 @@ CREATE TABLE `vote` (
 
 
 ALTER TABLE `chat`
-  ADD PRIMARY KEY (`id_chat`);
+  ADD PRIMARY KEY (`id_chat`),
+  ADD KEY `id_game` (`id_game`),
+  ADD KEY `id_user_from` (`id_user_from`),
+  ADD KEY `dest` (`dest`),
+  ADD KEY `group` (`group`);
 
 ALTER TABLE `event`
-  ADD PRIMARY KEY (`id_event`);
+  ADD PRIMARY KEY (`id_event`),
+  ADD KEY `id_game` (`id_game`);
 
 ALTER TABLE `game`
-  ADD PRIMARY KEY (`id_game`);
+  ADD PRIMARY KEY (`id_game`),
+  ADD KEY `id_room` (`id_room`),
+  ADD KEY `game_name` (`game_name`);
 
 ALTER TABLE `player`
-  ADD PRIMARY KEY (`id_role`);
+  ADD PRIMARY KEY (`id_role`),
+  ADD KEY `id_game` (`id_game`,`id_user`);
 
 ALTER TABLE `room`
-  ADD PRIMARY KEY (`id_room`);
+  ADD PRIMARY KEY (`id_room`),
+  ADD KEY `id_admin` (`id_admin`),
+  ADD KEY `room_name` (`room_name`);
 
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id_user`),
   ADD UNIQUE KEY `username` (`username`);
 
 ALTER TABLE `vote`
-  ADD PRIMARY KEY (`id_vote`);
+  ADD PRIMARY KEY (`id_vote`),
+  ADD KEY `id_game` (`id_game`,`id_user`);
 
 
 ALTER TABLE `chat`
