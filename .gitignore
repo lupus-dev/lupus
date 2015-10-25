@@ -13,3 +13,4 @@ specifiche/*.log
 specifiche/*.out
 specifiche/*.gz
 specifiche/*.toc
+log/log.txt
