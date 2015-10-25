@@ -10,6 +10,7 @@
 require_once __DIR__ . "/../core/init.php";
 
 // estrae la richiesta dall'url
+// TODO: permettere che baseDir sia vuota
 $baseApiDir = $baseDir . "/api/";
 $apiReqUri = $_SERVER['REQUEST_URI'];
 $apiReq = substr($apiReqUri, strlen($baseApiDir));

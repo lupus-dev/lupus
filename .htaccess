@@ -1,6 +1,7 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	# cambiare il percorso per adattarsi alla sottodirectory del server
+    # TODO: possibile renderla dinamica?
 	RewriteBase /lupus
 	# rewrite per le API
 	RewriteCond %{REQUEST_URI} api/

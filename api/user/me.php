@@ -11,6 +11,9 @@
  * API per visualizzare le informazioni dell'utente connesso
  */
 
-$apiMatches[1] = $user->username;
+if ($login)
+    $apiMatches[1] = $user->username;
+else
+    $apiMatches[1] = "";
 
 require __DIR__ . "/user.php";
