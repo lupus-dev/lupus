@@ -114,9 +114,11 @@ class User {
         $username = Database::escape($username);
         $password = Database::escape($password);
 
-        $query = "SELECT id_user FROM user WHERE username='$username' AND password=SHA1('$password')";
+        $query = "SELECT id_user,password FROM user WHERE username='$username'";
         $res = Database::query($query);
-        return count($res) == 1 ? $res[0]["id_user"] : false;
+        if (count($res) == 1 && self::password_verify($password, $res[0]["password"]))
+            return $res[0]["id_user"];
+        return false;
     }
 
     /**
@@ -257,15 +259,48 @@ class User {
             return false;
         
         $username = $username;
-        $password = Database::escape($password);
+        $password = self::password_hash(Database::escape($password));
         $nome = Database::escape($nome);
         $cognome = Database::escape($cognome);
         
         $query = "INSERT INTO user (username,password,level,name,surname) VALUE "
-                . "('$username', SHA1('$password'), 2, '$nome', '$cognome')";
+                . "('$username', '$password', 2, '$nome', '$cognome')";
         $res = Database::query($query);
         if (!$res)
             return false;
         return User::fromUsername($username);
+    }
+
+    /**
+     * Cifra una password con password_hash se PHP la supporta, altrimenti viene usato SHA1
+     * per retrocompatibilità.
+     * @param string $password Password da hashare
+     * @return bool|string Hash della password
+     */
+    private static function password_hash($password) {
+        if (function_exists("password_hash"))
+            return password_hash($password, PASSWORD_BCRYPT);
+        else
+            return sha1($password);
+    }
+
+    /**
+     * Verifica se la password inserita è corretta rispetto ad un hash nel database
+     * @param string $password Password in chiaro da verificare
+     * @param string $hash Hash della password, se è di 40 caratteri viene usata una versione NON SICURA
+     * di SHA1, se di 60 e PHP supporta password_verify verrà usata una funzione sicura
+     * @return bool True se le password corrispondono, false altrimenti
+     * @throws Error Un errore verrà restituito se PHP non supporta l'hash
+     */
+    private static function password_verify($password, $hash) {
+        if (strlen($hash) == 40)
+            return sha1($password) == $hash;
+        else if (strlen($hash) == 60)
+            if (function_exists("password_verify"))
+                password_verify($password, $hash);
+            else
+                throw new Error("Too old version of PHP or password_verify not supported");
+        else
+            throw new Error("Password not recognized");
     }
 }
