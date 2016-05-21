@@ -5,7 +5,7 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-var path = "/lupus";
+var path = "";
 var APIdir = path + "/api";
 
 var errorCount = 0;
@@ -50,5 +50,5 @@ function getErrorMessage(jqError) {
 function removeError() {
 	$("#error-"+(lastError++)).fadeTo(500, 0).slideUp(500, function(){
 		$(this).remove();	
-});
+	});
 }
