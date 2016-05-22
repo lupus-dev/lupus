@@ -105,4 +105,8 @@ class APIStatus {
     const ChatMissingParameter = 262;
     const ChatUserNotInGame = 263;
     const ChatInvalidUser = 264;
+    // ---------- TERM GAME ----------
+    const GameTerminated = 270;
+    const GameTermNotAuthorized = 271;
+    const GameTermNotRunning = 272;
 }

@@ -30,6 +30,7 @@ $paths = array(
     "/^game\/?$/" => "game/game.php",
     "/^game\/($shortName)\/_new\/?$/" => "game/new_game/new_game.php",
     "/^game\/($shortName)\/($shortName)\/?$/" => "game/game_name/game_name.php",
+    "/^game\/($shortName)\/($shortName)\/admin$/" => "game/game_name/admin.php",
     "/^room\/?$/" => "room/room.php",
     "/^room\/($shortName)\/?$/" => "room/room_name/room_name.php",
     "/^room\/_new\/?$/" => "room/new_room/new_room.php",

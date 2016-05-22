@@ -361,6 +361,10 @@ Tutte le seguenti funzioni si intendono già nel percorso delle \API\ (es: \page
 
 \item \pageurl{/game/(room\_name)/(game\_name)/start} Avvia la partita e la porta allo stato \texttt{NotStarted} per far entrare i giocatori.
 
+\item \pageurl{/game/(room\_name)/(game\_name)/admin/term} Termina la partita e passa allo stato \texttt{TermByAdmin}.
+
+\item \pageurl{/game/(room\_name)/(game\_name)/admin/kick} Espelle un giocatore dalla partita, lo username del giocatore deve essere passato in POST.
+
 \item \pageurl{/new\_room/(room\_name)} Crea una nuova stanza appartenente all'utente. Deve venire specificato il parametro \texttt{descr} in \GET. Può essere specificato il parametro \texttt{private} per rendere la stanza privata
 
 \item \pageurl{/new\_game/(room\_name)/(game\_name)} Crea una nuova partita nella stanza specificata. Devono venire specificati i parametri \texttt{descr} e \texttt{num\_players} in \GET.
@@ -462,6 +466,16 @@ I codici riconosciuti sono:
 \apicode{251}{SignupMissingParameter}{Non sono stati specificati i parametri \texttt{username}, \texttt{password}, \texttt{name}, \texttt{surname}}
 \apicode{252}{SignupAlreadyExists}{Non è possibile registrare un utente con questo \texttt{username}}
 \apicode{253}{SignupMalformed}{Lo \texttt{username} fornito non è un nome breve}
+\hline
+\apicode{260}{ChatSuccess}{Il messaggio è stato inviato}
+\apicode{261}{ChatAccessDenied}{L'utente non ha i privilegi per inviare il messaggio}
+\apicode{262}{ChatMissingParameter}{Non è stato specificato un parametro necessario per l'invio del messaggio}
+\apicode{263}{ChatUserNotInGame}{L'utente non è nella partita}
+\apicode{264}{ChatInvalidUser}{Il destinatario del messaggio non è valido}
+\hline
+\apicode{270}{GameTerminated}{La partita è stata terminata dall'amministratore}
+\apicode{271}{GameTermNotAuthorized}{L'utente non ha i privilegi per terminare la partita}
+\apicode{272}{GameTermNotRunning}{La partita non era in corso}
 \hline
 \end{tabular}
 }

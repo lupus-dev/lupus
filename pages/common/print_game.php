@@ -15,7 +15,7 @@
 function printGame($game, $room, $user, $status = true) {
     global $baseDir;
     ?>
-    <?= $game->game_descr ?>
+    <a href="<?= $baseDir ?>/game/<?= $room->room_name ?>/<?= $game->game_name ?>"><?= $game->game_descr ?></a>
     <?php $hasToVote = $game->hasToVote($user); ?>
     <?php if($status) printGameStatus($game, $room, $hasToVote); ?>
     <small>
