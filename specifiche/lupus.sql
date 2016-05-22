@@ -1,77 +1,61 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
-
 CREATE TABLE `chat` (
   `id_chat` int(11) NOT NULL,
   `id_game` int(11) NOT NULL,
   `id_user_from` int(11) NOT NULL,
   `dest` int(11) NOT NULL,
   `group` int(11) NOT NULL,
-  `text` varchar(200) NOT NULL,
+  `text` varchar(200) CHARACTER SET utf8 NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `event` (
   `id_event` int(11) NOT NULL,
   `id_game` int(11) NOT NULL,
   `event_code` int(11) NOT NULL,
-  `event_data` varchar(500) NOT NULL,
+  `event_data` varchar(500) CHARACTER SET utf8 NOT NULL,
   `day` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `game` (
   `id_game` int(11) NOT NULL,
   `id_room` int(11) NOT NULL,
   `day` int(11) NOT NULL,
   `status` int(11) NOT NULL,
-  `game_name` varchar(10) NOT NULL,
-  `game_descr` varchar(100) NOT NULL,
+  `game_name` varchar(10) CHARACTER SET utf8 NOT NULL,
+  `game_descr` varchar(100) CHARACTER SET utf8 NOT NULL,
   `num_players` int(11) NOT NULL,
-  `gen_info` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `gen_info` varchar(500) CHARACTER SET utf8 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `player` (
   `id_role` int(11) NOT NULL,
   `id_game` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `role` varchar(45) NOT NULL,
+  `role` varchar(45) CHARACTER SET utf8 NOT NULL,
   `status` int(11) NOT NULL,
-  `data` varchar(500) NOT NULL,
-  `chat_info` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `data` varchar(500) CHARACTER SET utf8 NOT NULL,
+  `chat_info` varchar(500) CHARACTER SET utf8 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `room` (
   `id_room` int(11) NOT NULL,
   `id_admin` int(11) NOT NULL,
-  `room_name` varchar(10) NOT NULL,
-  `room_descr` varchar(45) NOT NULL,
+  `room_name` varchar(10) CHARACTER SET utf8 NOT NULL,
+  `room_descr` varchar(45) CHARACTER SET utf8 NOT NULL,
   `private` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user` (
   `id_user` int(11) NOT NULL,
-  `username` varchar(10) NOT NULL,
-  `password` varchar(45) NOT NULL,
+  `username` varchar(10) CHARACTER SET utf8 NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8 NOT NULL,
   `level` int(11) NOT NULL,
-  `name` varchar(45) NOT NULL,
-  `surname` varchar(45) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-INSERT INTO `user` (`id_user`, `username`, `password`, `level`, `name`, `surname`) VALUES
-(1, 'root', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 10, '', ''),
-(2, 'user1', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 2, '', ''),
-(3, 'user2', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 2, '', ''),
-(4, 'user3', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 2, '', ''),
-(5, 'user4', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 2, '', ''),
-(6, 'user5', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 2, '', ''),
-(7, 'user6', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 2, '', ''),
-(8, 'user7', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 2, '', '');
+  `name` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `surname` varchar(45) CHARACTER SET utf8 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `vote` (
   `id_vote` int(11) NOT NULL,
@@ -79,7 +63,7 @@ CREATE TABLE `vote` (
   `id_user` int(11) NOT NULL,
   `vote` int(11) NOT NULL,
   `day` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 ALTER TABLE `chat`
@@ -100,7 +84,8 @@ ALTER TABLE `game`
 
 ALTER TABLE `player`
   ADD PRIMARY KEY (`id_role`),
-  ADD KEY `id_game` (`id_game`,`id_user`);
+  ADD KEY `id_game` (`id_game`,`id_user`),
+  ADD KEY `id_user` (`id_user`);
 
 ALTER TABLE `room`
   ADD PRIMARY KEY (`id_room`),
@@ -113,7 +98,8 @@ ALTER TABLE `user`
 
 ALTER TABLE `vote`
   ADD PRIMARY KEY (`id_vote`),
-  ADD KEY `id_game` (`id_game`,`id_user`);
+  ADD KEY `id_game` (`id_game`,`id_user`),
+  ADD KEY `id_user` (`id_user`);
 
 
 ALTER TABLE `chat`
@@ -130,6 +116,24 @@ ALTER TABLE `user`
   MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `vote`
   MODIFY `id_vote` int(11) NOT NULL AUTO_INCREMENT;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+ALTER TABLE `chat`
+  ADD CONSTRAINT `chat_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `game` (`id_game`),
+  ADD CONSTRAINT `chat_ibfk_2` FOREIGN KEY (`id_user_from`) REFERENCES `user` (`id_user`);
+
+ALTER TABLE `event`
+  ADD CONSTRAINT `event_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `game` (`id_game`);
+
+ALTER TABLE `game`
+  ADD CONSTRAINT `game_ibfk_1` FOREIGN KEY (`id_room`) REFERENCES `room` (`id_room`);
+
+ALTER TABLE `player`
+  ADD CONSTRAINT `player_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `game` (`id_game`),
+  ADD CONSTRAINT `player_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`);
+
+ALTER TABLE `room`
+  ADD CONSTRAINT `room_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `user` (`id_user`);
+
+ALTER TABLE `vote`
+  ADD CONSTRAINT `vote_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `game` (`id_game`),
+  ADD CONSTRAINT `vote_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`);
