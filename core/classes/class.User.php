@@ -296,7 +296,7 @@ class User {
             return sha1($password) == $hash;
         else if (strlen($hash) == 60)
             if (function_exists("password_verify"))
-                password_verify($password, $hash);
+                return password_verify($password, $hash);
             else
                 throw new Error("Too old version of PHP or password_verify not supported");
         else

@@ -49,6 +49,13 @@ class Lupo extends Role {
                 if ($this->getRole($user, $this->engine->game) != Lupo::$role_name)
                     $votable[] = $user->username;
             $pre = "<p>Vota chi sbranare!</p>";
+
+            $lupi = $this->getOtherLupi();
+            if (!$lupi || count($lupi) == 0)
+                $pre .= "<p>Sei l'unico lupo vivo nella partita</p>";
+            else
+                $pre .= "<p>Gli altri lupi sono: " . implode(", ", $lupi) . "</p>";
+
             $votes = $this->getVoteLupus();
             if ($votes) {
                 $pre .= "<p>Gli altri lupi hanno votato:</p><ul>";
@@ -175,4 +182,30 @@ class Lupo extends Role {
         return $role != Lupo::$role_name;
     }
 
+    /**
+     * Ritorna la lista con gli username degli altri lupi vivi nella partita, il giocatore corrente
+     * non è presente nella lista.
+     * @return array|bool Array con gli username degli altri lupi. False in caso di errore
+     */
+    protected function getOtherLupi() {
+        $id_game = $this->engine->game->id_game;
+        $id_user = $this->user->id_user;
+        $role = Lupo::$role_name;
+        $status = RoleStatus::Alive;
+
+        $query = "SELECT username
+                  FROM player
+                  JOIN user ON player.id_user = user.id_user
+                  WHERE id_game=? AND user.id_user!=? AND role=? AND status=?";
+        $res = Database::query($query, [$id_game, $id_user, $role, $status]);
+
+        if (!$res)
+            return false;
+
+        $usernames = [];
+        foreach ($res as $user)
+            $usernames[] = $user["username"];
+
+        return $usernames;
+    }
 }
