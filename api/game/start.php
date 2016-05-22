@@ -40,6 +40,12 @@ if ($game->status != GameStatus::Setup)
         "error" => "La partita non è in fase di setup",
         "code" => APIStatus::StartNotInSetup));
 
+if ($game->gen_info["gen_mode"] == "manual" && $game->gen_info["manual"]["roles"]["Lupo"] == 0)
+    response(401, array(
+        "error" => "La partita non contiene lupi",
+        "code" => APIStatus::StartWithoutLupus
+    ));
+
 $game->startGame();
 
 response(200, array(

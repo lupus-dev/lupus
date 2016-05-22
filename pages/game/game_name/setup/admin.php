@@ -46,7 +46,7 @@ $aviableRoles = RoleDispenser::getAviableRoles($level->betaFeature);
             <label for="gen-auto-numplayers">Numero di giocatori</label>
             <select class="form-control" id="auto-num-players">
                 <?php
-                for ($i = RoleDispenser::MinPlayers; $i <= 18; $i++)
+                for ($i = Config::$min_players; $i <= Config::$max_players; $i++)
                     echo "<option value='$i' " . (($i == $autoNumPlayers) ? "selected" : "") . ">$i</option>";
                 ?>
             </select>

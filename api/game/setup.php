@@ -65,10 +65,10 @@ if ($game->status != GameStatus::Setup)
 $num_players = intval($gen_info["gen_mode"] == "auto" ?
                 $gen_info["auto"]["num_players"] :
                 array_sum($gen_info["manual"]["roles"]));
-if ($num_players < RoleDispenser::MinPlayers || $num_players > 18)
+if ($num_players < Config::$min_players || $num_players > Config::$max_players)
     response(400, array(
         "error" => "Troppi o troppo pochi giocatori: devono essere presenti almeno "
-            . RoleDispenser::MinPlayers . " e al più 18 giocatori",
+            . Config::$min_players . " e al più " . Config::$max_players . " giocatori",
         "code" => APIStatus::SetupInvalidNumPlayers
     ));
 

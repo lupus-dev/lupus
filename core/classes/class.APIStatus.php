@@ -44,6 +44,7 @@ class APIStatus {
     const StartDone = 150;
     const StartAccessDenied = 151;
     const StartNotInSetup = 152;
+    const StartWithoutLupus = 153;
     // ---------- VOTE ----------
     const VoteDoneNextDay = 160;
     const VoteDoneWaiting = 161;

@@ -386,6 +386,8 @@ class Game {
     public function startGame() {
         if ($this->status != GameStatus::Setup)
             return false;
+        if ($this->gen_info["gen_mode"] == "manual" && $this->gen_info["manual"]["roles"]["Lupo"] == 0)
+            return false;
         logEvent("La partita {$this->game_name} è iniziata", LogLevel::Debug);
         Event::insertGameStart($this);
         $this->status(GameStatus::NotStarted);

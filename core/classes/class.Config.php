@@ -20,7 +20,13 @@ class Config {
     public static $log_path = "log/log.txt";
     
     public static $webapp_base = "/lupus";
-    
+
+    public static $min_players = 7;
+    public static $max_players = 18;
+    public static $lupus_cutoff = 15;
+    public static $lupus_low = 2;
+    public static $lupus_hi = 3;
+
     public static $ini = "";
 
 
@@ -42,6 +48,12 @@ class Config {
         Config::$log_level = $config["log"]["level"];
         
         Config::$webapp_base = $config["webapp"]["basedir"];
+
+        Config::$min_players = $config["game"]["min_players"];
+        Config::$max_players = $config["game"]["max_players"];
+        Config::$lupus_cutoff = $config["game"]["lupus_cutoff"];
+        Config::$lupus_low = $config["game"]["lupus_low"];
+        Config::$lupus_hi = $config["game"]["lupus_hi"];
     }
 
     

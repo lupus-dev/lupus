@@ -9,29 +9,7 @@
 
 class RoleDispenser {
 
-    /**
-     * Numero minimo di giocatori in una partita
-     */
-    const MinPlayers = 7;
-
-    /**
-     * Numero di lupi da generare se ci sono almeno Lupus1 lupi
-     */
-    const LupusMin1 = 2;
-
-    /**
-     * Numero minimo di giocatori perchè vengano generati LupusMin2 lupi
-     */
-    const Lupus2 = 15;
-
-    /**
-     * Numero di lupi da generare se ci sono almeno Lupus2 lupi
-     */
-    const LupusMin2 = 3;
-
-    private function __construct() {
-        
-    }
+    private function __construct() {}
 
     /**
      * Genera e assegna i ruoli agli utenti nella partita
@@ -121,7 +99,7 @@ class RoleDispenser {
      * mescolare) con i nomi dei ruoli generati. False se si verifica un errore.
      */
     private static function generateAutoRoles($roles_name, $num_players, $user) {
-        if ($num_players < RoleDispenser::MinPlayers) {
+        if ($num_players < Config::$min_players) {
             logEvent("La partita non ha un numero sufficiente di giocatori ($num_players)", LogLevel::Warning);
             return false;
         }
@@ -147,8 +125,8 @@ class RoleDispenser {
             $roles_probability[$i] /= $prob_sum;
 
         // sceglie il numero di lupi
-        $num_lupus = ($num_players < RoleDispenser::Lupus2) ?
-                RoleDispenser::LupusMin1 : RoleDispenser::LupusMin2;
+        $num_lupus = ($num_players < Config::$lupus_cutoff) ?
+                Config::$lupus_low : Config::$lupus_hi;
 
         // genera i lupi
         for ($i = 0; $i < $num_lupus; $i++) {
@@ -193,7 +171,7 @@ class RoleDispenser {
     private static function generateManualRoles($roles, $user) {
         $num_players = array_sum($roles);
 
-        if ($num_players < RoleDispenser::MinPlayers) {
+        if ($num_players < Config::$min_players) {
             logEvent("La partita non ha un numero sufficiente di giocatori ($num_players)", LogLevel::Warning);
             return false;
         }
