@@ -159,10 +159,11 @@ class User {
         $notStarted = GameStatus::NotStarted;
         $running = GameStatus::Running;
         // ottiene il game_name e la room_name
-        // TODO ottimizzare questa query con JOIN, GROUP BY e HAVING
-        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name 
-                  FROM game WHERE (status=? OR status=?) AND 
-                  (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=?)=1";
+        $query = "SELECT game_name, room_name
+                  FROM game
+                  JOIN room ON room.id_room = game.id_room
+                  JOIN player ON player.id_game = game.id_game
+                  WHERE (game.status=? OR game.status=?) AND id_user=?";
         $res = Database::query($query, [$notStarted, $running, $id_user]);
 
         $games = array();
@@ -181,9 +182,10 @@ class User {
         $id_user = $this->id_user;
         $setup = GameStatus::Setup;
 
-        // TODO ottimizzare con JOIN
-        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name
-                  FROM game WHERE status=? AND (SELECT id_admin FROM room WHERE room.id_room=game.id_room)=?";
+        $query = "SELECT game_name, room_name
+                  FROM game
+                  JOIN room ON room.id_room = game.id_room
+                  WHERE game.status=? AND id_admin=?";
         $res = Database::query($query, [$setup, $id_user]);
 
         $games = array();
@@ -202,10 +204,11 @@ class User {
         $id_user = $this->id_user;
         $winy = GameStatus::Winy;
         // ottiene il game_name e la room_name
-        // TODO ottimizzare con JOIN
-        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name 
-                  FROM game WHERE status>=? AND 
-                  (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=?)=1";
+        $query = "SELECT game_name, room_name
+                  FROM game
+                  JOIN room ON room.id_room = game.id_room
+                  JOIN player ON player.id_game = game.id_game
+                  WHERE game.status>=? AND id_user=?";
         $res = Database::query($query, [$winy, $id_user]);
 
         $games = array();
