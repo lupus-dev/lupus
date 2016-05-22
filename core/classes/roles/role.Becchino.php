@@ -72,20 +72,25 @@ class Becchino extends Role {
         // se l'utente è morto non agisce
         if ($this->getRoleStatus($this->engine->game, $this->user->id_user) == RoleStatus::Dead)
             return true;
+
         $vote = $this->getVote();
         if ($vote == 0)
             return true;
+
         $voted = User::fromIdUser($vote);
         if (!$voted)
             return false;
+
         Event::insertBecchinoAction($this->engine->game, $this->user, $voted);
-        // resuscita e visita il giocatore        
+
+        // resuscita e visita il giocatore
         $alive = RoleStatus::Alive;
         $id_game = $this->engine->game->id_game;
-        $query = "UPDATE player SET status=$alive WHERE id_game=$id_game AND id_user=$vote";
-        $res = Database::query($query);
+        $query = "UPDATE player SET status=? WHERE id_game=? AND id_user=?";
+        $res = Database::query($query, [$alive, $id_game, $vote]);
         if (!$res)
             return false;
+
         $this->visit($voted);
         // marca l'azione, il becchino non potrà più resuscitare
         $this->setData(array("acted" => true));
@@ -139,9 +144,8 @@ class Becchino extends Role {
         } else 
             $vote = 0;            
                 
-        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE "
-                . "($id_game,$id_user,$vote,$day)";
-        $res = Database::query($query);
+        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE (?, ?, ?, ?)";
+        $res = Database::query($query, [$id_game, $id_user, $vote, $day]);
         if (!$res) {
             logEvent("Impossibile compiere la votazione di $id_user => $username. id_game=$id_game", LogLevel::Warning);
             return false;

@@ -235,15 +235,20 @@ class RoleDispenser {
          * WHERE id_game = 5
          */
 
+        $params = [];
         $query = "UPDATE player SET role=CASE id_user ";
         for ($i = 0; $i < count($roles); $i++) {
             $id_user = User::fromUsername($usernames[$i])->id_user;
+            /** @var string $role_name just to suppress error messages... */
             $role = $roles[$i]::$role_name;
-            $query .= "WHEN $id_user THEN '$role' ";
+            $query .= "WHEN ? THEN ? ";
+            $params[] = $id_user;
+            $params[] = $role;
         }
-        $query .= "END WHERE id_game=$id_game";
+        $query .= "END WHERE id_game=?";
+        $params[] = $id_game;
 
-        $res = Database::query($query);
+        $res = Database::query($query, $params);
         if (!$res)
             return false;
         return true;

@@ -57,9 +57,10 @@ class Event {
     public static function fromIdEvent($id) {
         $id = intval($id);
 
-        $query = "SELECT id_event,id_game,event_code,event_data,day FROM event "
-                . "WHERE id_event=$id";
-        $res = Database::query($query);
+        $query = "SELECT id_event,id_game,event_code,event_data,day 
+                  FROM event
+                  WHERE id_event=?";
+        $res = Database::query($query, [$id]);
 
         if (!$res || count($res) != 1) {
             logEvent("Evento con id_event=$id non trovato", LogLevel::Warning);
@@ -85,9 +86,10 @@ class Event {
     public static function getGameEvent($game) {
         $id_game = $game->id_game;
 
-        $query = "SELECT id_event,id_game,event_code,event_data,day FROM event "
-                . "WHERE id_game=$id_game";
-        $res = Database::query($query);
+        $query = "SELECT id_event,id_game,event_code,event_data,day 
+                  FROM event
+                  WHERE id_game=?";
+        $res = Database::query($query, [$id_game]);
 
         $events = array();
         foreach ($res as $e) {
@@ -223,20 +225,19 @@ class Event {
      */
     private static function insertEvent($game, $event_code, $event_data) {
         $id_game = $game->id_game;
-        $event_data = Database::escape(json_encode($event_data));
+        $event_data = json_encode($event_data);
         $day = $game->day;
 
-        $query = "INSERT INTO event (id_game,event_code,event_data,day) VALUE "
-                . "($id_game,$event_code,'$event_data',$day)";
-        $res = Database::query($query);
+        $query = "INSERT INTO event (id_game,event_code,event_data,day) VALUE 
+                  (?, ?, ?, ?)";
+        $res = Database::query($query, [$id_game, $event_code, $event_data, $day]);
         if (!$res) {
             logEvent("Impossibile inserire l'evento id_game=$id_game event_code=$event_code", LogLevel::Warning);
             return false;
         }
 
-        $id_event = Database::$mysqli->insert_id;
+        $id_event = Database::lastInsertId();
         if (!$id_event) {
-            throw Exception;
             logEvent("Impossibile recuperare l'evento creato", LogLevel::Warning);
             return false;
         }

@@ -12,10 +12,10 @@
  */
 class Database {
     /**
-     * Il database connesso. Null se non è connesso
-     * @var \mysqli
+     * Il database connesso. null se non è connesso
+     * @var \PDO
      */
-    public static $mysqli = null;
+    private static $db = null;
 
     /**
      * Il costruttore è privato perchè è una classe statica
@@ -26,11 +26,12 @@ class Database {
      * Connette la classe al database specificato nel file di configurazione
      */
     public static function connect() {
-        Database::$mysqli = mysqli_connect(
-                Config::$db_host, Config::$db_user, Config::$db_password, Config::$db_database, Config::$db_port);
-        
-        if (!Database::$mysqli || Database::$mysqli->errno) {
+        try {
+            Database::$db = new PDO(Config::$db_string, Config::$db_user, Config::$db_password);
+            Database::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
             logEvent("Errore connessione DB", LogLevel::Error);
+            logEvent($e->getMessage(), LogLevel::Error);
             return false;
         }
         logEvent("Connesso al DB", LogLevel::Verbose);
@@ -38,31 +39,36 @@ class Database {
     }
     /**
      * Esegue una query sql e ritorna il risultato come vettore
-     * @param string $query La query SQL da eseguire
+     * @param string $sql La query SQL da eseguire
      * @return boolean|mixed False se si verifica un errore. True nelle query 
      * che ritornano true. Un vettore nelle altre query
      */
-    public static function query($query) {
-        logEvent("Query: $query", LogLevel::Verbose);
-        $result = Database::$mysqli->query($query);
-        if (Database::$mysqli->errno) {
-            logEvent("Query fallita: " . Database::$mysqli->error, LogLevel::Error);
-            logEvent("Query errata: " . $query, LogLevel::Error);
+    public static function query($sql, $options = []) {
+        logEvent("Query: $sql", LogLevel::Verbose);
+
+        try {
+            $query = Database::$db->prepare($sql);
+            $query->execute($options);
+
+            if ($query->columnCount() == 0)
+                return true;
+
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            logEvent("Query fallita: " . $sql, LogLevel::Error);
+            logEvent($e->getMessage(), LogLevel::Error);
+            logEvent($e->getTraceAsString(), LogLevel::Error);
             return false;
         }
-        if ($result === TRUE || $result === FALSE)
-            return $result;
-        $res = array();
-        while ($row = $result->fetch_assoc())
-            $res[] = $row;
-        return $res;
     }
+
     /**
-     * Effettua l'escape di una stringa usando il database connesso
-     * @param string $string Stringa da "escappare"
-     * @return string La stringa sicuras
+     * Ritorna l'id dell'ultima riga inserita nel database.
+     * @param null|string $name Utile solo se il driver di PDO richiede il nome della sequenza
+     * @return string L'id dell'ultima riga inserita
      */
-    public static function escape($string) {
-        return Database::$mysqli->escape_string($string);
+    public static function lastInsertId($name = null) {
+        return Database::$db->lastInsertId($name);
     }
 }

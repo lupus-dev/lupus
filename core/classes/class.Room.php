@@ -58,8 +58,8 @@ class Room {
     public static function fromIdRoom($id) {
         $id = intval($id);
 
-        $query = "SELECT id_room,id_admin,room_name,room_descr,private FROM room WHERE id_room=$id";
-        $res = Database::query($query);
+        $query = "SELECT id_room,id_admin,room_name,room_descr,private FROM room WHERE id_room=?";
+        $res = Database::query($query, [$id]);
 
         if (count($res) != 1) {
             logEvent("La stanza $id non esiste", LogLevel::Debug);
@@ -84,10 +84,8 @@ class Room {
      * se non trovata
      */
     public static function fromRoomName($name) {
-        $name = Database::escape($name);
-
-        $query = "SELECT id_room,id_admin,room_name,room_descr,private FROM room WHERE room_name='$name'";
-        $res = Database::query($query);
+        $query = "SELECT id_room,id_admin,room_name,room_descr,private FROM room WHERE room_name=?";
+        $res = Database::query($query, [$name]);
 
         if (count($res) != 1) {
             logEvent("La stanza $name non esiste", LogLevel::Debug);
@@ -110,10 +108,8 @@ class Room {
      * @return \boolean True se la stanza esiste, False altrimenti
      */
     public static function checkIfExists($name) {
-        $name = Database::escape($name);
-
-        $query = "SELECT 1 FROM room WHERE room_name='$name'";
-        $res = Database::query($query);
+        $query = "SELECT 1 FROM room WHERE room_name=?";
+        $res = Database::query($query, [$name]);
 
         return count($res) == 1;
     }
@@ -146,14 +142,12 @@ class Room {
      * errore
      */
     public static function createRoom($name, $descr, $admin, $private) {
-        $name = Database::escape($name);
-        $descr = Database::escape($descr);
         $admin = intval($admin);
         $private = $private ? 1 : 0;
 
-        $query = "INSERT INTO room (id_admin,room_name,room_descr,private) VALUE "
-                . "($admin,'$name','$descr',$private)";
-        $res = Database::query($query);
+        $query = "INSERT INTO room (id_admin,room_name,room_descr,private) VALUE
+                  (?, ?, ?, ?)";
+        $res = Database::query($query, [$admin, $name, $descr, $private]);
         if (!$res)
             return false;
         return Room::fromRoomName($name);
@@ -165,8 +159,8 @@ class Room {
      */
     public function getGame() {
         $id_room = $this->id_room;
-        $query = "SELECT game_name FROM game WHERE id_room=$id_room ORDER BY id_game";
-        $res = Database::query($query);
+        $query = "SELECT game_name FROM game WHERE id_room=? ORDER BY id_game";
+        $res = Database::query($query, [$id_room]);
 
         $games = array();
         foreach ($res as $game)
@@ -183,8 +177,8 @@ class Room {
     public function isAllTerminated() {
         $id_room = $this->id_room;
         
-        $query = "SELECT COUNT(*) AS count FROM game WHERE id_room=$id_room AND status<200";
-        $res = Database::query($query);
+        $query = "SELECT COUNT(*) AS count FROM game WHERE id_room=? AND status<200";
+        $res = Database::query($query, [$id_room]);
         
         if (count($res) != 1)
             return false;

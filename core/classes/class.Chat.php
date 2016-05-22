@@ -25,14 +25,18 @@ class Chat {
 
         $id_user = $user->id_user;
         $id_game = $game->id_game;
-        $groups = implode(",", $chat_groups);
+        $queryInClause = str_repeat("?,", count($chat_groups)-1) . "?";
 
         // seleziona tutti i messaggi nei sui gruppi
         // e tutti i messaggi inviati da lui o destinati a lui
-        $query = "SELECT id_chat,id_game,id_user_from,dest,`group`,text,timestamp FROM chat WHERE id_game=$id_game AND ("
-                . "`group` IN ($groups) OR "
-                . "(`group`=0 AND (id_user_from=$id_user OR dest=$id_user)))";
-        $res = Database::query($query);
+        $query = "SELECT id_chat,id_game,id_user_from,dest,`group`,text,timestamp 
+                  FROM chat 
+                  WHERE id_game=? AND (`group` IN ($queryInClause) OR (`group`=0 AND (id_user_from=? OR dest=?)))";
+        $params = [$id_game];
+        $params = array_merge($params, $chat_groups);
+        $params[] = $id_user;
+        $params[] = $id_user;
+        $res = Database::query($query, $params);
 
         if (!$res)
             return false;
@@ -58,14 +62,21 @@ class Chat {
         $id_user = $user->id_user;
         $id_game = $game->id_game;
 
-        if ($group != ChatGroup::User)
-            $where = "`group`=$group";
-        else
-            $where = "`group`=$group AND ((id_user_from=$id_user AND dest=$dest) OR (id_user_from=$dest AND dest=$id_user))";
-
-        $query = "SELECT id_chat,id_game,id_user_from,dest,`group`,text,timestamp FROM chat "
-                . "WHERE id_game=$id_game AND ($where)";
-        $res = Database::query($query);
+        if ($group != ChatGroup::User) {
+            $query = "SELECT id_chat,id_game,id_user_from,dest,`group`,text,timestamp 
+                      FROM chat 
+                      WHERE id_game=? AND (
+                        `group`=?
+                      )";
+            $res = Database::query($query, [$id_game, $group]);
+        } else {
+            $query = "SELECT id_chat,id_game,id_user_from,dest,`group`,text,timestamp 
+                      FROM chat 
+                      WHERE id_game=? AND (
+                        `group`=? AND ((id_user_from=? AND dest=?) OR (id_user_from=? AND dest=?))
+                      )";
+            $res = Database::query($query, [$id_game, $group, $id_user, $dest, $dest, $id_user]);
+        }
 
         if (!$res)
             return false;
@@ -88,13 +99,13 @@ class Chat {
      */
     public static function sendMessage($game, $id_user, $dest, $group, $text) {
         $id_game = $game->id_game;
-        $text = Database::escape(trim($text));
+        $text = strip_tags(trim($text));
         if (!$text)
             return true;
 
-        $query = "INSERT INTO chat (id_game,id_user_from,dest,`group`,text) "
-                . "VALUE ($id_game, $id_user, $dest, $group, '$text')";
-        $res = Database::query($query);
+        $query = "INSERT INTO chat (id_game,id_user_from,dest,`group`,text) 
+                  VALUE (?, ?, ?, ?, ?)";
+        $res = Database::query($query, [$id_game, $id_user, $dest, $group, $text]);
         if (!$res)
             return false;
         return true;
@@ -111,13 +122,22 @@ class Chat {
     public static function getLastTimestamp($game, $id_user, $group, $id_dest = 0) {
         $id_game = $game->id_game;
 
-        $where = ($group == ChatGroup::User) ?
-                "`group`=$group AND ((id_user_from=$id_user AND dest=$id_dest) OR (id_user_from=$id_dest AND dest=$id_user))" :
-                "`group`=$group";
+        if ($group == ChatGroup::User) {
+            $query = "SELECT timestamp 
+                      FROM chat 
+                      WHERE id_game=? AND (
+                          `group`=? AND ((id_user_from=? AND dest=?) OR (id_user_from=? AND dest=?))
+                      ) ORDER BY timestamp DESC LIMIT 1";
+            $res = Database::query($query, [$id_game, $group, $id_user, $id_dest, $id_dest, $id_user]);
+        } else {
+            $query = "SELECT timestamp 
+                      FROM chat 
+                      WHERE id_game=? AND (
+                          `group`=?
+                      ) ORDER BY timestamp DESC LIMIT 1";
+            $res = Database::query($query, [$id_game, $group]);
+        }
 
-        $query = "SELECT timestamp FROM chat WHERE id_game=$id_game AND "
-                . "($where) ORDER BY timestamp DESC LIMIT 1";
-        $res = Database::query($query);
         if (!$res)
             return 0;
         return strtotime($res[0]["timestamp"]);
@@ -135,13 +155,22 @@ class Chat {
     public static function getNumAfterTimestamp($game, $id_user, $group, $timestamp, $id_dest = 0) {
         $id_game = $game->id_game;
 
-        $where = ($group == ChatGroup::User) ?
-                "`group`=$group AND ((id_user_from=$id_user AND dest=$id_dest) OR (id_user_from=$id_dest AND dest=$id_user))" :
-                "`group`=$group";
+        if ($group == ChatGroup::User) {
+            $query = "SELECT COUNT(*) AS new 
+                      FROM chat 
+                      WHERE id_game=? AND (
+                          `group`=? AND ((id_user_from=? AND dest=?) OR (id_user_from=? AND dest=?))
+                      ) AND timestamp>FROM_UNIXTIME(?)";
+            $res = Database::query($query, [$id_game, $group, $id_user, $id_dest, $id_dest, $id_user, $timestamp]);
+        } else {
+            $query = "SELECT COUNT(*) AS new 
+                      FROM chat 
+                      WHERE id_game=? AND (
+                          `group`=?
+                      ) AND timestamp>FROM_UNIXTIME(?)";
+            $res = Database::query($query, [$id_game, $group, $timestamp]);
+        }
 
-        $query = "SELECT COUNT(*) AS new FROM chat WHERE id_game=$id_game AND "
-                . "($where) AND timestamp>FROM_UNIXTIME($timestamp)";
-        $res = Database::query($query);
         if (!$res)
             return 0;
         return $res[0]["new"];
@@ -188,8 +217,8 @@ class Chat {
         $id_game = $game->id_game;
         $id_user = $user->id_user;
 
-        $query = "SELECT chat_info FROM player WHERE id_game=$id_game AND id_user=$id_user";
-        $res = Database::query($query);
+        $query = "SELECT chat_info FROM player WHERE id_game=? AND id_user=?";
+        $res = Database::query($query, [$id_game, $id_user]);
         if (!$res)
             return false;
 
@@ -210,10 +239,10 @@ class Chat {
         $id_game = $game->id_game;
         $id_user = $user->id_user;
         
-        $data = Database::escape(json_encode($data));
+        $data = json_encode($data);
 
-        $query = "UPDATE player SET chat_info='$data' WHERE id_game=$id_game AND id_user=$id_user";
-        $res = Database::query($query);
+        $query = "UPDATE player SET chat_info=? WHERE id_game=? AND id_user=?";
+        $res = Database::query($query, [$data, $id_game, $id_user]);
         if (!$res)
             return false;
         return true;

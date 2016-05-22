@@ -94,8 +94,8 @@ class Game {
     public static function fromIdGame($id) {
         $id = intval($id);
 
-        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game WHERE id_game=$id";
-        $res = Database::query($query);
+        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game WHERE id_game=?";
+        $res = Database::query($query, [$id]);
 
         if (count($res) != 1) {
             logEvent("Partita non trovata. id_game=$id", LogLevel::Warning);
@@ -113,8 +113,6 @@ class Game {
      * è valida
      */
     public static function fromRoomGameName($room, $game) {
-        $game = Database::escape($game);
-
         $room = Room::fromRoomName($room);
         if (!$room) {
             logEvent("Stanza non trovata. room_name=$room", LogLevel::Warning);
@@ -122,8 +120,10 @@ class Game {
         }
         $id_room = $room->id_room;
 
-        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game WHERE id_room=$id_room AND game_name='$game'";
-        $res = Database::query($query);
+        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info 
+                  FROM game 
+                  WHERE id_room=? AND game_name=?";
+        $res = Database::query($query, [$id_room, $game]);
 
         if (count($res) != 1) {
             logEvent("Partita non trovata. room_name={$room->room_name} game_name=$game", LogLevel::Warning);
@@ -140,12 +140,12 @@ class Game {
      * @return \boolean True se la partita esiste, False altrimenti
      */
     public static function checkIfExists($room, $game) {
-        $room = Database::escape($room);
-        $game = Database::escape($game);
+        $query = "SELECT 1 
+                  FROM game 
+                  JOIN room ON game.id_room=room.id_room 
+                  WHERE room.room_name=? AND game.game_name=?";
 
-        $query = "SELECT 1 FROM game JOIN room ON game.id_room=room.id_room WHERE room.room_name='$room' AND game.game_name='$game'";
-
-        $res = Database::query($query);
+        $res = Database::query($query, [$room, $game]);
 
         return count($res) == 1;
     }
@@ -203,8 +203,6 @@ class Game {
             logEvent("Amministratore della stanza non trovato. id_admin={$room->id_admin}", LogLevel::Warning);
             return false;
         }
-        $name = Database::escape($name);
-        $descr = Database::escape($descr);
 
         $id_room = $room->id_room;
 
@@ -230,15 +228,15 @@ class Game {
                 )
             )
         );
-        $gen_info = Database::escape(json_encode($gen_info));
+        $gen_info = json_encode($gen_info);
 
-        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,num_players,gen_info) VALUE "
-                . "($id_room,0,0,'$name','$descr',8,'$gen_info')";
+        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,num_players,gen_info) VALUE 
+                  (?,0,0,?,?,8,?)";
 
-        $res = Database::query($query);
+        $res = Database::query($query, [$id_room, $name, $descr, $gen_info]);
         if (!$res)
             return false;
-        $id_game = Database::$mysqli->insert_id;
+        $id_game = Database::lastInsertId();
         $game = Game::fromIdGame($id_game);
         if (!$game) {
             logEvent("Partita creata ma non trovata...", LogLevel::Warning);
@@ -256,14 +254,14 @@ class Game {
     public static function getOpenGames($user) {
         $id_user = $user->id_user;
         $notStarted = GameStatus::NotStarted;
-        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game "
-                . "WHERE status=$notStarted "
-                . "AND (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=$id_user)=0 "
-                . "AND (SELECT private FROM room WHERE room.id_room=game.id_room)=0 "
-                . "ORDER BY (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game) DESC "
-                . "LIMIT 100";
+        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game
+                  WHERE status=?
+                  AND (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=?)=0
+                  AND (SELECT private FROM room WHERE room.id_room=game.id_room)=0
+                  ORDER BY (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game) DESC
+                  LIMIT 100";
 
-        $res = Database::query($query);
+        $res = Database::query($query, [$notStarted, $id_user]);
         if (!$res)
             return false;
 
@@ -281,8 +279,8 @@ class Game {
     public function getPlayers() {
         $id_game = $this->id_game;
 
-        $query = "SELECT id_user FROM player WHERE id_game=$id_game";
-        $res = Database::query($query);
+        $query = "SELECT id_user FROM player WHERE id_game=?";
+        $res = Database::query($query, [$id_game]);
 
         $users = array();
 
@@ -301,8 +299,8 @@ class Game {
     public function getNumPlayers() {
         $id_game = $this->id_game;
 
-        $query = "SELECT COUNT(*) AS num_players FROM player WHERE id_game=$id_game";
-        $res = Database::query($query);
+        $query = "SELECT COUNT(*) AS num_players FROM player WHERE id_game=?";
+        $res = Database::query($query, [$id_game]);
 
         return $res[0]["num_players"];
     }
@@ -319,8 +317,8 @@ class Game {
             $status = GameStatus::TermByBug;
         }
         $id_game = $this->id_game;
-        $query = "UPDATE game SET status=$status WHERE id_game=$id_game";
-        $res = Database::query($query);
+        $query = "UPDATE game SET status=? WHERE id_game=?";
+        $res = Database::query($query, [$status, $id_game]);
         if (!$res)
             return false;
         $this->status = $status;
@@ -333,8 +331,8 @@ class Game {
      */
     public function nextDay() {
         $id_game = $this->id_game;
-        $query = "UPDATE game SET day=day+1 WHERE id_game=$id_game";
-        $res = Database::query($query);
+        $query = "UPDATE game SET day=day+1 WHERE id_game=?";
+        $res = Database::query($query, [$id_game]);
         if (!$res)
             return false;
         $this->day++;
@@ -372,10 +370,9 @@ class Game {
         $id_user = $user->id_user;
         $alive = RoleStatus::Alive;
 
-        $query = "INSERT INTO player (id_game,id_user,role,status) VALUES "
-                . "($id_game,$id_user,'unknown',$alive)";
+        $query = "INSERT INTO player (id_game,id_user,role,status) VALUES (?,?,'unknown',?)";
 
-        $res = Database::query($query);
+        $res = Database::query($query, [$id_game, $id_user, $alive]);
         if (!$res)
             return false;
 
@@ -432,16 +429,15 @@ class Game {
         $num_players = intval($gen_info["gen_mode"] == "auto" ?
                         $gen_info["auto"]["num_players"] :
                         array_sum($gen_info["manual"]["roles"]));
-        $game_descr = Database::escape($game_descr);
-        $gen_info = Database::escape(json_encode($gen_info));
+        $gen_info = json_encode($gen_info);
         $id_game = $this->id_game;
 
         $this->game_descr = $game_descr;
         $this->num_players = $num_players;
         $this->gen_info = $gen_info;
 
-        $query = "UPDATE game SET game_descr='$game_descr', num_players=$num_players, gen_info='$gen_info' WHERE id_game=$id_game";
-        $res = Database::query($query);
+        $query = "UPDATE game SET game_descr=?, num_players=?, gen_info=? WHERE id_game=?";
+        $res = Database::query($query, [$game_descr, $num_players, $gen_info, $id_game]);
         if (!$res)
             return false;
         return true;
@@ -455,8 +451,8 @@ class Game {
         $id_game = $this->id_game;
         $alive = RoleStatus::Alive;
 
-        $query = "SELECT id_user FROM player WHERE id_game=$id_game AND status=$alive";
-        $res = Database::query($query);
+        $query = "SELECT id_user FROM player WHERE id_game=? AND status=?";
+        $res = Database::query($query, [$id_game, $alive]);
         if (!$res)
             return false;
 
@@ -476,8 +472,8 @@ class Game {
         $id_game = $this->id_game;
         $dead = RoleStatus::Dead;
 
-        $query = "SELECT id_user FROM player WHERE id_game=$id_game AND status=$dead";
-        $res = Database::query($query);
+        $query = "SELECT id_user FROM player WHERE id_game=? AND status=?";
+        $res = Database::query($query, [$id_game, $dead]);
         if (!$res)
             return false;
 

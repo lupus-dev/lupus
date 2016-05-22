@@ -74,18 +74,22 @@ class Lupo extends Role {
         $day = $this->engine->game->day;
         
         $roles = Team::getRoles(RoleTeam::Antagonists);
-        for ($i = 0; $i < count($roles); $i++)
-            $roles[$i] = "'" . strtolower ($roles[$i]) . "'";
-        
-        // unisce i ruoli per essere usati nella query
-        $roles = implode(",", $roles);
+
+        // genera ?,?,?,...,? da mettere nella query
+        $queryInPart = str_repeat("?,", count($roles)-1) . "?";
         
         // cerca tutti i voti della parita e nel giorno che appartengono ai lupi
-        $query = "SELECT id_user,vote FROM vote WHERE "
-                . "id_game=$id_game AND day=$day AND "
-                . "(SELECT role FROM player WHERE vote.id_user=player.id_user AND player.id_game=$id_game) IN ($roles) "
-                . "ORDER BY id_vote DESC";
-        $res = Database::query($query);
+        $query = "SELECT id_user,vote 
+                  FROM vote 
+                  WHERE id_game=? AND day=? AND 
+                  (SELECT role FROM player WHERE vote.id_user=player.id_user AND player.id_game=?) IN ($queryInPart) 
+                  ORDER BY id_vote DESC";
+
+        $params = [$id_game, $day, $id_game];
+        for ($i = 0; $i < count($roles); $i++)
+            $params[] = strtolower($roles[$i]);
+
+        $res = Database::query($query, $params);
         if (!$res)
             return false;
         return $res;

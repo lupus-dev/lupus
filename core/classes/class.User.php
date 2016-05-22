@@ -58,8 +58,8 @@ class User {
     public static function fromIdUser($id) {
         $id = intval($id);
 
-        $query = "SELECT id_user,username,level,name,surname FROM user WHERE id_user=$id";
-        $res = Database::query($query);
+        $query = "SELECT id_user,username,level,name,surname FROM user WHERE id_user=?";
+        $res = Database::query($query, [$id]);
 
         if (count($res) != 1) {
             logEvent("L'utente $id non esiste", LogLevel::Warning);
@@ -83,10 +83,8 @@ class User {
      * è stato trovato
      */
     public static function fromUsername($username) {
-        $username = Database::escape($username);
-
-        $query = "SELECT id_user,username,level,name,surname FROM user WHERE username='$username'";
-        $res = Database::query($query);
+        $query = "SELECT id_user,username,level,name,surname FROM user WHERE username=?";
+        $res = Database::query($query, [$username]);
 
         if (count($res) != 1) {
             logEvent("L'utente $username non esiste", LogLevel::Warning);
@@ -111,11 +109,9 @@ class User {
      * se sono corretti
      */
     public static function checkLogin($username, $password) {
-        $username = Database::escape($username);
-        $password = Database::escape($password);
+        $query = "SELECT id_user,password FROM user WHERE username=?";
+        $res = Database::query($query, [$username]);
 
-        $query = "SELECT id_user,password FROM user WHERE username='$username'";
-        $res = Database::query($query);
         if (count($res) == 1 && self::password_verify($password, $res[0]["password"]))
             return $res[0]["id_user"];
         return false;
@@ -127,8 +123,8 @@ class User {
      */
     public function getPublicRoom() {
         $id_admin = $this->id_user;
-        $query = "SELECT room_name FROM room WHERE id_admin=$id_admin AND private=0";
-        $res = Database::query($query);
+        $query = "SELECT room_name FROM room WHERE id_admin=? AND private=0";
+        $res = Database::query($query, [$id_admin]);
 
         $rooms = array();
         foreach ($res as $room)
@@ -143,8 +139,8 @@ class User {
      */
     public function getPrivateRoom() {
         $id_admin = $this->id_user;
-        $query = "SELECT room_name FROM room WHERE id_admin=$id_admin AND private=1";
-        $res = Database::query($query);
+        $query = "SELECT room_name FROM room WHERE id_admin=? AND private=1";
+        $res = Database::query($query, [$id_admin]);
 
         $rooms = array();
         foreach ($res as $room)
@@ -159,14 +155,15 @@ class User {
      * room_name e la chiave game_name
      */
     public function getActiveGame() {
-        $id_user = Database::escape($this->id_user);
+        $id_user = $this->id_user;
         $notStarted = GameStatus::NotStarted;
         $running = GameStatus::Running;
         // ottiene il game_name e la room_name
-        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
-                . "FROM game WHERE (status=$notStarted OR status=$running) AND "
-                . "(SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=$id_user)=1";
-        $res = Database::query($query);
+        // TODO ottimizzare questa query con JOIN, GROUP BY e HAVING
+        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name 
+                  FROM game WHERE (status=? OR status=?) AND 
+                  (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=?)=1";
+        $res = Database::query($query, [$notStarted, $running, $id_user]);
 
         $games = array();
         foreach ($res as $game)
@@ -184,9 +181,10 @@ class User {
         $id_user = $this->id_user;
         $setup = GameStatus::Setup;
 
-        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
-                . "FROM game WHERE status=$setup AND (SELECT id_admin FROM room WHERE room.id_room=game.id_room)=$id_user";
-        $res = Database::query($query);
+        // TODO ottimizzare con JOIN
+        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name
+                  FROM game WHERE status=? AND (SELECT id_admin FROM room WHERE room.id_room=game.id_room)=?";
+        $res = Database::query($query, [$setup, $id_user]);
 
         $games = array();
         foreach ($res as $game)
@@ -204,10 +202,11 @@ class User {
         $id_user = $this->id_user;
         $winy = GameStatus::Winy;
         // ottiene il game_name e la room_name
-        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name "
-                . "FROM game WHERE status>=$winy AND "
-                . "(SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=$id_user)=1";
-        $res = Database::query($query);
+        // TODO ottimizzare con JOIN
+        $query = "SELECT game_name,(SELECT room_name FROM room WHERE room.id_room=game.id_room) AS room_name 
+                  FROM game WHERE status>=? AND 
+                  (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=?)=1";
+        $res = Database::query($query, [$winy, $id_user]);
 
         $games = array();
         foreach ($res as $game)
@@ -258,14 +257,11 @@ class User {
         if ($user)
             return false;
         
-        $username = $username;
-        $password = self::password_hash(Database::escape($password));
-        $nome = Database::escape($nome);
-        $cognome = Database::escape($cognome);
-        
-        $query = "INSERT INTO user (username,password,level,name,surname) VALUE "
-                . "('$username', '$password', 2, '$nome', '$cognome')";
-        $res = Database::query($query);
+        $password = self::password_hash($password);
+
+        $query = "INSERT INTO user (username,password,level,name,surname) VALUE 
+                  (?, ?, 2, ?, ?)";
+        $res = Database::query($query, [$username, $password, $nome, $cognome]);
         if (!$res)
             return false;
         return User::fromUsername($username);

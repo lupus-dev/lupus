@@ -245,11 +245,12 @@ abstract class Role {
         $id_game = $this->engine->game->id_game;
         $day = $this->engine->game->day;
 
-        $query = "SELECT id_user,vote FROM vote WHERE "
-                . "id_game=$id_game AND day=$day "
-                . "ORDER BY id_vote DESC";
+        $query = "SELECT id_user,vote 
+                  FROM vote 
+                  WHERE id_game=? AND day=? 
+                  ORDER BY id_vote DESC";
 
-        $res = Database::query($query);
+        $res = Database::query($query, [$id_game, $day]);
         if (!$res)
             return false;
         return $res;
@@ -281,10 +282,12 @@ abstract class Role {
         $id_game = $this->engine->game->id_game;
         $id_user = $this->user->id_user;
 
-        $query = "SELECT data FROM player WHERE id_game=$id_game AND id_user=$id_user";
-        $res = Database::query($query);
+        $query = "SELECT data FROM player WHERE id_game=? AND id_user=?";
+        $res = Database::query($query, [$id_game, $id_user]);
+
         if (!$res || count($res) != 1)
             return false;
+
         $data = json_decode($res[0]["data"], true);
         if (!$data) {
             logEvent("I dati dell'utente {$this->user->username} sono danneggiati", LogLevel::Notice);
@@ -301,13 +304,13 @@ abstract class Role {
      * @return boolean True se l'operazione ha esito positivo, false altrimenti
      */
     protected function setData($data) {
-        $json = Database::escape(json_encode($data));
+        $json = json_encode($data);
 
         $id_game = $this->engine->game->id_game;
         $id_user = $this->user->id_user;
 
-        $query = "UPDATE player SET data='$json' WHERE id_game=$id_game AND id_user=$id_user";
-        $res = Database::query($query);
+        $query = "UPDATE player SET data=? WHERE id_game=? AND id_user=?";
+        $res = Database::query($query, [$json, $id_game, $id_user]);
         if (!$res)
             return false;
         return true;
@@ -323,8 +326,8 @@ abstract class Role {
         $id_user = $this->user->id_user;
         $day = $this->engine->game->day;
 
-        $query = "SELECT vote FROM vote WHERE id_game=$id_game AND id_user=$id_user AND day=$day";
-        $res = Database::query($query);
+        $query = "SELECT vote FROM vote WHERE id_game=? AND id_user=? AND day=?";
+        $res = Database::query($query, [$id_game, $id_user, $day]);
 
         if (!$res || count($res) != 1)
             return false;
@@ -344,7 +347,7 @@ abstract class Role {
             return false;
         }
         if ($status == RoleStatus::Dead) {
-            logEvent("E' stato ucciso un giocatore morto ({$this->user->username} => {$user->username}", LogLevel::Debug);
+            logEvent("E' stato ucciso un giocatore morto ({$this->user->username} => {$user->username})", LogLevel::Debug);
             return false;
         }
         if ($this->isProtected($user, $this->user)) {
@@ -356,8 +359,8 @@ abstract class Role {
         $id_user = $user->id_user;
         $status = RoleStatus::Dead;
 
-        $query = "UPDATE player SET status=$status WHERE id_game=$id_game AND id_user=$id_user";
-        $res = Database::query($query);
+        $query = "UPDATE player SET status=? WHERE id_game=? AND id_user=?";
+        $res = Database::query($query, [$status, $id_game, $id_user]);
         if (!$res)
             return false;
         return true;
@@ -438,9 +441,8 @@ abstract class Role {
         }
         $vote = $user_voted->id_user;
         
-        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE "
-                . "($id_game,$id_user,$vote,$day)";
-        $res = Database::query($query);
+        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE (?, ?, ?, ?)";
+        $res = Database::query($query, [$id_game, $id_user, $vote, $day]);
         if (!$res) {
             logEvent("Impossibile compiere la votazione di $id_user => $username. id_game=$id_game", LogLevel::Warning);
             return false;
@@ -602,13 +604,14 @@ abstract class Role {
      * partita
      * @param \User $user L'utente da controllare
      * @param \Game $game La partita in cui controllare
+     * @return string|boolean Ritorna il ruolo del giocatore, false in caso di errore
      */
     public static function getRole($user, $game) {
         $id_user = $user->id_user;
         $id_game = $game->id_game;
 
-        $query = "SELECT role FROM player WHERE id_user=$id_user AND id_game=$id_game";
-        $res = Database::query($query);
+        $query = "SELECT role FROM player WHERE id_user=? AND id_game=?";
+        $res = Database::query($query, [$id_user, $id_game]);
 
         if (!$res || count($res) != 1) {
             logEvent("L'utente $id_user non è nella partita $id_game", LogLevel::Warning);
@@ -651,8 +654,8 @@ abstract class Role {
     public static function getRoleStatus($game, $id_user) {
         $id_game = $game->id_game;
 
-        $query = "SELECT status FROM player WHERE id_game=$id_game AND id_user=$id_user";
-        $res = Database::query($query);
+        $query = "SELECT status FROM player WHERE id_game=? AND id_user=?";
+        $res = Database::query($query, [$id_game, $id_user]);
         if (!$res || count($res) != 1) {
             logEvent("L'utente $id_user non è nella partita $id_game", LogLevel::Warning);
             return false;

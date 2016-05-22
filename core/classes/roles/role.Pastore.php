@@ -109,9 +109,8 @@ class Pastore extends Role {
         else
             $vote = 0;
 
-        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE "
-                . "($id_game,$id_user,$vote,$day)";
-        $res = Database::query($query);
+        $query = "INSERT INTO vote (id_game,id_user,vote,day) VALUE (?, ?, ?, ?)";
+        $res = Database::query($query, [$id_game, $id_user, $vote, $day]);
         if (!$res) {
             logEvent("Impossibile compiere la votazione di $id_user => $voted. id_game=$id_game", LogLevel::Warning);
             return false;
