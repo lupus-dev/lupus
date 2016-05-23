@@ -115,9 +115,6 @@ class Engine {
                 $this->game->status(GameStatus::TermByBug);
                 return Engine::BadRole;
             }
-            
-            $endStatus = $this->checkEndWrapper();
-            if ($endStatus) return $endStatus;
         } else if ($gameStatus == GameStatus::NotStarted)
             $roles = array();
 

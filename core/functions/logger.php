@@ -49,7 +49,10 @@ function logEvent($event, $level = LogLevel::Debug) {
     
     $date = date("Y-m-d H:i:s");
     $level = LogLevel::$levels[$level];
-    
+
+    if (!is_string($event))
+        $event = var_export($event, true);
+
     $message = "[$date][$level] $event\n";
     
     $root_base = __DIR__ . "/../../";
