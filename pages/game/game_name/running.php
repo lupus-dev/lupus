@@ -13,6 +13,8 @@ $body_class = $day ? "day" : "night";
 // verifica se il giocatore è nella partita ed ha un ruolo valido
 $inGame = $game->inGame($user->id_user) && Role::getRole($user, $game);
 
+$admin = ($room->id_admin == $user->id_user);
+
 ?>
 <!doctype html>
 <html>
@@ -28,7 +30,9 @@ $inGame = $game->inGame($user->id_user) && Role::getRole($user, $game);
         <div class="container" role="main">
             <?php include __DIR__ . "/running/navbar.php"; ?>
             <div class="page-header">
-                <h1><?= $game->game_descr ?> <small><?= $game->game_name ?></small></h1>
+                <h1>
+                    <?= $game->game_descr ?> <small><?= $game->game_name ?></small>
+                </h1>
             </div>
             <?php if ($inGame): ?>
                 <?php include __DIR__ . "/running/in_game.php"; ?>

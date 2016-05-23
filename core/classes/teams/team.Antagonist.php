@@ -29,5 +29,4 @@ class Antagonist extends Team {
         
         return count($antag_alive) >= count($villa_alive) && count($antag_alive) > 0;
     }
-
 }

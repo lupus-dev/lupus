@@ -7,13 +7,20 @@
  */
 
 function printUserRole($role_name) {
-    $roleTeam = $role_name::$team_name;
-    $mana = $role_name::$mana;
-    $color = ($roleTeam == Antagonist::$team_name) ? "danger" : "success";
-    $glyph = ($mana == Mana::Bad) ? "fire" : "leaf";
+    if ($role_name == "unknown") {
+        $name = "sconosciuto...";
+        $color = "default";
+        $glyph = "remove-circle";
+    } else {
+        $name = $role_name::$name;
+        $roleTeam = $role_name::$team_name;
+        $mana = $role_name::$mana;
+        $color = ($roleTeam == Antagonist::$team_name) ? "danger" : "success";
+        $glyph = ($mana == Mana::Bad) ? "fire" : "leaf";
+    }
     ?>
     <span class="label label-<?= $color ?>">
-        <?= $role_name::$name ?>
+        <?= $name ?>
         <span class="glyphicon glyphicon-<?= $glyph ?>"></span>
     </span>
     <?php

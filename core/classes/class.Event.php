@@ -214,6 +214,19 @@ class Event {
         return Event::insertEvent($game, EventCode::BecchinoAction, $data);
     }
 
+    /**
+     * Inserisce l'evento di un giocaotre espulso
+     * @param \Game $game Partita in cui salvare l'evento
+     * @param \User $kicked Giocatore espulso
+     * @return boolean|\Event Evento creato. False se si verifica un errore
+     */
+    public static function insertPlayerKicked($game, $kicked) {
+        $data = array(
+            "kicked" => $kicked->username
+        );
+
+        return Event::insertEvent($game, EventCode::PlayerKicked, $data);
+    }
 
     /**
      * Inserisce un evento nel database
@@ -266,6 +279,8 @@ class Event {
                 return Event::getNewsFromPaparazzoAction($event, $user);
             case EventCode::BecchinoAction:
                 return Event::getNewsFromBecchinoAction($event, $user);
+            case EventCode::PlayerKicked:
+                return Event::getNewsFromPlayerKicked($event);
             default:
                 return false;
         }
@@ -431,6 +446,20 @@ class Event {
         return array(
             "day" => $event->day,
             "news" => $news
+        );
+    }
+
+    /**
+     * Formatta l'espulsione di un giocatore
+     * @param \Event $event Evento da formattare
+     * @return array|boolean Ritorna le informazioni dell'espulsione.
+     */
+    private static function getNewsFromPlayerKicked($event) {
+        $kicked = $event->event_data["kicked"];
+
+        return array(
+            "day" => $event->day,
+            "news" => "Il giocatore $kicked è stato espulso dalla partita"
         );
     }
 }

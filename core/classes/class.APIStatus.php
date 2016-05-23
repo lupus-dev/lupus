@@ -109,4 +109,10 @@ class APIStatus {
     const GameTerminated = 270;
     const GameTermNotAuthorized = 271;
     const GameTermNotRunning = 272;
+    // ---------- KICK PLAYER ----------
+    const PlayerKicked = 280;
+    const PlayerKickNotAuthorized = 281;
+    const PlayerKickNotValidState = 282;
+    const PlayerKickMissingParameter = 283;
+    const PlayerKickFailed = 284;
 }

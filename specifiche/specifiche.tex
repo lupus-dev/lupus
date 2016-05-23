@@ -480,6 +480,20 @@ I codici riconosciuti sono:
 \end{tabular}
 }
 
+\resizebox{\textwidth}{!} {
+\begin{tabular}{|rl|l|}
+\hline
+\textbf{\#} & \textbf{Abbreviazione} & \textbf{Descrizione} \\
+\hline
+\apicode{280}{PlayerKicked}{Il giocatore è stato espulso}
+\apicode{281}{PlayerKickNotAuthorized}{Il giocatore non è l'amministratore della stanza}
+\apicode{282}{PlayerKickNotValidState}{La partita non è in uno stato valido per espellere giocatori}
+\apicode{283}{PlayerKickMissingParameter}{Non è stato specificato un parametro}
+\apicode{284}{PlayerKickFailed}{L'espulsione è fallita (il giocatore non fa parte della partita?)}
+\hline
+\end{tabular}
+}
+
 \subsection{La web-app}
 L'interfaccia grafica del gioco sarà sviluppata con la libreria \texttt{BootStrap}, la quale rende tutto molto portabile su dispositivi con schermo ridotto. 
 
@@ -543,7 +557,7 @@ I campi \texttt{day} e \texttt{status} sono informazioni utili della partita, l'
 
 Il campo \texttt{players} contiene una stringa \texttt{JSON} che codifica un vettore degli \texttt{username} degli utenti registrati alla partita.
 
-\subsection{Tabella role}
+\subsection{Tabella player}
 In questa tabella sono memorizzati i ruoli dei giocatori interni ad una partita. 
 
 Ogni riga è identificata da un campo \texttt{id\_role} non pubblico. 
@@ -552,7 +566,7 @@ Ogni ruolo è interno alla partita \texttt{id\_game} e relativo all'utente \text
 
 Il ruolo dell'utente è memorizzato nella stringa \texttt{role} la quale identifica un ruolo nella cartella dei ruoli. 
 
-Il campo \texttt{status} indica lo stato dell'utente (vivo o morto). 
+Il campo \texttt{status} indica lo stato dell'utente (vivo/morto/espulso).
 
 Alcuni ruoli potrebbero richiedere di memorizzare delle informazioni aggiuntive, il campo \texttt{data} contiene dei dati salvati da un ruolo, codificati in \texttt{JSON}.
 
@@ -595,6 +609,28 @@ Il tipo di evento che si è verificato è memorizzato in \texttt{event\_code} e 
 \texttt{dead}	& Username del giocatore morto \\
 \texttt{cause}	& Causa della morte \\
 \texttt{actor}	& Causante della morte (killer)
+}
+\item \eventcode{2}{MediumAction}{Un medium ha guardato un morto}{
+\texttt{medium}	& Username del medium \\
+\texttt{seen}	& Username del giocatore guardato \\
+\texttt{mana}	& Mana del giocatore guardato
+}
+\item \eventcode{3}{VeggenteAction}{Un veggente ha guardato un vivo}{
+\texttt{medium}	& Username del veggente \\
+\texttt{seen}	& Username del giocatore guardato \\
+\texttt{mana}	& Mana del giocatore guardato
+}
+\item \eventcode{4}{PaparazzoAction}{Un paparazzo ha fotografato un giocatore}{
+\texttt{paparazzo}	& Username del paparazzo \\
+\texttt{seen}	    & Username del giocatore guardato \\
+\texttt{visitors}   & Lista dei giocatori che hanno fatto visita al giocatore
+}
+\item \eventcode{5}{BecchinoAction}{Un becchino ha resuscitato un giocatore}{
+\texttt{becchino}	& Username del becchino \\
+\texttt{dead}	    & Username del giocatore resuscitato
+}
+\item \eventcode{6}{PlayerKicked}{Un giocatore è stato espulso dalla partita}{
+\texttt{kicked}	& Username del giocatore espulso
 }
 \end{itemize}
 

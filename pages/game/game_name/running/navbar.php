@@ -31,8 +31,13 @@ $dayName = $day ? "Giorno $d" : "Notte $d";
                 <li>
                     <span class="navbar-brand"><?= $dayName ?></span>
                 </li>
+                <li>
+                    <?php if ($admin) { ?>
+                        <a href="<?= $baseDir ?>/game/<?= $room->room_name ?>/<?= $game->game_name ?>/admin">Admin</a>
+                    <?php } ?>
+                </li>
             </ul>
-            <?php if ($login): ?>
+            <?php if ($login) { ?>
                 <div class="navbar-right">
                     <span class="navbar-text">
                         Benvenuto <?= $user->name ?> <?= $user->surname ?> 
@@ -40,7 +45,7 @@ $dayName = $day ? "Giorno $d" : "Notte $d";
                     </span>
                     <button type="button" class="btn btn-warning navbar-btn" onclick="logout()">Logout</button>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
         </div>
     </div>
 </nav>

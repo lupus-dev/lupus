@@ -115,6 +115,9 @@ class Engine {
                 $this->game->status(GameStatus::TermByBug);
                 return Engine::BadRole;
             }
+            
+            $endStatus = $this->checkEndWrapper();
+            if ($endStatus) return $endStatus;
         } else if ($gameStatus == GameStatus::NotStarted)
             $roles = array();
 
@@ -138,24 +141,13 @@ class Engine {
             return $performStatus;
         }
 
-        // verifica se la partita termina
-        $endStatus = $this->checkEnd();
-        // se il giorno/notte è finito correttamente
-        if ($endStatus == Engine::NextDay) {
-            logEvent("Il giorno/notte è finito correttamente", LogLevel::Debug);
-            $this->game->nextDay();
-            return Engine::NextDay;
-        }
-        // se la partita termina
-        if ($endStatus <= GameStatus::DeadWin) {
-            logEvent("La partita è terminata correttamente: codice $endStatus", LogLevel::Debug);
-            $this->game->status($endStatus);
-            return Engine::EndGame;
-        }
+        $endStatus = $this->checkEndWrapper();
+        if ($endStatus) return $endStatus;
+
         // se se verifica un errore
         $this->game->status(GameStatus::TermByBug);
         logEvent("Un errore strano è accaduto, la partita è stata terminata", LogLevel::Error);
-        return $endStatus;
+        return false;
     }
 
     /**
@@ -269,6 +261,28 @@ class Engine {
                 break;
         }
         logEvent("Tutti i giocatori hanno eseguito", LogLevel::Debug);
+        return false;
+    }
+
+    /**
+     * Verifica se la partita è terminata e in tal caso esegue le dovute azioni
+     * @return bool|int False se la partita non è terminata, lo stato del termine altrimenti
+     */
+    private function checkEndWrapper() {
+        // verifica se la partita termina
+        $endStatus = $this->checkEnd();
+        // se il giorno/notte è finito correttamente
+        if ($endStatus == Engine::NextDay) {
+            logEvent("Il giorno/notte è finito correttamente", LogLevel::Debug);
+            $this->game->nextDay();
+            return Engine::NextDay;
+        }
+        // se la partita termina
+        if ($endStatus <= GameStatus::DeadWin) {
+            logEvent("La partita è terminata correttamente: codice $endStatus", LogLevel::Debug);
+            $this->game->status($endStatus);
+            return Engine::EndGame;
+        }
         return false;
     }
 

@@ -33,7 +33,7 @@ class Pastore extends Role {
      */
     public function needVoteNight() {
         // un pastore morto non vota
-        if ($this->roleStatus() == RoleStatus::Dead)
+        if ($this->roleStatus() != RoleStatus::Alive)
             return false;
         $vote = $this->getVote();
         // se l'utente non ha ancora votato la partita rimane in attesa
@@ -54,7 +54,7 @@ class Pastore extends Role {
      */
     public function performActionNight() {
         // se l'utente è morto non agisce
-        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) == RoleStatus::Dead)
+        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) != RoleStatus::Alive)
             return true;
         $vote = $this->getVote();
         // se il voto è zero ha scelto di non usare il sacrificio

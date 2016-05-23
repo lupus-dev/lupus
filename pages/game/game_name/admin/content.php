@@ -6,7 +6,7 @@
  *   - 2016 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-$players = ["timur", "baznat"];
+$players = array_diff($game->getPlayers(), [$user->username]);
 
 ?>
 <div class="page-header">

@@ -32,7 +32,12 @@ if (!$admin) redirect("game/$room_name/$game_name");
 </head>
 <body>
 <div class="container" role="main">
-    <?php include __DIR__ . "/../../common/navbar.php"; ?>
+    <?php
+        if ($game->status == GameStatus::Running)
+            include __DIR__ . "/running/navbar.php";
+        else
+            include __DIR__ . "/../../common/navbar.php";
+    ?>
     <?php include __DIR__ . "/admin/content.php"; ?>
     <script>
         var room_name = "<?= $room_name ?>";

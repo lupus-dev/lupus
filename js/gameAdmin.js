@@ -20,7 +20,7 @@ $(function() {
                 player: player
             },
             success: function() {
-                location.reload(true);
+                location.href += "/..";
             },
             error: function(error) {
                 console.error(error);
@@ -38,7 +38,7 @@ $(function() {
             type: 'POST',
             dataType: 'json',
             success: function() {
-                // TODO redirect to...
+                location.href += "/..";
             },
             error: function(error) {
                 console.error(error);

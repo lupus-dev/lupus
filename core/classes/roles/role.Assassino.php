@@ -33,7 +33,7 @@ class Assassino extends Role {
      * @return boolean|string
      */
     public function needVoteNight() {
-        if ($this->roleStatus() == RoleStatus::Dead)
+        if ($this->roleStatus() != RoleStatus::Alive)
             return false;
         $data = $this->getData();
         // se i dati del ruolo non sono salvati o sono danneggiati
@@ -69,7 +69,7 @@ class Assassino extends Role {
      */
     public function performActionNight() {
         // se l'utente è morto non agisce
-        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) == RoleStatus::Dead)
+        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) != RoleStatus::Alive)
             return true;
         $vote = $this->getVote();
         if ($vote == 0)

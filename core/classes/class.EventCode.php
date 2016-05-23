@@ -35,11 +35,15 @@ class EventCode {
      * Il becchino ha resuscitato qualcuno
      */
     const BecchinoAction = 5;
-    
+    /**
+     * Un gioatore è stato espulso
+     */
+    const PlayerKicked = 6;
+
     /**
      * Costruttore privato
      */
     private function __construct() {
-        
+
     }
 }

@@ -32,7 +32,7 @@ class Veggente extends Role {
      * @return boolean|string
      */
     public function needVoteNight() {
-        if ($this->roleStatus() == RoleStatus::Dead)
+        if ($this->roleStatus() != RoleStatus::Alive)
             return false;
         $vote = $this->getVote();
         // se l'utente non ha ancora votato la partita rimane in attesa
@@ -59,7 +59,7 @@ class Veggente extends Role {
      */
     public function performActionNight() {
         // se l'utente è morto non agisce
-        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) == RoleStatus::Dead)
+        if ($this->getRoleStatus($this->engine->game, $this->user->id_user) != RoleStatus::Alive)
             return true;
         $vote = $this->getVote();
         if ($vote == 0)

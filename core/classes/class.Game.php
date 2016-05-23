@@ -274,13 +274,14 @@ class Game {
 
     /**
      * Cerca tutti gli utenti della partita
+     * @param bool $includeKicked Indica se includere i giocatori espulsi nell'elenco
      * @return array Vettore di username
      */
-    public function getPlayers() {
+    public function getPlayers($includeKicked = false) {
         $id_game = $this->id_game;
 
-        $query = "SELECT id_user FROM player WHERE id_game=?";
-        $res = Database::query($query, [$id_game]);
+        $query = "SELECT id_user FROM player WHERE id_game=? AND status!=?";
+        $res = Database::query($query, [$id_game, $includeKicked?-1:RoleStatus::Kicked]);
 
         $users = array();
 
@@ -487,4 +488,48 @@ class Game {
         return $users;
     }
 
+    /**
+     * Espelle un giocatore dalla partita. Se la partita non è iniziata il giocatore è come se non fosse
+     * mai entrato
+     * @param User $admin Utente che esegue il kick
+     * @param string $username Username del giocatore da espellere
+     * @return bool True se l'operazione ha successo, false altrimenti
+     */
+    public function kickPlayer($admin, $username) {
+        $room = Room::fromIdRoom($this->id_room);
+        if ($room->id_admin != $admin->id_user)
+            return false;
+        if (!in_array($username, $this->getPlayers()))
+            return false;
+
+        $user = User::fromUsername($username);
+        if (!$user) return false;
+
+        $query = "SELECT id_role,role,status FROM player WHERE id_game=? AND id_user=?";
+        $res = Database::query($query, [$this->id_game, $user->id_user]);
+
+        if (!$res || count($res) != 1) return false;
+
+        $role = $res[0];
+
+        // se la partita non è iniziata per espellere il giocatore è sufficiente rimuovere al riga
+        if ($role["role"] == "unknown") {
+            $query = "DELETE FROM player WHERE id_game=? AND id_user=?";
+            $res = Database::query($query, [$this->id_game, $user->id_user]);
+            if (!$res) return false;
+            Event::insertPlayerKicked($this, $user);
+            logEvent("Il giocatore $username è stato kickato dalla partita $room->room_name/$this->game_name prima che iniziasse", LogLevel::Notice);
+        }
+
+        $query = "UPDATE player SET status=? WHERE id_game=? AND id_user=?";
+        $res = Database::query($query, [RoleStatus::Kicked, $this->id_game, $user->id_user]);
+
+        if (!$res) return false;
+
+        $engine = new Engine($this);
+        $engine->run();
+        logEvent("Il giocatore $username è stato kickato dalla partita $room->room_name/$this->game_name", LogLevel::Notice);
+        Event::insertPlayerKicked($this, $user);
+        return true;
+    }
 }

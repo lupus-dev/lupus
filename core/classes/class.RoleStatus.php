@@ -19,4 +19,8 @@ class RoleStatus {
      * Il giocatore è morto
      */
     const Dead = 1;
+    /**
+     * Il giocatore è stato espulso
+     */
+    const Kicked = 2;
 }
