@@ -160,24 +160,41 @@ body {
 }
 
 .newspaper {
-	$news-height: 300px + 40px + 1;
-	$news-padding: 7px;
-	$border-color: #ddd;
-	$border-radius: 4px;
+	.panel {
+		$newspaper-padding: 10px;
+		$newspaper-min-height: 400px;
+		$newspaper-color: lighten(#F8ECC2, 5);
 
-	width: 100%;
-	height: $news-height;
-	padding: $news-padding;
-	border: 1px $border-color solid;
-	border-radius: $border-radius;
-	overflow-y: auto;
+		// disable bootstrap default panel style
+		border-radius: 0;
+		border: none;
 
-	h1 {
-		font-size: 25px;
-		font-family: 'Cinzel', serif;
+		background-color: $newspaper-color;
+		padding: $newspaper-padding;
+		min-height: $newspaper-min-height;
+
+		.newspaper-header {
+			margin: 0 0 20px 0;
+		}
+
+		h1 {
+			margin: 0;
+			font-family: Cinzel;
+			font-size: 40px;
+			text-align: center;
+			letter-spacing: 5px;
+		}
+
+		.newspaper-day {
+			text-align: center;
+			margin: -15px 0 0 0;
+			font-size: 25px;
+		}
+
+		.news {
+			text-align: justify;
+		}
 	}
-
-	.news { font-family: cursive; }
 }
 
 table.first-col-small {

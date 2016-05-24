@@ -7,18 +7,35 @@
  */
 
 $events = Event::getGameEvent($game);
-$curr_day = -1;
+
+$days = [];
+foreach ($events as $event) {
+    $news = Event::getNewsFromEvent($event, $user);
+    if (!isset($days[$news["day"]]))
+        $days[$news["day"]] = array();
+    $days[$news["day"]][] = $news;
+}
+
+$keys = array_reverse(array_keys($days));
+
 ?>
 <h2>Giornale</h2>
 <div class="newspaper">
-    <?php foreach ($events as $event): ?>    
-        <?php $news = Event::getNewsFromEvent($event, $user); ?>        
-        <?php if ($news): ?>
-            <?php if ($news["day"] != $curr_day): ?>
-                <h1><?= GameTime::getNameFromDay($news["day"], true) ?></h1>
-            <?php endif; ?>
-            <?php $curr_day = $news["day"]; ?>
-            <div class="news"><?= $news["news"] ?></div>
-        <?php endif; ?>
-    <?php endforeach; ?>
+    <?php foreach ($keys as $day) { ?>
+        <?php $newses = $days[$day]; ?>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="newspaper-header">
+                    <h1>Lupus in Tabula</h1>
+                    <p class="newspaper-day"><?= GameTime::getNameFromDay($day, true) ?></p>
+                </div>
+
+                <?php foreach ($newses as $news) { ?>
+                    <div class="news col-md-6">
+                        <?= $news["news"] ?>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    <?php } ?>
 </div>

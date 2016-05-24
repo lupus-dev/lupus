@@ -278,7 +278,7 @@ class Event {
             case EventCode::PaparazzoAction:
                 return Event::getNewsFromPaparazzoAction($event, $user);
             case EventCode::BecchinoAction:
-                return Event::getNewsFromBecchinoAction($event, $user);
+                return Event::getNewsFromBecchinoAction($event);
             case EventCode::PlayerKicked:
                 return Event::getNewsFromPlayerKicked($event);
             default:
@@ -295,19 +295,9 @@ class Event {
         $game = Game::fromIdGame($event->id_game);
 
         $timestamp = $event->event_data["start"];
-        $date = date("d-m-Y", $timestamp);
+        $date = date("d/m/Y", $timestamp);
         $hour = date("H:i:s", $timestamp);
-        $news = "La partita è iniziata il $date alle $hour";
-
-        if ($game->status >= GameStatus::Winy || $game->gen_info["gen_mode"] == "manual") {
-            $roles = $game->gen_info["manual"]["roles"];
-            $news .= "<pre>I ruoli nella partita sono:";
-            $news .= "<table>";
-            foreach ($roles as $role => $freq)
-                if ($freq > 0)
-                    $news .= "<tr><td>$role: </td><td>$freq</td></tr>";
-            $news .= "</table></pre>";
-        }
+        $news = Event::getEventTemplate("GameStart", get_defined_vars());
 
         return array(
             "day" => 0,
@@ -325,29 +315,8 @@ class Event {
         $username = $event->event_data["dead"];
         $killer = $event->event_data["actor"];
 
-        $news = "";
+        $news = Event::getEventTemplate("Death", get_defined_vars());
 
-        if ($event->event_data["cause"] == "kill-day")
-            $news = "Il giocatore $username è stato messo al rogo";
-        else
-            $news = "Il giocatore $username è stato trovato morto";
-
-        if ($game->status >= GameStatus::Winy) {
-            switch ($event->event_data["cause"]) {
-                case "kill-day":
-                    $news = "Il giocatore $username è stato messo al rogo. Focolare preparato da $killer";
-                    break;
-                case "kill-assassino":
-                    $news = "Il giocatore $username è stato assassinato da $killer";
-                    break;
-                case "kill-lupo":
-                    $news = "Il giocatore $username è stato sbranato da $killer";
-                    break;
-                case "suicidio-pastore":
-                    $news = "Il giocatore $username ha sacrificato una pecora di troppo";
-                    break;
-            }
-        }
         return array(
             "day" => $event->day,
             "news" => $news
@@ -367,9 +336,11 @@ class Event {
         $mana = ($event->event_data["mana"] == Mana::Good) ? "buono" : "cattivo";
         $username = $event->event_data["seen"];
 
+        $news = Event::getEventTemplate("Medium", get_defined_vars());
+
         return array(
             "day" => $event->day,
-            "news" => "Il giocatore $username aveva un mana $mana"
+            "news" => $news
         );
     }
 
@@ -386,9 +357,11 @@ class Event {
         $mana = ($event->event_data["mana"] == Mana::Good) ? "buono" : "cattivo";
         $username = $event->event_data["seen"];
 
+        $news = Event::getEventTemplate("Veggente", get_defined_vars());
+
         return array(
             "day" => $event->day,
-            "news" => "Il giocatore $username ha un mana $mana"
+            "news" => $news
         );
     }
 
@@ -400,21 +373,9 @@ class Event {
     private static function getNewsFromPaparazzoAction($event) {
         $game = Game::fromIdGame($event->id_game);
         $username = $event->event_data["seen"];
-
-        $news = "Il giocatore $username è stato paparazzato ";
         $visitors = $event->event_data["visitors"];
 
-        if (count($visitors) == 0)
-            $news .= "da solo";
-        else if (count($visitors) == 1)
-            $news .= "insieme a " . $visitors[0];
-        else {
-            $chunk = array_chunk($visitors, count($visitors) - 1);
-            $news .= "insieme a " . implode(", ", $chunk[0]) . " e " . $chunk[1][0];
-        }
-
-        if ($game->status >= GameStatus::Winy)
-            $news .= " da " . $event->event_data["paparazzo"];
+        $news = Event::getEventTemplate("Paparazzo", get_defined_vars());
 
         return array(
             "day" => $event->day,
@@ -429,20 +390,13 @@ class Event {
      * @return array|boolean Ritorna le informazioni della resurrezione. False se non la può
      * vedere
      */
-    private static function getNewsFromBecchinoAction($event, $user) {
+    private static function getNewsFromBecchinoAction($event) {
+        $game = Game::fromIdGame($event->id_game);
         $becchino = $event->event_data["becchino"];
         $dead = $event->event_data["dead"];
-        
-        if ($becchino == $user->username)
-            $news = "Hai resuscitato $dead";
-        else {
-            $game = Game::fromIdGame($event->id_game);
-            if ($game->status >= GameStatus::Winy)
-                $news = "Il giocatore $becchino ha resuscitato $dead";
-            else
-                $news = "Miracolo! Il giocatore $dead è tornato in vita!";
-        }
-        
+
+        $news = Event::getEventTemplate("Becchino", get_defined_vars());
+
         return array(
             "day" => $event->day,
             "news" => $news
@@ -457,9 +411,26 @@ class Event {
     private static function getNewsFromPlayerKicked($event) {
         $kicked = $event->event_data["kicked"];
 
+        $news = Event::getEventTemplate("PlayerKicked", get_defined_vars());
+
         return array(
             "day" => $event->day,
-            "news" => "Il giocatore $kicked è stato espulso dalla partita"
+            "news" => $news
         );
+    }
+
+    /**
+     * Esegue un template e ritorna il risultato
+     * @param string $file Percorso completo del template da usare
+     * @param array $defined_vars Vettore associativo con le variabili definite (usare get_defined_vars)
+     * @return string Output del template
+     */
+    private static function getEventTemplate($file, $defined_vars = array()) {
+        extract($defined_vars);
+        ob_start();
+        include __DIR__ . "/../events/event.$file.php";
+        $res = ob_get_contents();
+        ob_end_clean();
+        return $res;
     }
 }

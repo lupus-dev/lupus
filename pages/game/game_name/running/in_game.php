@@ -21,10 +21,10 @@ $role = Role::fromUser($user, $engine);
 <div class="col-sm-6 row" class="players">
     <?php include __DIR__ . "/players.php"; ?>
 </div>
-<div class="col-sm-6" class="news">
+<div class="col-sm-8" class="news">
     <?php include __DIR__ . "/news.php"; ?>
 </div>
-<div class="col-sm-6" class="chat">
+<div class="col-sm-4" class="chat">
     <?php include __DIR__ . "/chat.php"; ?>
 </div>
 

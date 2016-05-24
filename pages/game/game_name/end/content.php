@@ -22,7 +22,7 @@ if ($game_status < GameStatus::TermByAdmin) {
         $winner = "Morte";
 } else {
     if ($game_status == GameStatus::TermByAdmin)
-        $message = "Partita terminata dall'amministartore";
+        $message = "Partita terminata dall'amministratore";
     else if ($game_status == GameStatus::TermBySolitude)
         $message = "Partita terminata per solitudine";
     else if ($game_status == GameStatus::TermByVote)
@@ -91,16 +91,6 @@ $curr_day = -1;
 </div>
 <div class="clearfix"></div>
 <hr>
-<h2>Lo storico del villaggio</h2>
-<div class="newspaper">
-    <?php foreach ($events as $event): ?>    
-        <?php $news = Event::getNewsFromEvent($event, $user); ?>        
-        <?php if ($news): ?>
-            <?php if ($news["day"] != $curr_day): ?>
-                <h1><?= GameTime::getNameFromDay($news["day"], true) ?></h1>
-            <?php endif; ?>
-            <?php $curr_day = $news["day"]; ?>
-            <div class="news"><?= $news["news"] ?></div>
-        <?php endif; ?>
-    <?php endforeach; ?>
+<div class="col-md-8">
+    <?php include __DIR__ . "/../running/news.php"; ?>
 </div>
