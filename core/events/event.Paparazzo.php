@@ -24,25 +24,28 @@ if (!function_exists("randomName")) {
 
 <h3 style="margin-top: 0">SCOOP!!</h3>
 <p>Notizia bomba! Alcune troop di paparazzi del nostro quotidiano hanno appena tenuto sotto controllo
-l'abitazione della nota celebrità <?= $username ?>.</p>
+l'abitazione della nota celebrità <code><?= $username ?></code>.</p>
 
 <?php if (count($visitors) == 0) { ?>
     <p>Forse non è una persona così importante... nessuno gli ha fatto visita questa notte... Che tristezza!</p>
 <?php } else if (count($visitors) == 1) { ?>
-    <p>Fate attenzione!! <?= $visitors[0] ?> ha fatto visita di soppiatto e credendo di non essere visto da nessuno
-        ha fatto qualcosa...</p>
+    <p>Fate attenzione!! <code><?= $visitors[0] ?></code> ha fatto visita di soppiatto e credendo di non
+        essere visto da nessuno ha fatto qualcosa...</p>
 <?php } else { ?>
     <p>Che notte calda!! Diversi volti noti gli hanno fatto visita, un totale di ben <?= count($visitors) ?>
         persone sono andate a trovarlo. Le foto rivelano che gli ospiti sono stati
         <?php $chunks = array_chunk($visitors, count($visitors) - 1) ?>
-        <?= implode(", ", $chunks[0]) ?> e <?= $chunks[1][0] ?>.
+        <?php foreach ($chunks[0] as $username) { ?>
+            <code><?= $username ?></code>,
+        <?php } ?>
+        e <code><?= $chunks[1][0] ?></code>.
     </p>
 <?php } ?>
 
 <p class="pull-right">
     Articolo di <em>
         <?php if ($game->status >= GameStatus::Winy) { ?>
-            <?= $event->event_data["paparazzo"] ?>
+            <code><?= $event->event_data["paparazzo"] ?></code>
         <?php } else { ?>
             <?= randomName() ?>
         <?php } ?>

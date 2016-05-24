@@ -7,5 +7,5 @@
  */
 
 ?>
-<p>La tua accurata visita nell'aldilà ha rivelato il carattere più intimo di <?= $username ?>,
+<p>La tua accurata visita nell'aldilà ha rivelato il carattere più intimo di <code><?= $username ?></code>,
 in vita, in fondo, era <?= $mana ?>.</p>

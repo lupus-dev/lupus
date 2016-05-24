@@ -7,5 +7,5 @@
  */
 
 ?>
-<p>Il capo dello stato ha decretato che la presenza di <?= $kicked ?> non è più richiesta,
+<p>Il capo dello stato ha decretato che la presenza di <code><?= $kicked ?></code> non è più richiesta,
 la polizia segreta ha provveduto alla sua espulsione.</p>
