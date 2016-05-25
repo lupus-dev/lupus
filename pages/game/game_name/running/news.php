@@ -11,12 +11,14 @@ $events = Event::getGameEvent($game);
 $days = [];
 foreach ($events as $event) {
     $news = Event::getNewsFromEvent($event, $user);
+    if (!$news) continue;
     if (!isset($days[$news["day"]]))
         $days[$news["day"]] = array();
     $days[$news["day"]][] = $news;
 }
 
-$keys = array_reverse(array_keys($days));
+$keys = array_keys($days);
+rsort($keys);
 
 ?>
 <h2>Giornale</h2>
