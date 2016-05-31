@@ -94,7 +94,6 @@ class Game {
     public static function fromIdGame($id) {
         $id = intval($id);
 
-        // TODO add MongoDB
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game WHERE id_game=?";
         $res = Database::query($query, [$id]);
 
@@ -102,6 +101,8 @@ class Game {
             logEvent("Partita non trovata. id_game=$id", LogLevel::Warning);
             return false;
         }
+
+        $res[0]["gen_info"] = Game::getGenInfo($id, $res[0]["gen_info"]);
 
         return Game::fromDBdata($res[0]);
     }
@@ -121,7 +122,6 @@ class Game {
         }
         $id_room = $room->id_room;
 
-        // TODO add MongoDB
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info 
                   FROM game 
                   WHERE id_room=? AND game_name=?";
@@ -132,7 +132,19 @@ class Game {
             return false;
         }
 
+        $res[0]["gen_info"] = Game::getGenInfo($res[0]["id_game"], $res[0]["gen_info"]);
+
         return Game::fromDBdata($res[0]);
+    }
+
+    private static function getGenInfo($id, $default = null) {
+        $id = intval($id);
+        if (Database::$mongo) {
+            $gen_info = Database::$mongo->games->findOne(["_id" => $id]);
+            if ($gen_info)
+                return json_encode($gen_info["gen_info"]);
+        }
+        return $default;
     }
 
     /**
@@ -230,22 +242,35 @@ class Game {
                 )
             )
         );
-        $gen_info = json_encode($gen_info);
 
-        // TODO add MongoDB
-        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,num_players,gen_info) VALUE 
-                  (?,0,0,?,?,8,?)";
+        if (Database::$mongo) {
+            $_gen_info = $gen_info;
+            $gen_info = null;
+        } else
+            $gen_info = json_encode($gen_info);
+
+        $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,num_players,gen_info) VALUE (?,0,0,?,?,8,?)";
 
         $res = Database::query($query, [$id_room, $name, $descr, $gen_info]);
         if (!$res)
             return false;
+
         $id_game = Database::lastInsertId();
-        $game = Game::fromIdGame($id_game);
-        if (!$game) {
-            logEvent("Partita creata ma non trovata...", LogLevel::Warning);
+        if (!$id_game) {
+            logEvent("Impossibile recuperare la partita creata", LogLevel::Warning);
             return false;
+        } else {
+            $res = Database::$mongo->games->insertOne([
+                "_id" => intval($id_game),
+                "gen_info" => $_gen_info
+            ]);
+            if (!$res || $res->getInsertedCount() != 1) {
+                logEvent("Impossibile inserire i dati della partita id=$id_game", LogLevel::Error);
+                return false;
+            }
         }
-        return $game;
+
+        return Game::fromIdGame($id_game);
     }
 
     /**
@@ -257,7 +282,7 @@ class Game {
     public static function getOpenGames($user) {
         $id_user = $user->id_user;
         $notStarted = GameStatus::NotStarted;
-        // TODO add MongoDB
+
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game
                   WHERE status=?
                   AND (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=?)=0
@@ -270,8 +295,10 @@ class Game {
             return false;
 
         $games = array();
-        foreach ($res as $game)
+        foreach ($res as $game) {
+            $game["gen_info"] = Game::getGenInfo($game["id_game"], $game["gen_info"]);
             $games[] = Game::fromDBdata($game);
+        }
 
         return $games;
     }
@@ -443,7 +470,6 @@ class Game {
         $this->num_players = $num_players;
         $this->gen_info = $gen_info;
 
-        // TODO add MongoDB
         $query = "UPDATE game SET game_descr=?, num_players=?, gen_info=? WHERE id_game=?";
         $res = Database::query($query, [$game_descr, $num_players, $gen_info, $id_game]);
         if (!$res)

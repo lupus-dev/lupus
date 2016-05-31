@@ -114,7 +114,7 @@ class Event {
         if (Database::$mongo) {
             $event_data = Database::$mongo->events->findOne(["_id" => $id]);
             if ($event_data)
-                return $event_data["event_data"];
+                return json_decode(json_encode($event_data["event_data"]), true);
         }
         return $default;
     }
