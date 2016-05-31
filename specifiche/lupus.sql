@@ -7,7 +7,7 @@ CREATE TABLE `chat` (
   `id_user_from` int(11) NOT NULL,
   `dest` int(11) NOT NULL,
   `group` int(11) NOT NULL,
-  `text` varchar(200) CHARACTER SET utf8 NOT NULL,
+  `text` varchar(200) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -15,7 +15,7 @@ CREATE TABLE `event` (
   `id_event` int(11) NOT NULL,
   `id_game` int(11) NOT NULL,
   `event_code` int(11) NOT NULL,
-  `event_data` varchar(500) CHARACTER SET utf8 NOT NULL,
+  `event_data` varchar(500) DEFAULT NULL,
   `day` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -24,37 +24,37 @@ CREATE TABLE `game` (
   `id_room` int(11) NOT NULL,
   `day` int(11) NOT NULL,
   `status` int(11) NOT NULL,
-  `game_name` varchar(10) CHARACTER SET utf8 NOT NULL,
-  `game_descr` varchar(100) CHARACTER SET utf8 NOT NULL,
+  `game_name` varchar(10) NOT NULL,
+  `game_descr` varchar(100) NOT NULL,
   `num_players` int(11) NOT NULL,
-  `gen_info` varchar(500) CHARACTER SET utf8 NOT NULL
+  `gen_info` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `player` (
   `id_role` int(11) NOT NULL,
   `id_game` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `role` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `role` varchar(45) NOT NULL,
   `status` int(11) NOT NULL,
-  `data` varchar(500) CHARACTER SET utf8 NOT NULL,
-  `chat_info` varchar(500) CHARACTER SET utf8 NOT NULL
+  `data` varchar(500) NOT NULL,
+  `chat_info` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `room` (
   `id_room` int(11) NOT NULL,
   `id_admin` int(11) NOT NULL,
-  `room_name` varchar(10) CHARACTER SET utf8 NOT NULL,
-  `room_descr` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `room_name` varchar(10) NOT NULL,
+  `room_descr` varchar(45) NOT NULL,
   `private` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user` (
   `id_user` int(11) NOT NULL,
-  `username` varchar(10) CHARACTER SET utf8 NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `username` varchar(10) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `level` int(11) NOT NULL,
-  `name` varchar(45) CHARACTER SET utf8 NOT NULL,
-  `surname` varchar(45) CHARACTER SET utf8 NOT NULL
+  `name` varchar(45) NOT NULL,
+  `surname` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `vote` (

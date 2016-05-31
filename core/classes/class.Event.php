@@ -57,7 +57,6 @@ class Event {
     public static function fromIdEvent($id) {
         $id = intval($id);
 
-        // TODO add MongoDB
         $query = "SELECT id_event,id_game,event_code,event_data,day 
                   FROM event
                   WHERE id_event=?";
@@ -68,11 +67,13 @@ class Event {
             return false;
         }
 
+        $event_data = Event::getGameEventData($id, json_decode($res[0]["event_data"], true));
+
         $event = new Event();
         $event->id_event = $res[0]["id_event"];
         $event->id_game = $res[0]["id_game"];
         $event->event_code = $res[0]["event_code"];
-        $event->event_data = json_decode($res[0]["event_data"], true);
+        $event->event_data = $event_data;
         $event->day = $res[0]["day"];
 
         return $event;
@@ -87,7 +88,6 @@ class Event {
     public static function getGameEvent($game) {
         $id_game = $game->id_game;
 
-        // TODO add MongoDB
         $query = "SELECT id_event,id_game,event_code,event_data,day 
                   FROM event
                   WHERE id_game=?";
@@ -99,13 +99,24 @@ class Event {
             $event->id_event = $e["id_event"];
             $event->id_game = $e["id_game"];
             $event->event_code = $e["event_code"];
-            $event->event_data = json_decode($e["event_data"], true);
+            $event_data = Event::getGameEventData($e["id_event"], json_decode($e["event_data"], true));
+            $event->event_data = $event_data;
             $event->day = $e["day"];
 
             $events[] = $event;
         }
 
         return $events;
+    }
+
+    private static function getGameEventData($id, $default = null) {
+        $id = intval($id);
+        if (Database::$mongo) {
+            $event_data = Database::$mongo->events->findOne(["_id" => $id]);
+            if ($event_data)
+                return $event_data["event_data"];
+        }
+        return $default;
     }
 
     /**
@@ -240,12 +251,16 @@ class Event {
      */
     private static function insertEvent($game, $event_code, $event_data) {
         $id_game = $game->id_game;
-        $event_data = json_encode($event_data);
         $day = $game->day;
 
-        // TODO add MongoDB
-        $query = "INSERT INTO event (id_game,event_code,event_data,day) VALUE 
-                  (?, ?, ?, ?)";
+        if (Database::$mongo) {
+            // save the event data for MongoDB
+            $_event_data = $event_data;
+            $event_data = null;
+        } else
+            $event_data = json_encode($event_data);
+
+        $query = "INSERT INTO event (id_game,event_code,event_data,day) VALUE (?, ?, ?, ?)";
         $res = Database::query($query, [$id_game, $event_code, $event_data, $day]);
         if (!$res) {
             logEvent("Impossibile inserire l'evento id_game=$id_game event_code=$event_code", LogLevel::Warning);
@@ -253,9 +268,19 @@ class Event {
         }
 
         $id_event = Database::lastInsertId();
+
         if (!$id_event) {
             logEvent("Impossibile recuperare l'evento creato", LogLevel::Warning);
             return false;
+        } else {
+            $res = Database::$mongo->events->insertOne([
+                "_id" => intval($id_event),
+                "event_data" => $_event_data
+            ]);
+            if (!$res || $res->getInsertedCount() != 1) {
+                logEvent("Impossibile inserire i dati dell'evento id=$id_event", LogLevel::Error);
+                return false;
+            }
         }
 
         return Event::fromIdEvent($id_event);
