@@ -217,13 +217,18 @@ class Chat {
         $id_game = $game->id_game;
         $id_user = $user->id_user;
 
-        // TODO add MongoDB
-        $query = "SELECT chat_info FROM player WHERE id_game=? AND id_user=?";
-        $res = Database::query($query, [$id_game, $id_user]);
-        if (!$res)
-            return false;
+        if (Database::$mongo) {
+            $data = Database::$mongo->chat->findOne(["id_game" => $id_game, "id_user" => $id_user]);
+            if ($data)
+                $data = $data["chat_info"];
+        } else {
+            $query = "SELECT chat_info FROM player WHERE id_game=? AND id_user=?";
+            $res = Database::query($query, [$id_game, $id_user]);
+            if (!$res)
+                return false;
+            $data = json_decode($res[0]["chat_info"], true);
+        }
 
-        $data = json_decode($res[0]["chat_info"], true);
         if (!$data)
             $data = Chat::initializeChatInfo($game, $user);
         return $data;
@@ -239,15 +244,19 @@ class Chat {
     public static function setUserChatInfo($game, $user, $data) {
         $id_game = $game->id_game;
         $id_user = $user->id_user;
-        
-        $data = json_encode($data);
 
-        // TODO add MongoDB
-        $query = "UPDATE player SET chat_info=? WHERE id_game=? AND id_user=?";
-        $res = Database::query($query, [$data, $id_game, $id_user]);
-        if (!$res)
-            return false;
-        return true;
+        if (Database::$mongo) {
+            $res = Database::$mongo->chat->updateOne(
+                ["id_game" => $id_game, "id_user" => $id_user],
+                [ '$set' => ["chat_info" => $data] ],
+                ["upsert" => true]);
+            return $res->getUpsertedCount() + $res->getModifiedCount() == 1;
+        } else {
+            $data = json_encode($data);
+            $query = "UPDATE player SET chat_info=? WHERE id_game=? AND id_user=?";
+            $res = Database::query($query, [$data, $id_game, $id_user]);
+            return !!$res;
+        }
     }
 
 }

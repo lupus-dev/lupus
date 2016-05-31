@@ -84,8 +84,8 @@ class Engine {
      * @param \Game $game Partita in cui il motore girerà
      */
     public function __construct($game) {
-        logEvent("-----------------------------------------------------------", LogLevel::Debug);
-        logEvent("Creato Engine: room={$game->id_room} game={$game->game_name}({$game->id_game})", LogLevel::Debug);
+        logEvent("-----------------------------------------------------------", LogLevel::Verbose);
+        logEvent("Creato Engine: room={$game->id_room} game={$game->game_name}({$game->id_game})", LogLevel::Verbose);
         $this->game = $game;
     }
 

@@ -19,7 +19,7 @@ class Database {
 
     /**
      * Il database di MongoDB. null se non è connesso
-     * @var null|MongoDB\Client
+     * @var null|MongoDB\Database
      */
     public static $mongo = null;
 
@@ -42,8 +42,10 @@ class Database {
         }
 
         try {
-            Database::$mongo = new MongoDB\Client(Config::$mongo_string);
-            Database::$mongo->listDatabases();
+            $client = new MongoDB\Client(Config::$mongo_string);
+            // throw an exception if mongo is unavailable
+            $client->listDatabases();
+            Database::$mongo = $client->lupus;
         } catch (Exception $ex) {
             if (Config::$mongo_fallback)
                 // disable mongo using the fallback
