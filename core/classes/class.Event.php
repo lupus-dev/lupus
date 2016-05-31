@@ -273,13 +273,15 @@ class Event {
             logEvent("Impossibile recuperare l'evento creato", LogLevel::Warning);
             return false;
         } else {
-            $res = Database::$mongo->events->insertOne([
-                "_id" => intval($id_event),
-                "event_data" => $_event_data
-            ]);
-            if (!$res || $res->getInsertedCount() != 1) {
-                logEvent("Impossibile inserire i dati dell'evento id=$id_event", LogLevel::Error);
-                return false;
+            if (Database::$mongo) {
+                $res = Database::$mongo->events->insertOne([
+                    "_id" => intval($id_event),
+                    "event_data" => $_event_data
+                ]);
+                if (!$res || $res->getInsertedCount() != 1) {
+                    logEvent("Impossibile inserire i dati dell'evento id=$id_event", LogLevel::Error);
+                    return false;
+                }
             }
         }
 

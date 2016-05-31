@@ -260,13 +260,15 @@ class Game {
             logEvent("Impossibile recuperare la partita creata", LogLevel::Warning);
             return false;
         } else {
-            $res = Database::$mongo->games->insertOne([
-                "_id" => intval($id_game),
-                "gen_info" => $_gen_info
-            ]);
-            if (!$res || $res->getInsertedCount() != 1) {
-                logEvent("Impossibile inserire i dati della partita id=$id_game", LogLevel::Error);
-                return false;
+            if (Database::$mongo) {
+                $res = Database::$mongo->games->insertOne([
+                    "_id" => intval($id_game),
+                    "gen_info" => $_gen_info
+                ]);
+                if (!$res || $res->getInsertedCount() != 1) {
+                    logEvent("Impossibile inserire i dati della partita id=$id_game", LogLevel::Error);
+                    return false;
+                }
             }
         }
 
