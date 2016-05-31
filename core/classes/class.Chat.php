@@ -217,6 +217,7 @@ class Chat {
         $id_game = $game->id_game;
         $id_user = $user->id_user;
 
+        // TODO add MongoDB
         $query = "SELECT chat_info FROM player WHERE id_game=? AND id_user=?";
         $res = Database::query($query, [$id_game, $id_user]);
         if (!$res)
@@ -241,6 +242,7 @@ class Chat {
         
         $data = json_encode($data);
 
+        // TODO add MongoDB
         $query = "UPDATE player SET chat_info=? WHERE id_game=? AND id_user=?";
         $res = Database::query($query, [$data, $id_game, $id_user]);
         if (!$res)

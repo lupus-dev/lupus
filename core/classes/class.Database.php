@@ -18,6 +18,12 @@ class Database {
     private static $db = null;
 
     /**
+     * Il database di MongoDB. null se non è connesso
+     * @var null|MongoDB\Client
+     */
+    public static $mongo = null;
+
+    /**
      * Il costruttore è privato perchè è una classe statica
      */
     private function __construct() {}
@@ -33,6 +39,20 @@ class Database {
             logEvent("Errore connessione DB", LogLevel::Error);
             logEvent($e->getMessage(), LogLevel::Error);
             return false;
+        }
+
+        try {
+            Database::$mongo = new MongoDB\Client(Config::$mongo_string);
+            Database::$mongo->listDatabases();
+        } catch (Exception $ex) {
+            if (Config::$mongo_fallback)
+                // disable mongo using the fallback
+                Database::$mongo = null;
+            else {
+                logEvent("Errore connessione a MongoDB", LogLevel::Error);
+                logEvent($ex->getMessage(), LogLevel::Error);
+                return false;
+            }
         }
         logEvent("Connesso al DB", LogLevel::Verbose);
         return true;

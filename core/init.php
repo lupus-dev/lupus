@@ -13,6 +13,12 @@
  * index delle api, ecc...)
  */
 
+if (!file_exists(__DIR__ . "/../vendor/autoload.php"))
+    die("Eseguire 'composer install' prima di avviare questa applicazione");
+
+// include le librerie da Composer
+require_once __DIR__ . "/../vendor/autoload.php";
+
 require_once __DIR__ . "/porting.php";
 
 // include tutte le classi

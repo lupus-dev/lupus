@@ -16,3 +16,5 @@ specifiche/*.toc
 log/log.txt
 .idea
 config/config.ini
+vendor/
+composer.phar

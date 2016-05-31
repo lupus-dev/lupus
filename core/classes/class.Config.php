@@ -15,6 +15,8 @@ class Config {
     public static $db_string = "mysql:host=localhost;dbname=lupus";
     public static $db_user = "root";
     public static $db_password = "password";
+    public static $mongo_string = "mongodb://localhost:27017";
+    public static $mongo_fallback = true;
 
     public static $log_level = 3;
     public static $log_path = "log/log.txt";
@@ -44,6 +46,8 @@ class Config {
         Config::$db_string = $config["database"]["string"];
         Config::$db_user = $config["database"]["username"];
         Config::$db_password = $config["database"]["password"];
+        Config::$mongo_string = $config["database"]["mongo_string"];
+        Config::$mongo_fallback = $config["database"]["mongo_fallback"];
 
         Config::$log_level = $config["log"]["level"];
         

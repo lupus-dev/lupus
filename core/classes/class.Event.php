@@ -57,6 +57,7 @@ class Event {
     public static function fromIdEvent($id) {
         $id = intval($id);
 
+        // TODO add MongoDB
         $query = "SELECT id_event,id_game,event_code,event_data,day 
                   FROM event
                   WHERE id_event=?";
@@ -86,6 +87,7 @@ class Event {
     public static function getGameEvent($game) {
         $id_game = $game->id_game;
 
+        // TODO add MongoDB
         $query = "SELECT id_event,id_game,event_code,event_data,day 
                   FROM event
                   WHERE id_game=?";
@@ -241,6 +243,7 @@ class Event {
         $event_data = json_encode($event_data);
         $day = $game->day;
 
+        // TODO add MongoDB
         $query = "INSERT INTO event (id_game,event_code,event_data,day) VALUE 
                   (?, ?, ?, ?)";
         $res = Database::query($query, [$id_game, $event_code, $event_data, $day]);

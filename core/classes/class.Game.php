@@ -94,6 +94,7 @@ class Game {
     public static function fromIdGame($id) {
         $id = intval($id);
 
+        // TODO add MongoDB
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game WHERE id_game=?";
         $res = Database::query($query, [$id]);
 
@@ -120,6 +121,7 @@ class Game {
         }
         $id_room = $room->id_room;
 
+        // TODO add MongoDB
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info 
                   FROM game 
                   WHERE id_room=? AND game_name=?";
@@ -230,6 +232,7 @@ class Game {
         );
         $gen_info = json_encode($gen_info);
 
+        // TODO add MongoDB
         $query = "INSERT INTO game (id_room,day,status,game_name,game_descr,num_players,gen_info) VALUE 
                   (?,0,0,?,?,8,?)";
 
@@ -254,6 +257,7 @@ class Game {
     public static function getOpenGames($user) {
         $id_user = $user->id_user;
         $notStarted = GameStatus::NotStarted;
+        // TODO add MongoDB
         $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game
                   WHERE status=?
                   AND (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=?)=0
@@ -439,6 +443,7 @@ class Game {
         $this->num_players = $num_players;
         $this->gen_info = $gen_info;
 
+        // TODO add MongoDB
         $query = "UPDATE game SET game_descr=?, num_players=?, gen_info=? WHERE id_game=?";
         $res = Database::query($query, [$game_descr, $num_players, $gen_info, $id_game]);
         if (!$res)
