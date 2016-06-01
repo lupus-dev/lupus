@@ -42,6 +42,8 @@ class Database {
         }
 
         try {
+            if (!class_exists("MongoDB\\Client"))
+                throw new Exception("MongoDB extension not found");
             $client = new MongoDB\Client(Config::$mongo_string);
             // throw an exception if mongo is unavailable
             $client->listDatabases();
