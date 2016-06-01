@@ -314,6 +314,11 @@ class Engine {
             // se la squadra ha vinto
             if ($team_obj->checkWin()) {
                 logEvent("La squadra {$team_name::$name} ha vinto", LogLevel::Debug);
+
+                $players = $team_obj->getAllTeam();
+                foreach ($players as $id_user)
+                    User::fromIdUser($id_user)->addKarma(Level::KARMA_PER_WIN);
+
                 return GameStatus::Winy + $team_name::$team_code;
             }
         }

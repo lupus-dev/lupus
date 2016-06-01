@@ -272,6 +272,8 @@ class Game {
             }
         }
 
+        $admin->addKarma(Level::KARMA_PER_CREATED);
+
         return Game::fromIdGame($id_game);
     }
 
@@ -410,6 +412,8 @@ class Game {
         if (!$res)
             return false;
 
+        $user->addKarma(Level::KARMA_PER_JOIN);
+
         return true;
     }
 
@@ -465,18 +469,54 @@ class Game {
         $num_players = intval($gen_info["gen_mode"] == "auto" ?
                         $gen_info["auto"]["num_players"] :
                         array_sum($gen_info["manual"]["roles"]));
-        $gen_info = json_encode($gen_info);
-        $id_game = $this->id_game;
-
+        $id_game = intval($this->id_game);
         $this->game_descr = $game_descr;
         $this->num_players = $num_players;
         $this->gen_info = $gen_info;
+
+        if (Database::$mongo) {
+            $res = Database::$mongo->games->updateOne(
+                ["_id" => $id_game],
+                ['$set' => [ "gen_info" => Game::filterGenInfo($gen_info) ]],
+                ["upsert" => true]);
+
+            if ($res->getUpsertedCount() + $res->getModifiedCount() != 1)
+                return false;
+
+            $gen_info = null;
+        } else
+            $gen_info = json_encode($gen_info);
 
         $query = "UPDATE game SET game_descr=?, num_players=?, gen_info=? WHERE id_game=?";
         $res = Database::query($query, [$game_descr, $num_players, $gen_info, $id_game]);
         if (!$res)
             return false;
+
         return true;
+    }
+
+    /**
+     * Filtra i parametri di gen_info lasciando solo quelli autorizzati e rende i numeri "interi"
+     * @param array $gen_info Gen_info dai parametri delle API
+     * @return array gen_info filtrato
+     */
+    private static function filterGenInfo($gen_info) {
+        $res = [
+            "gen_mode" => $gen_info["gen_mode"],
+            "auto" => [
+                "num_players" => intval($gen_info["auto"]["num_players"]),
+                "roles" => $gen_info["auto"]["roles"]
+            ],
+            "manual" => [
+                "roles" => []
+            ]
+        ];
+
+        foreach ($gen_info["manual"]["roles"] as $role => $freq)
+            if (intval($freq) > 0)
+                $res["manual"]["roles"][$role] = intval($freq);
+        
+        return $res;
     }
 
     /**

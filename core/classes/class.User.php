@@ -31,6 +31,12 @@ class User {
     public $level;
 
     /**
+     * Karma dell'utente
+     * @var int
+     */
+    public $karma;
+
+    /**
      * Il nome dell'utente
      * @var string
      */
@@ -58,7 +64,7 @@ class User {
     public static function fromIdUser($id) {
         $id = intval($id);
 
-        $query = "SELECT id_user,username,level,name,surname FROM user WHERE id_user=?";
+        $query = "SELECT id_user,username,level,karma,name,surname FROM user WHERE id_user=?";
         $res = Database::query($query, [$id]);
 
         if (count($res) != 1) {
@@ -70,6 +76,7 @@ class User {
         $user->id_user = $res[0]["id_user"];
         $user->username = $res[0]["username"];
         $user->level = $res[0]["level"];
+        $user->karma = $res[0]["karma"];
         $user->name = $res[0]["name"];
         $user->surname = $res[0]["surname"];
 
@@ -83,7 +90,7 @@ class User {
      * è stato trovato
      */
     public static function fromUsername($username) {
-        $query = "SELECT id_user,username,level,name,surname FROM user WHERE username=?";
+        $query = "SELECT id_user,username,level,karma,name,surname FROM user WHERE username=?";
         $res = Database::query($query, [$username]);
 
         if (count($res) != 1) {
@@ -95,6 +102,7 @@ class User {
         $user->id_user = $res[0]["id_user"];
         $user->username = $res[0]["username"];
         $user->level = $res[0]["level"];
+        $user->karma = $res[0]["karma"];
         $user->name = $res[0]["name"];
         $user->surname = $res[0]["surname"];
 
@@ -247,6 +255,24 @@ class User {
     }
 
     /**
+     * Add (or remove) karma to the user
+     * @param int $delta Karma to add or remove to the user
+     * @return boolean True se l'operazione ha success, false altrimenti
+     */
+    public function addKarma($delta) {
+        $sql = "UPDATE user SET karma = karma + ? WHERE id_user = ?";
+        $res = Database::query($sql, [$delta, $this->id_user]);
+        if (!$res) return false;
+
+        $this->karma += $delta;
+        logEvent(($delta >= 0 ? "+$delta" : "$delta") . " di karma per $this->username", LogLevel::Debug);
+
+        Level::checkLevelAdvance($this);
+
+        return true;
+    }
+
+    /**
      * Effettua la registrazione di un utente
      * @param string $username Nome utente
      * @param string $password Password
@@ -262,8 +288,8 @@ class User {
         
         $password = self::password_hash($password);
 
-        $query = "INSERT INTO user (username,password,level,name,surname) VALUE 
-                  (?, ?, 2, ?, ?)";
+        $query = "INSERT INTO user (username,password,level,karma,name,surname) VALUE 
+                  (?, ?, 1, 0, ?, ?)";
         $res = Database::query($query, [$username, $password, $nome, $cognome]);
         if (!$res)
             return false;

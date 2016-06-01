@@ -11,6 +11,32 @@
  * Classe che contiene le informazioni di un livello
  */
 class Level {
+
+    /**
+     * Percorso dove trovare il file con i metadati dei livelli
+     */
+    const LEVEL_PATH = __DIR__ . "/../metadata/data.levels.json";
+
+    /**
+     * Karma guadagnato per partita giocata dall'utente
+     */
+    const KARMA_PER_JOIN = 10;
+    /**
+     * Karma guadagnato per partita vinta
+     */
+    const KARMA_PER_WIN = 10;
+    /**
+     * Karma guadagnato per partita creata
+     */
+    const KARMA_PER_CREATED = 5;
+
+
+    /**
+     * Cache dei livelli presenti nel file LEVEL_PATH
+     * @var array|null
+     */
+    private static $levelsCache;
+
     /**
      * Nome del livello
      * @var string
@@ -36,16 +62,22 @@ class Level {
      * @var boolean
      */
     public $betaFeature;
+    /**
+     * Quantità minima di karma necessario per entrare in questo livello
+     * @var int
+     */
+    public $requiredKarma;
 
     /**
      * Costruttore privato
      */
-    private function __construct($name, $aviableRoom, $privateRoom, $aviableGame, $betaFeature) {
-        $this->name = $name;
-        $this->aviableRoom = $aviableRoom;
-        $this->privateRoom = $privateRoom;
-        $this->aviableGame = $aviableGame;
-        $this->betaFeature = $betaFeature;
+    private function __construct($data) {
+        $this->name = $data['name'];
+        $this->aviableRoom = $data['availableRoom'];
+        $this->privateRoom = $data['privateRoom'];
+        $this->aviableGame = $data['concurrentGame'];
+        $this->betaFeature = $data['betaFeature'];
+        $this->requiredKarma = $data['requiredKarma'];
     }
 
     /**
@@ -54,18 +86,16 @@ class Level {
      * livello
      */
     public static function getLevels() {
+        if (Level::$levelsCache) return Level::$levelsCache;
+
         $levels = array();
-        $levels[1] = new Level("Neofita", 0, 0, 3, false);
-        $levels[2] = new Level("Principiante", 1, 0, 5, false);
-        $levels[3] = new Level("Gamer", 3, 1, 5, false);
-        $levels[4] = new Level("Esperto", 5, 3, 5, false);
-        $levels[5] = new Level("Maestro", 5, 5, 7, false);
-        $levels[6] = new Level("Progamer", 10, 5, 10, false);
-        $levels[7] = new Level("Stratega", 10, 10, 15, true);
-        $levels[8] = new Level("Generale", 100, 10, 50, true);
-        $levels[9] = new Level("Guru", 100, 100, 100, true);
-        $levels[10] = new Level("GameMaster", 1000, 1000, 1000, true);
-        return $levels;
+        $json = file_get_contents(Level::LEVEL_PATH);
+
+        $i = 1;
+        foreach (json_decode($json, true) as $l)
+            $levels[$i++] = new Level($l);
+
+        return Level::$levelsCache = $levels;
     }
     /**
      * Ritorna il livello con il numero indicato
@@ -78,5 +108,32 @@ class Level {
         if (isset($levels[$level]))
             return $levels[$level];
         return false;
+    }
+
+    /**
+     * Check if the user can level up, if yes level up the user...
+     * @param User $user User to check
+     * @return boolean True if the user has been leveled up, false otherwise
+     */
+    public static function checkLevelAdvance($user) {
+        $level = $user->level;
+        $karma = $user->karma;
+        $levels = Level::getLevels();
+
+        for ($i = $level+1; $i <= count($levels); $i++)
+            if ($karma >= $levels[$i]->requiredKarma)
+                $level = $i;
+
+        if ($level <= $user->level)
+            return false;
+
+        $sql = "UPDATE user SET level=? WHERE id_user=?";
+        $res = Database::query($sql, [$level, $user->id_user]);
+        if (!$res) return false;
+
+        logEvent("L'utente $user->username passa dal livello $user->level al livello $level", LogLevel::Debug);
+
+        $user->level = $level;
+        return true;
     }
 }

@@ -53,6 +53,7 @@ CREATE TABLE `user` (
   `username` varchar(10) NOT NULL,
   `password` varchar(255) NOT NULL,
   `level` int(11) NOT NULL,
+  `karma` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
   `surname` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

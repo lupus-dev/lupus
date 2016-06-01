@@ -201,6 +201,8 @@ class RoleDispenser {
 
         if (count($roles) != count($usernames)) {
             logEvent("Il numero di ruoli generati non corrisponde con il numero di giocatori", LogLevel::Error);
+            logEvent("Giocatori registrati: " . json_encode($usernames), LogLevel::Error);
+            logEvent("Giocatori generati: " . json_encode($roles), LogLevel::Error);
             return false;
         }
 

@@ -64,6 +64,7 @@ class Database {
     /**
      * Esegue una query sql e ritorna il risultato come vettore
      * @param string $sql La query SQL da eseguire
+     * @param array $options Parametri della Prepared Statement
      * @return boolean|mixed False se si verifica un errore. True nelle query 
      * che ritornano true. Un vettore nelle altre query
      */

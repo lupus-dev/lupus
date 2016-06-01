@@ -71,6 +71,13 @@ if ($status == Engine::NeedVote)
         "game" => Game::makeResponse($game),
         "code" => APIStatus::JoinDoneGameWaiting
     ));
+if ($status == Engine::EndGame)
+    response(201, array(
+        "join" => "Ingresso riuscito",
+        "status" => "Partita terminata",
+        "game" => Game::makeResponse($game),
+        "code" => APIStatus::GameTerminated
+    ));
 if ($status >= 500)
     response(500, array(
         "error" => "Un errore del server ha interrotto la partita",

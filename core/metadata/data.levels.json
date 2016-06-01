@@ -1,0 +1,82 @@
+[
+  {
+    "name":           "Neofita",
+    "availableRoom":  1,
+    "privateRoom":    0,
+    "concurrentGame": 3,
+    "betaFeature":    false,
+    "requiredKarma":  0
+  },
+  {
+    "name":           "Principiante",
+    "availableRoom":  1,
+    "privateRoom":    0,
+    "concurrentGame": 5,
+    "betaFeature":    false,
+    "requiredKarma":  25
+  },
+  {
+    "name":           "Gamer",
+    "availableRoom":  3,
+    "privateRoom":    1,
+    "concurrentGame": 5,
+    "betaFeature":    false,
+    "requiredKarma":  50
+  },
+  {
+    "name":           "Esperto",
+    "availableRoom":  5,
+    "privateRoom":    3,
+    "concurrentGame": 5,
+    "betaFeature":    false,
+    "requiredKarma":  100
+  },
+  {
+    "name":           "Maestro",
+    "availableRoom":  5,
+    "privateRoom":    5,
+    "concurrentGame": 7,
+    "betaFeature":    false,
+    "requiredKarma":  200
+  },
+  {
+    "name":           "ProGamer",
+    "availableRoom":  10,
+    "privateRoom":    5,
+    "concurrentGame": 10,
+    "betaFeature":    false,
+    "requiredKarma":  500
+  },
+  {
+    "name":           "Stratega",
+    "availableRoom":  10,
+    "privateRoom":    10,
+    "concurrentGame": 15,
+    "betaFeature":    true,
+    "requiredKarma":  2000
+  },
+  {
+    "name":           "Generale",
+    "availableRoom":  100,
+    "privateRoom":    10,
+    "concurrentGame": 50,
+    "betaFeature":    true,
+    "requiredKarma":  5000
+  },
+  {
+    "name":           "Guru",
+    "availableRoom":  100,
+    "privateRoom":    100,
+    "concurrentGame": 100,
+    "betaFeature":    true,
+    "requiredKarma":  10000
+  },
+  {
+    "name":           "GameMaster",
+    "availableRoom":  1000,
+    "privateRoom":    1000,
+    "concurrentGame": 1000,
+    "betaFeature":    false,
+    "requiredKarma":  1000000000
+  }
+]
