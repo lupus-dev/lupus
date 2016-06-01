@@ -475,13 +475,10 @@ class Game {
         $this->gen_info = $gen_info;
 
         if (Database::$mongo) {
-            $res = Database::$mongo->games->updateOne(
+            Database::$mongo->games->updateOne(
                 ["_id" => $id_game],
                 ['$set' => [ "gen_info" => Game::filterGenInfo($gen_info) ]],
                 ["upsert" => true]);
-
-            if ($res->getUpsertedCount() + $res->getModifiedCount() != 1)
-                return false;
 
             $gen_info = null;
         } else

@@ -148,6 +148,7 @@ Ovviamente perché si possa chiamare \emph{gioco} è necessario che tutto abbia 
 \item Ogni utente ha uno \texttt{username} univoco che usa per identificarsi e per accedere al sito
 \item Lo \texttt{username} è un \emph{nome breve}
 \item Ogni utente ha un \emph{livello} pubblico che determina i privilegi a cui l'utente può accedere
+\item Ogni utente ha un punteggio detto \emph{karma} che viene incrementato ogni volta che il giocatore \emph{gioca}, per esempio quando inizia una partita o ne vince un'altra. Questo punteggio serve per stabilire il livello del giocatore
 \item Ogni utente ha una email che viene usata per verificare l'account e notificare qualcosa\dots \emph{(da definire)}
 \end{itemize}
 
@@ -527,11 +528,11 @@ Questa è una \emph{bozza} della struttura del database, ci saranno sicuramente 
 \subsection{Tabella user}
 In questa tabella vengono memorizzati gli utenti registrati. Ogni utente ha un \texttt{id\_user} che rimane nascosto al pubblico e identifica all'interno del database uno ed un solo utente. Ogni utente è identificato all'esterno con un \texttt{username} unico che rispetta il formato \emph{nome breve}.
 
-La password dell'utente è salvata codificata in \texttt{SHA-1}. In futuro potrebbe essere aggiunto un ulteriore livello di protezione aggiungendo del \emph{salt}.
+Per memorizzare la password viene utilizzata la funzione \texttt{password\_hash} che cifra la password in modo sicuro. Nel caso in cui questa funzione non sia disponibile viene utilizzato il semplice (e insicuro) SHA1.
 
-Il livello dell'utente è salvato nella righe dell'utente. Ogni volta che si verifica un evento che potrebbe modificare il livello, si ricalcola il livello e lo si aggiorna solo se è strettamente maggiore di quello precedente.
+Il livello dell'utente è salvato nella righe dell'utente. Ogni volta che si verifica un evento che potrebbe modificare il livello, si ricalcola il livello e lo si aggiorna solo se è strettamente maggiore di quello precedente. Per il calcolo del livello viene memorizzato il \texttt{karma} dell'utente e i vari livelli sono calcolati in base a questo valore.
 
-Ogni utente ha anche un campo \texttt{name} e uno campo \texttt{surname}
+Ogni utente ha anche un campo \texttt{name} e uno campo \texttt{surname}.
 
 \subsection{Tabella room}
 La tabella \texttt{room} contiene le informazioni delle stanze. 
