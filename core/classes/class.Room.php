@@ -72,7 +72,7 @@ class Room {
         $room->id_admin = $res[0]["id_admin"];
         $room->room_name = $res[0]["room_name"];
         $room->room_descr = $res[0]["room_descr"];
-        $room->private = (boolean) $res[0]["private"];
+        $room->private = $res[0]["private"];
 
         return $room;
     }
@@ -97,7 +97,7 @@ class Room {
         $room->id_admin = $res[0]["id_admin"];
         $room->room_name = $res[0]["room_name"];
         $room->room_descr = $res[0]["room_descr"];
-        $room->private = (boolean) $res[0]["private"];
+        $room->private = $res[0]["private"];
 
         return $room;
     }
@@ -125,7 +125,7 @@ class Room {
             "room_name" => $room->room_name,
             "room_descr" => $room->room_descr,
             "admin" => $admin->username,
-            "private" => (boolean)$room->private,
+            "private" => $room->private,
             "games" => $room->getGame()
         );
         return $res;
@@ -143,7 +143,7 @@ class Room {
      */
     public static function createRoom($name, $descr, $admin, $private) {
         $admin = intval($admin);
-        $private = $private ? 1 : 0;
+        $private = intval($private);
 
         $query = "INSERT INTO room (id_admin,room_name,room_descr,private) VALUE
                   (?, ?, ?, ?)";
@@ -183,5 +183,77 @@ class Room {
         if (count($res) != 1)
             return false;
         return $res[0]["count"] == 0;
+    }
+
+    /**
+     * Controlla se un utente può accedere alla stanza.
+     * Un utente può accedere alla stanza se:
+     * - La stanza è aperta
+     * - La stanza è link-only
+     * - L'utente è nelle ACL della stanza
+     * @param User $user Utente da controllare
+     * @return bool True se l'utente può accedere, False altrimenti
+     */
+    public function checkAuthorized($user) {
+        if ($this->private == RoomPrivate::Open) return true;
+        if ($this->private == RoomPrivate::LinkOnly) return true;
+
+        if ($this->id_admin == $user->id_user) return true;
+
+        $sql = "SELECT * FROM room_acl WHERE id_room=? AND id_user=?";
+        $res = Database::query($sql, [$this->id_room, $user->id_user]);
+
+        if ($res && count($res) == 1) return true;
+
+        logEvent("L'utente $user->username non può accedere alla stanza $this->room_name", LogLevel::Warning);
+
+        return false;
+    }
+
+    /**
+     * Ritorna una lista degli identificativi degli utenti che possono accedere a questa stanza
+     * (se è del tipo ACL). L'admin della stanza è in questo elenco solo se $include_admin è true
+     * @param boolean $include_admin Indica se includere l'admin nell'elenco
+     * @return array|false Ritorna false se la stanza non è ACL altrimenti l'elenco degli utenti
+     * autorizzati
+     */
+    public function getACLUsers($include_admin = true) {
+        if ($this->private != RoomPrivate::ACL) return false;
+
+        $users = array();
+        if ($include_admin) $users[] = $this->id_admin;
+
+        $sql = "SELECT id_user FROM room_acl WHERE id_room=?";
+        $res = Database::query($sql, [$this->id_room]);
+
+        if ($res === false) return false;
+
+        foreach ($res as $u)
+            $users[] = $u["id_user"];
+        return $users;
+    }
+
+    /**
+     * Aggiunge una regola all'ACL della stanza corrente. Non vengono effettuati controlli
+     * @param User $user Utente da aggiungere all'ACL
+     * @return bool True se l'inserimento ha avuto successo, false altrimenti
+     */
+    public function addACL($user) {
+        $sql = "INSERT INTO room_acl (id_room, id_user) VALUES (?, ?)";
+        $res = Database::query($sql, [$this->id_room, $user->id_user]);
+
+        return !!$res;
+    }
+
+    /**
+     * Rimuove un'ACL di una stanza, non vengono effettuati controlli
+     * @param User $user Utente da rimuovere dall'ACL
+     * @return bool True se l'operazione ha avuto successo, false altrimenti
+     */
+    public function removeACL($user) {
+        $sql = "DELETE FROM room_acl WHERE id_room=? AND id_user=?";
+        $res = Database::query($sql, [$this->id_room, $user->id_user]);
+
+        return !!$res;
     }
 }

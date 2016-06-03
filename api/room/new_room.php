@@ -21,7 +21,7 @@ if (!isset($_GET["descr"]))
 
 $room_name = $apiMatches[1];
 $room_descr = $_GET["descr"];
-$private = isset($_GET["private"]);
+$private = isset($_GET["private"]) ? intval($_GET["private"]) : 0;
 
 if (!preg_match("/^$descr_name$/", $room_descr))
     response (400, array(
@@ -46,6 +46,10 @@ if ($private && $numPrivateRooms+1 > $level->privateRoom)
     response (403, array(
         "error" => "L'utente ha esaurito il numero di stanze private disponibili",
         "code" => APIStatus::NewRoomPrivateRoomsEnded));
+if ($private != RoomPrivate::Open && $private != RoomPrivate::LinkOnly && $private != RoomPrivate::ACL)
+    response(400, array(
+        "error" => "Il parametro private non è nel formato corretto",
+        "code" => APIStatus::NewRoomMalformed));
 
 $existRoom = Room::checkIfExists($room_name);
 if ($existRoom)

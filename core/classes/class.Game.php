@@ -286,15 +286,21 @@ class Game {
     public static function getOpenGames($user) {
         $id_user = $user->id_user;
         $notStarted = GameStatus::NotStarted;
+        $open = RoomPrivate::Open;
+        $acl = RoomPrivate::ACL;
 
-        $query = "SELECT id_game,id_room,day,status,game_name,game_descr,num_players,gen_info FROM game
-                  WHERE status=?
-                  AND (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game AND id_user=?)=0
-                  AND (SELECT private FROM room WHERE room.id_room=game.id_room)=0
-                  ORDER BY (SELECT COUNT(*) FROM player WHERE player.id_game=game.id_game) DESC
+        $query = "SELECT game.id_game,game.id_room,day,game.status,game_name,game_descr,num_players,gen_info,COUNT(*) AS giocatori
+                  FROM game
+                  JOIN room ON game.id_room = room.id_room
+                  JOIN player ON player.id_game = game.id_game AND player.id_user!=?
+                  WHERE game.status=? AND private=? OR (private=? AND EXISTS(
+                      SELECT * FROM room_acl WHERE room_acl.id_room = room.id_room AND room_acl.id_user=?
+                  ))
+                  GROUP BY game.id_game,game.id_room,day,game.status,game_name,game_descr,num_players,gen_info
+                  ORDER BY giocatori DESC
                   LIMIT 100";
 
-        $res = Database::query($query, [$notStarted, $id_user]);
+        $res = Database::query($query, [$id_user, $notStarted, $open, $acl, $id_user]);
         if (!$res)
             return false;
 
@@ -601,5 +607,27 @@ class Game {
         logEvent("Il giocatore $username è stato kickato dalla partita $room->room_name/$this->game_name", LogLevel::Notice);
         Event::insertPlayerKicked($this, $user);
         return true;
+    }
+
+    /**
+     * Controlla se un utente può accedere alla partita.
+     * Un utente può accedere alla partita se:
+     * - Può accedere alla stanza
+     * - Fa parte della partita
+     * @param User $user Utente da controllare
+     * @return bool True se l'utente può accedere, False altrimenti
+     */
+    public function checkAuthorized($user) {
+        $room = Room::fromIdRoom($this->id_room);
+
+        if ($room->checkAuthorized($user)) return true;
+
+        $sql = "SELECT * FROM player WHERE player.id_user=? AND player.id_game=?";
+        $res = Database::query($sql, [$user->id_user, $this->id_game]);
+
+        if ($res && count($res) == 1) return true;
+
+        logEvent("L'utente $user->username non può accedere alla partita $room->room_name/$this->game_name", LogLevel::Warning);
+        return false;
     }
 }

@@ -46,8 +46,12 @@ $level = Level::getLevel($user->level);
 if (count($user->getActiveGame()) + 1 > $level->aviableGame)
     response (401, array(        
         "error" => "L'utente ha finito le partite di cui può far parte",
-        "code" => APIStatus::JoinFailedGamesEnded
-    ));
+        "code" => APIStatus::JoinFailedGamesEnded));
+
+if (!$game->checkAuthorized($user))
+    response(403, array(
+        "error" => "Permessi insufficienti per accedere a questa partita",
+        "code" => APIStatus::AccessDenied));
 
 $game->joinGame($user);
 

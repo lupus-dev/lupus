@@ -94,6 +94,80 @@ function ajaxStart() {
 	});
 }
 
+function sortACLTable() {
+	var $table = $('#acl-table'),
+		$rows = $('tbody > tr', $table);
+
+	$rows.sort(function (a, b) {
+		var keyA = $('td', a).text();
+		var keyB = $('td', b).text();
+
+		return (keyA > keyB) ? 1 : 0;
+	});
+
+	$rows.each(function (index, row) {
+		$table.append(row);
+	});
+}
+
+function addACL() {
+	var username = $("#add-acl-text").val();
+
+	$.ajax({
+		url: APIdir + "/room/" + room_name + "/add_acl",
+		type: 'POST',
+		dataType: 'json',
+		data: { username: username },
+		success: function(data) {
+			console.log(data);
+			var tr = $("<tr>");
+
+			var td1 = $("<td>").text(data.user.username + " ");
+			td1.append(
+				$('<span>').addClass('label label-'+data.user['level-name'].toLowerCase())
+					.text(data.user['level-name'])
+			);
+
+			var td2 = $("<td>").append(
+				$("<button>").addClass("btn btn-xs btn-danger btn-remove-from-acl")
+					.attr("data-id-user", data.user.id_user)
+					.html("&times;")
+					.click(removeACL)
+			);
+
+			tr.append(td1);
+			tr.append(td2);
+			$("#acl-table").append(tr);
+
+			sortACLTable();
+		},
+		error: function (error) {
+			console.log(error);
+			showError(getErrorMessage(error));
+		}
+	});
+}
+
+function removeACL() {
+	var $this = $(this);
+	var id_user = $this.attr("data-id-user");
+
+	console.log(id_user);
+	$.ajax({
+		url: APIdir + "/room/" + room_name + "/remove_acl",
+		type: 'POST',
+		dataType: 'json',
+		data: { id_user: id_user },
+		success: function(data) {
+			$this.closest('tr').remove();
+		},
+		error: function(error) {
+			console.log(error);
+			showError(getErrorMessage(error));
+		}
+	});
+}
+
 $(function(){
 	var changeFunc = function() {
 		if ($("input[name=gen_mode]:checked").val() == "auto") {
@@ -107,6 +181,9 @@ $(function(){
 	
 	$("#gen-auto").change(changeFunc);
 	$("#gen-manual").change(changeFunc);
-	
+
+	$('.btn-remove-from-acl').click(removeACL);
+	$('#add-acl-btn').click(addACL);
+
 	changeFunc();
 });

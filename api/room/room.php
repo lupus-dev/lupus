@@ -24,12 +24,10 @@ if (!$room)
         "error" => "Stanza non trovata",
         "code" => APIStatus::RoomNotFound));
 
-$admin = User::fromIdUser($room->id_admin);
-
-if ($admin->id_user != $user->id_user && $room->private)
+if (!$room->checkAuthorized($user))
     response (401, array(
         "error" => "La stanza non è accessibile all'utente'",
-        "code" => APIStatus::RoomAccessDenied));
+        "code" => APIStatus::AccessDenied));
 
 response(202, array(
     "room" => Room::makeResponse($room),

@@ -9,7 +9,13 @@
 
 if (!$login) 
     redirect("login");
+
 $room_name = $matches[1];
+$room = Room::fromRoomName($room_name);
+
+if (!$room->checkAuthorized($user))
+    redirect("index");
+
 ?>
 <!doctype html>
 <html>

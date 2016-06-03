@@ -6,6 +6,8 @@
  * - 2014 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
+require_once __DIR__ . "/../../../common/print_user_badge.php";
+
 $gen_info = $game->gen_info;
 
 $auto = ($gen_info["gen_mode"] == "auto") ? "checked" : "";
@@ -92,11 +94,51 @@ $aviableRoles = RoleDispenser::getAviableRoles($level->betaFeature);
             </table>
         </div>   
     </div>
-
-    <br>
-    <button class="btn btn-info" id="save" onclick="saveGame(false)">Salva</button>
-    <button class="btn btn-success pull-right" id="start" onclick="startGame()">Avvia</button>
 </div>
+<div class="col-md-6">
+    <?php if ($room->private == RoomPrivate::ACL) { ?>
+    <div id="acl-selection">
+        <label>Utenti autorizzati ad accedere alla stanza</label>
+        <div class="form-group">
+            <div class="input-group">
+                <input type="text" class="form-control" id="add-acl-text">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" id="add-acl-btn">+</button>
+                </span>
+            </div>
+        </div>
+        <table class="table" id="acl-table">
+            <tr>
+                <td>
+                    <?= $user->username ?>
+                    <?= printUserBadge($user) ?>
+                    <div class="label label-info">admin</div>
+                </td>
+                <td></td>
+            </tr>
+            <?php $acl_list = $room->getACLUsers(false); ?>
+            <?php foreach ($acl_list as $id_user) { ?>
+                <?php $acl = User::fromIdUser($id_user); ?>
+                <tr>
+                    <td>
+                        <?= $acl->username ?>
+                        <?= printUserBadge($acl) ?>
+                    </td>
+                    <td>
+                        <button class="btn btn-xs btn-danger btn-remove-from-acl"
+                                data-id-user="<?= $acl->id_user ?>">&times;</button>
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
+    </div>
+    <?php } ?>
+
+</div>
+<div class="clearfix"></div>
+<button class="btn btn-info" id="save" onclick="saveGame(false)">Salva</button>
+<button class="btn btn-success" id="start" onclick="startGame()">Avvia</button>
+
 <script>
     var room_name = "<?= $room_name ?>";
     var game_name = "<?= $game_name ?>";

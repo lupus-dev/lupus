@@ -48,6 +48,11 @@ CREATE TABLE `room` (
   `private` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `room_acl` (
+  `id_room` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `user` (
   `id_user` int(11) NOT NULL,
   `username` varchar(10) NOT NULL,
@@ -93,6 +98,10 @@ ALTER TABLE `room`
   ADD KEY `id_admin` (`id_admin`),
   ADD KEY `room_name` (`room_name`);
 
+ALTER TABLE `room_acl`
+  ADD PRIMARY KEY (`id_room`,`id_user`),
+  ADD KEY `id_user` (`id_user`);
+
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id_user`),
   ADD UNIQUE KEY `username` (`username`);
@@ -134,6 +143,10 @@ ALTER TABLE `player`
 
 ALTER TABLE `room`
   ADD CONSTRAINT `room_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `user` (`id_user`);
+
+ALTER TABLE `room_acl`
+  ADD CONSTRAINT `room_acl_ibfk_1` FOREIGN KEY (`id_room`) REFERENCES `room` (`id_room`),
+  ADD CONSTRAINT `room_acl_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`);
 
 ALTER TABLE `vote`
   ADD CONSTRAINT `vote_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `game` (`id_game`),

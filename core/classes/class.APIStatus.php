@@ -14,6 +14,7 @@ class APIStatus {
     // ---------- COMMON ----------
     const NotLoggedIn = 1;
     const FatalError = 2;
+    const AccessDenied = 3;
     // ---------- LOGIN ----------
     const LoginDone = 100;
     const LoginAlreadyDone = 101;
@@ -64,7 +65,6 @@ class APIStatus {
     // ---------- ROOM ----------
     const RoomFound = 180;
     const RoomNotFound = 181;
-    const RoomAccessDenied = 182;
     // ---------- USER ----------
     const UserFound = 190;
     const UserNotFound = 191;
@@ -115,4 +115,9 @@ class APIStatus {
     const PlayerKickNotValidState = 282;
     const PlayerKickMissingParameter = 283;
     const PlayerKickFailed = 284;
+    // ---------- ACL -----------
+    const ACLAlreadyPresent = 290;
+    const ACLCannotRemoveAdmin = 291;
+    const ACLNotFound = 292;
+    const ACLDone = 293;
 }

@@ -8,8 +8,6 @@
 
 require_once __DIR__ . "/../../common/print_game_status.php";
 
-$room_name = $matches[1];
-$room = Room::fromRoomName($room_name);
 $games = $room->getGame();
 
 $games = array_reverse($games);

@@ -18,6 +18,8 @@ $game = Game::fromRoomGameName($room_name, $game_name);
 
 if (!$game)
     require __DIR__ . "/not_found.php";
+else if (!$game->checkAuthorized($user))
+    redirect("index");
 else if ($game->status == GameStatus::Setup)
     require __DIR__ . "/setup.php";
 else if ($game->status == GameStatus::NotStarted)

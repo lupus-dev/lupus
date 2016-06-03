@@ -25,6 +25,11 @@ if (!$game)
         "error" => "Partita non trovata",
         "code" => APIStatus::GameNotFound));
 
+if (!$game->checkAuthorized($user))
+    response(403, array(
+        "error" => "Permessi insufficienti per accedere alla partita",
+        "code" => APIStatus::AccessDenied));
+
 response(202, array(
     "game" => Game::makeResponse($game),
     "code" => APIStatus::GameFound));

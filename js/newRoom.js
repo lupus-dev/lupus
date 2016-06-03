@@ -84,18 +84,16 @@ function newRoom() {
 		return;
 	var room_name = $("#room-name").val();
 	var room_descr = $("#room-desc").val();
-
-	data = {
-		descr: room_descr
-	};
-	if ($("#private").length > 0 && $("#private").prop("checked"))
-		data.private = true;
+	var private = $("input[name=private]:checked").val();
 
 	$.ajax({
 		url: APIdir + "/new_room/" + room_name,
 		type: 'GET',
 		dataType: 'json',
-		data: data,
+		data: {
+			descr: room_descr,
+			private: private
+		},
 		success: function() {
 			document.location.href = room_name;
 		},

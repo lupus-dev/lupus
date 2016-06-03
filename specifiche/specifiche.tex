@@ -354,6 +354,10 @@ Tutte le seguenti funzioni si intendono già nel percorso delle \API\ (es: \page
 
 \item \pageurl{/room/(room\_name)} Mostra le informazioni della stanza specificata
 
+\item \pageurl{/room/(room\_name)/add\_acl} Permette all'utente \texttt{username} in \texttt{POST} di accedere alla stanza
+
+\item \pageurl{/room/(room\_name)/remove\_acl} Nega all'utente \texttt{id\_user} in \texttt{POST} di accedere alla stanza
+
 \item \pageurl{/game/(room\_name)/(game\_name)} Mostra le informazioni della partita specificata
 
 \item \pageurl{/game/(room\_name)/(game\_name)/vote} Effettua la votazione di un utente. Il voto deve essere l'\texttt{username} dell'utente votato nel parametro \texttt{vote} in \GET.
@@ -385,6 +389,7 @@ I codici riconosciuti sono:
 \hline
 \apicode{1}{NotLoggedIn}{L'utente non è connesso e non può accedere a questa risorsa}
 \apicode{2}{FatalError}{Un errore grave interno al server può aver compromesso la partita}
+\apicode{3}{AccessDenied}{L'utente non ha i permessi per accedere alla risorsa richiesta}
 \hline
 \apicode{100}{LoginDone}{Login riuscito}
 \apicode{101}{LoginAlreadyDone}{Utente già connesso}
@@ -430,11 +435,10 @@ I codici riconosciuti sono:
 \apicode{172}{NewRoomRoomsEnded}{L'utente ha finito il numero di stanze che può creare}
 \apicode{173}{NewRoomPrivateRoomsEnded}{L'utente ha finito il numero di stanze private che può creare}
 \apicode{174}{NewRoomAlreadyExists}{Esiste già una stanza con questo nome}
-\apicode{175}{NewRoomMalformed}{Il parametro \texttt{descr} non è in un formato corretto}
+\apicode{175}{NewRoomMalformed}{Il parametro \texttt{descr} o \texttt{private} non è in un formato corretto}
 \hline
 \apicode{180}{RoomFound}{La stanza è stata trovata e verrà mostrata}
 \apicode{181}{RoomNotFound}{La stanza non è stata trovata}
-\apicode{182}{RoomAccessDenied}{La stanza non è accessibile all'utente}
 \hline
 \apicode{190}{UserFound}{L'utente è stato trovato e verrà mostrato}
 \apicode{191}{UserNotFound}{L'utente non è stato trovato}
@@ -491,6 +495,11 @@ I codici riconosciuti sono:
 \apicode{282}{PlayerKickNotValidState}{La partita non è in uno stato valido per espellere giocatori}
 \apicode{283}{PlayerKickMissingParameter}{Non è stato specificato un parametro}
 \apicode{284}{PlayerKickFailed}{L'espulsione è fallita (il giocatore non fa parte della partita?)}
+\hline
+\apicode{290}{ACLAlreadyPresent}{La regola ACL era già presente nell'elenco}
+\apicode{291}{ACLCannotRemoveAdmin}{Non è possibile rimuovere l'admin della stanza dall'ACL}
+\apicode{292}{ACLNotFound}{Non è possibile rimuovere l'ACL perchè non esiste}
+\apicode{293}{ACLDone}{L'inserimento o la rimozione è riuscita}
 \hline
 \end{tabular}
 }

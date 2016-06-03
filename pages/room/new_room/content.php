@@ -27,14 +27,27 @@ $aviablePrivate = min(array(
             <label for="room-desc">Descrizione della stanza</label>
             <input class="form-control" id="room-desc" onchange="checkRoomDescr()">
             <span class="glyphicon glyphicon-remove form-control-feedback" id="room-desc-icon"></span>
-        </div>    
-        <?php if ($canPrivate): ?>
-            <input type="checkbox" id="private"> <label for="private">Privata</label>
+        </div>
+        <div class="form-group">
+            <div class="radio">
+                <input type="radio" name="private" value="0" id="private-open" checked>
+                <label for="private-open">Aperta</label>
+            </div>
             <span>(ancora <?= $aviablePrivate ?>)</span>
-        <?php endif; ?>
-        <br>
-        <button class="btn btn-success btn-lg disabled" id="create" onclick="newRoom()">Crea!</button>
+            <?php if ($canPrivate) { ?>
+                <div class="radio">
+                    <input type="radio" name="private" value="1" id="private-link">
+                    <label for="private-link">Solo con link</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" name="private" value="2" id="private-acl">
+                    <label for="private-acl">Solo autorizzati</label>
+                </div>
+            <?php } ?>
+        </div>
     </div>
+    <div class="clearfix"></div>
+    <button class="btn btn-success btn-lg disabled" id="create" onclick="newRoom()">Crea!</button>
 <?php else: ?>
     <h3>Non puoi creare altre stanze!</h3>
     <p>Gioca e aumenta il tuo livello per sbloccare altre stanze!</p>
@@ -42,7 +55,7 @@ $aviablePrivate = min(array(
 <script>
     var mexName = "<ul><li>Il nome della stanza non può essere più lungo di 10 caratteri\
 <li>E' formato da sole lettere maiuscole/minuscole e numeri\
-<li>Il primo carattere deve essere una lettere\
+<li>Il primo carattere deve essere una lettera\
 <li>Il nome di una stanza è unico";
     var mexDesc = "<ul><li>La descrizione di una stanza non può essere più lunga di 45 caratteri\
 <li>Deve essere lunga almeno 2 caratteri\
