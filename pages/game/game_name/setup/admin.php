@@ -86,7 +86,7 @@ $aviableRoles = RoleDispenser::getAviableRoles($level->betaFeature);
                             <td><?= $role ?></td>
                             <td>
                                 <input type="number" data-role="<?= $role ?>" class="form-control input-sm manual-role"
-                                       value="<?= (isset($manualRoles[$role])) ? $manualRoles[$role] : "0" ?>">
+                                       value="<?= (isset($manualRoles[$role])) ? $manualRoles[$role] : "0" ?>" min="0">
                             </td>
                         </tr>
                     <?php endforeach; ?>
