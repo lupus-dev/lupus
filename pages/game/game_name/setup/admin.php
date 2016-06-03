@@ -100,12 +100,14 @@ $aviableRoles = RoleDispenser::getAviableRoles($level->betaFeature);
     <div id="acl-selection">
         <label>Utenti autorizzati ad accedere alla stanza</label>
         <div class="form-group">
-            <div class="input-group">
-                <input type="text" class="form-control" id="add-acl-text">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" id="add-acl-btn">+</button>
-                </span>
-            </div>
+            <form action="#" id="add-acl">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="add-acl-text">
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-default" id="add-acl-btn">+</button>
+                    </span>
+                </div>
+            </form>
         </div>
         <table class="table" id="acl-table">
             <tr>

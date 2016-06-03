@@ -15,8 +15,11 @@ $admin = ($room->id_admin == $user->id_user);
 <html>
     <head>
         <?php include __DIR__ . "/../../common/head.php"; ?>
+        <link rel="stylesheet" href="<?= $baseDir ?>/css/jquery-ui.min.css">
+        <link rel="stylesheet" href="<?= $baseDir ?>/css/jquery-ui.theme.min.css">
         <title>Setup in progress - Lupus in Tabula</title>
         <?php insertScript("default.js"); ?>
+        <?php insertScript("jquery/jquery-ui.min.js"); ?>
     </head>
     <body>
         <div class="container" role="main">

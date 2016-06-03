@@ -358,6 +358,8 @@ Tutte le seguenti funzioni si intendono già nel percorso delle \API\ (es: \page
 
 \item \pageurl{/room/(room\_name)/remove\_acl} Nega all'utente \texttt{id\_user} in \texttt{POST} di accedere alla stanza
 
+\item \pageurl{/room/(room\_name)/autocompletion} Specificando il parametro \texttt{q} in \texttt{GET} viene restituita una lista di username che assomigliano a \texttt{q}
+
 \item \pageurl{/game/(room\_name)/(game\_name)} Mostra le informazioni della partita specificata
 
 \item \pageurl{/game/(room\_name)/(game\_name)/vote} Effettua la votazione di un utente. Il voto deve essere l'\texttt{username} dell'utente votato nel parametro \texttt{vote} in \GET.

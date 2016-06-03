@@ -31,6 +31,7 @@ $apiPaths = array(
     "/^room\/($shortName)\/?$/" => "room/room.php",
     "/^room\/($shortName)\/add_acl\/?$/" => "room/add_acl.php",
     "/^room\/($shortName)\/remove_acl\/?$/" => "room/remove_acl.php",
+    "/^room\/($shortName)\/autocomplete\/?$/" => "room/autocomplete.php",
     "/^game\/($shortName)\/($shortName)\/?$/" => "game/game.php",
     "/^game\/($shortName)\/($shortName)\/vote\/?$/" => "game/vote.php",
     "/^game\/($shortName)\/($shortName)\/join\/?$/" => "game/join.php",

@@ -99,8 +99,8 @@ function sortACLTable() {
 		$rows = $('tbody > tr', $table);
 
 	$rows.sort(function (a, b) {
-		var keyA = $('td', a).text();
-		var keyB = $('td', b).text();
+		var keyA = $('td', a).text().trim();
+		var keyB = $('td', b).text().trim();
 
 		return (keyA > keyB) ? 1 : 0;
 	});
@@ -138,6 +138,7 @@ function addACL() {
 			tr.append(td1);
 			tr.append(td2);
 			$("#acl-table").append(tr);
+			$("#add-acl-text").val('');
 
 			sortACLTable();
 		},
@@ -146,6 +147,8 @@ function addACL() {
 			showError(getErrorMessage(error));
 		}
 	});
+
+	return false;
 }
 
 function removeACL() {
@@ -168,6 +171,28 @@ function removeACL() {
 	});
 }
 
+function setupACLAutocompletion() {
+	$("#add-acl-text").autocomplete({
+		source: function (request, response) {
+			$.ajax({
+				url: APIdir + '/room/' + room_name + '/autocomplete',
+				type: 'GET',
+				data: { q: request.term },
+				dataType: 'json',
+				success: function(data) {
+					var res = [];
+					for (var i in data)
+						res.push(data[i].username);
+					response(res);
+				},
+				error: function(error) {
+					console.log(error);
+				}
+			})
+		}
+	});
+}
+
 $(function(){
 	var changeFunc = function() {
 		if ($("input[name=gen_mode]:checked").val() == "auto") {
@@ -183,7 +208,8 @@ $(function(){
 	$("#gen-manual").change(changeFunc);
 
 	$('.btn-remove-from-acl').click(removeACL);
-	$('#add-acl-btn').click(addACL);
+	$('#add-acl').submit(addACL);
 
 	changeFunc();
+	setupACLAutocompletion();
 });
