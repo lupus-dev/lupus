@@ -29,14 +29,12 @@ $room = Room::fromRoomName($room_name);
 if (!$room)
     response (404, array(
         "error" => "Stanza non trovata",
-        "code" => APIStatus::RoomNotFound));
+        "code" => APIStatus::NotFound));
 
 if (!isset($_GET["q"]))
     response(400, array(
         "error" => "Specificare il parametro 'q'",
-        // TODO add APIStatus
-        "code" => -1
-    ));
+        "code" => APIStatus::MissingParameter));
 
 $q = $_GET["q"];
 

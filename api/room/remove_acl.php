@@ -20,7 +20,7 @@ $room = Room::fromRoomName($room_name);
 if (!$room)
     response (404, array(
         "error" => "Stanza non trovata",
-        "code" => APIStatus::RoomNotFound));
+        "code" => APIStatus::NotFound));
 
 if ($room->id_admin != $user->id_user)
     response(403, array(
@@ -30,7 +30,7 @@ if ($room->id_admin != $user->id_user)
 if (!isset($_POST["id_user"]))
     response(400, array(
         "error" => "Specificare il parametro id_user",
-        "code" => APIStatus::SetupMissingParameter));
+        "code" => APIStatus::MissingParameter));
 
 $id_user = $_POST["id_user"];
 
@@ -39,7 +39,7 @@ $acl = User::fromIdUser($id_user);
 if (!$acl)
     response(404, array(
         "error" => "L'utente non esiste",
-        "code" => APIStatus::UserNotFound));
+        "code" => APIStatus::NotFound));
 
 if ($acl->id_user == $room->id_admin)
     response(400, array(
@@ -50,7 +50,7 @@ if ($acl->id_user == $room->id_admin)
 if (!in_array($acl->id_user, $room->getACLUsers(false)))
     response(400, array(
         "error" => "L'utente non è presente nelle ACL",
-        "code" => APIStatus::ACLNotFound));
+        "code" => APIStatus::NotFound));
 
 $res = $room->removeACL($acl);
 
@@ -61,5 +61,5 @@ if (!$res)
 
 response(201, array(
     "status" => "Utente rimosso dall'ACL",
-    "code" => APIStatus::ACLDone
+    "code" => APIStatus::Done
 ));

@@ -20,7 +20,7 @@ $room = Room::fromRoomName($room_name);
 if (!$room)
     response (404, array(
         "error" => "Stanza non trovata",
-        "code" => APIStatus::RoomNotFound));
+        "code" => APIStatus::NotFound));
 
 if ($room->id_admin != $user->id_user)
     response(403, array(
@@ -30,7 +30,7 @@ if ($room->id_admin != $user->id_user)
 if (!isset($_POST["username"]))
     response(400, array(
         "error" => "Specificare il parametro username",
-        "code" => APIStatus::SetupMissingParameter));
+        "code" => APIStatus::MissingParameter));
 
 $username = $_POST["username"];
 
@@ -39,7 +39,7 @@ $acl = User::fromUsername($username);
 if (!$acl)
     response(404, array(
         "error" => "L'utente non esiste",
-        "code" => APIStatus::UserNotFound));
+        "code" => APIStatus::NotFound));
 
 if (in_array($acl->id_user, $room->getACLUsers(true)))
     response(400, array(
@@ -61,5 +61,5 @@ response(201, array(
         "level" => $acl->level,
         "level-name" => Level::getLevel($acl->level)->name
     ),
-    "code" => APIStatus::ACLDone
+    "code" => APIStatus::Done
 ));

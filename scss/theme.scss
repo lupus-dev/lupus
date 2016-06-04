@@ -203,6 +203,40 @@ table.first-col-small {
 	}
 }
 
+#notifications {
+	#notifications-refresh {
+		margin: 5px;
+	}
+
+	.dropdown-menu {
+		min-width: 360px !important;
+		max-height: 360px !important;
+		overflow-y: auto;
+		padding-bottom: 0px !important;
+		h4 { text-align: center; }
+
+		& > p { margin: 5px 20px; }
+
+		.notification-element {
+			color: black !important;
+			text-decoration: none !important;
+			display: block;
+			min-height: 50px;
+			padding: 5px;
+
+			border-top: 1px #bbb solid;
+
+			&:last-child:hover { border-radius: 0 0 4px 4px; }
+			&:hover { background-color: #eee; }
+
+			.btn-dismiss-notification {
+				padding: 3px;
+				float: right;
+			}
+		}
+	}
+}
+
 $background-neofita:		grey;
 $background-principiante:	#aaa;
 $background-gamer:			#c44;

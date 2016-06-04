@@ -22,7 +22,7 @@ $room = Room::fromRoomName($room_name);
 if (!$room)
     response (404, array(
         "error" => "Stanza non trovata",
-        "code" => APIStatus::RoomNotFound));
+        "code" => APIStatus::NotFound));
 
 if (!$room->checkAuthorized($user))
     response (401, array(
@@ -31,4 +31,4 @@ if (!$room->checkAuthorized($user))
 
 response(202, array(
     "room" => Room::makeResponse($room),
-    "code" => APIStatus::RoomFound));
+    "code" => APIStatus::Found));

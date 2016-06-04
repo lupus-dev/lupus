@@ -38,6 +38,7 @@ $_room = startsWith($request, "room") ? "active" : "";
             </ul>
             <?php if ($login): ?>
                 <div class="navbar-right">
+                    <?php require __DIR__ . "/notification.php"; ?>
                     <span class="navbar-text">
                         Benvenuto <?= $user->name ?> <?= $user->surname ?> 
                         <small>(<?= $user->username ?>)</small>

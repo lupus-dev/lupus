@@ -24,12 +24,12 @@ $game = Game::fromRoomGameName($room_name, $game_name);
 if (!$game)
     response(400, array(
         "error" => "La partita $room_name/$game_name non esiste",
-        "code" => APIStatus::GameNotFound));
+        "code" => APIStatus::NotFound));
 
 if (!$game->inGame($user->id_user))
     response(401, array(
         "error" => "Non fai parte di questa partita",
-        "code" => APIStatus::VoteAccessDenied));
+        "code" => APIStatus::AccessDenied));
 
 $gameStatus = $game->status;
 if ($gameStatus != GameStatus::Running)
@@ -40,7 +40,7 @@ if ($gameStatus != GameStatus::Running)
 if (!isset($_GET["vote"]))
     response(400, array(
         "error" => "Specificare il voto",
-        "code" => APIStatus::VoteMissingParameter));
+        "code" => APIStatus::MissingParameter));
 
 $vote = $_GET["vote"];
 

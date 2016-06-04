@@ -35,6 +35,7 @@ class Database {
         try {
             Database::$db = new PDO(Config::$db_string, Config::$db_user, Config::$db_password);
             Database::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            Database::$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         } catch (PDOException $e) {
             logEvent("Errore connessione DB", LogLevel::Error);
             logEvent($e->getMessage(), LogLevel::Error);
@@ -69,7 +70,7 @@ class Database {
      * che ritornano true. Un vettore nelle altre query
      */
     public static function query($sql, $options = []) {
-        logEvent("Query: $sql", LogLevel::Verbose);
+        logEvent("Query: $sql \nParametri: " . json_encode($options), LogLevel::Verbose);
 
         try {
             $query = Database::$db->prepare($sql);
@@ -81,7 +82,9 @@ class Database {
             return $query->fetchAll(PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
-            logEvent("Query fallita: " . $sql, LogLevel::Error);
+            logEvent("Query fallita:", LogLevel::Error);
+            logEvent($sql, LogLevel::Error);
+            logEvent("Parametri: " . json_encode($options), LogLevel::Error);
             logEvent($e->getMessage(), LogLevel::Error);
             logEvent($e->getTraceAsString(), LogLevel::Error);
             return false;

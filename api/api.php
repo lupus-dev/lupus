@@ -51,7 +51,9 @@ $apiPaths = array(
     "/^checkRoomDescr\/?$/" => "room/checkRoomDescr.php",
     "/^checkGameName\/?$/" => "game/checkGameName.php",
     "/^checkGameDescr\/?$/" => "game/checkGameDescr.php",
-    "/^debug\/?$/" => "debug.php",    
+    "/^notification\/dismiss\/?$/" => "notification/dismiss.php",
+    "/^notification\/update\/?$/" => "notification/update.php",
+    "/^debug\/?$/" => "debug.php",
 );
 
 // dentro apiMatches ci sono gli eventuali match della richiesta

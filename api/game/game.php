@@ -23,7 +23,7 @@ $game = Game::fromRoomGameName($room_name, $game_name);
 if (!$game)
     response (404, array(
         "error" => "Partita non trovata",
-        "code" => APIStatus::GameNotFound));
+        "code" => APIStatus::NotFound));
 
 if (!$game->checkAuthorized($user))
     response(403, array(
@@ -32,4 +32,4 @@ if (!$game->checkAuthorized($user))
 
 response(202, array(
     "game" => Game::makeResponse($game),
-    "code" => APIStatus::GameFound));
+    "code" => APIStatus::Found));

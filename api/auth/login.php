@@ -29,7 +29,7 @@ if (isset($apiMatches[1]))
 if (!isset($_GET["username"]) || !isset($_GET["password"]))
     response (400, array(
         "error" => "Specificare username e password",
-        "code" => APIStatus::LoginMissingParameter));
+        "code" => APIStatus::MissingParameter));
 
 $username = $_GET["username"];
 $password = $_GET["password"];
@@ -41,10 +41,10 @@ $id_user = User::checkLogin($username, $password);
 if (!$id_user)
     response (401, array(
         "error" => "Nome utente/password errati",
-        "code" => APIStatus::LoginFailed));
+        "code" => APIStatus::Fail));
 
 // altrimenti salva nella sessione il login
 $_SESSION["id_user"] = $id_user;
 response(202, array(
     "ok" => "Login effettuato",
-    "code" => APIStatus::LoginDone));
+    "code" => APIStatus::Done));

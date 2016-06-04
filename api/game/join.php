@@ -24,7 +24,7 @@ $game = Game::fromRoomGameName($room_name, $game_name);
 if (!$game)
     response(400, array(
         "error" => "La partita $room_name/$game_name non esiste",
-        "code" => APIStatus::GameNotFound));
+        "code" => APIStatus::NotFound));
 
 if ($game->inGame($user->id_user))
     response(401, array(

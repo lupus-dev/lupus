@@ -21,25 +21,24 @@ $game_name = $apiMatches[2];
 if (!isset($_GET["descr"]))
     response(400, array(
         "error" => "Specificare descr in GET",
-        "code" => APIStatus::NewGameMissingParameter));
+        "code" => APIStatus::MissingParameter));
 
 $game_descr = $_GET["descr"];
 
 if (!preg_match("/^$descr_name$/", $game_descr))
     response(400, array(
         "error" => "Il parametro descr non è in un formato corretto",
-        "code" => APIStatus::NewGameMalformed
-    ));
+        "code" => APIStatus::MalformedParameter));
 
 $room = Room::fromRoomName($room_name);
 if (!$room)
     response(404, array(
         "error" => "La stanza cercata non esiste",
-        "code" => APIStatus::RoomNotFound));
+        "code" => APIStatus::NotFound));
 if ($room->id_admin != $user->id_user)
     response(401, array(
         "error" => "La stanza non appartiene all'utente",
-        "code" => APIStatus::NewGameAccessDenied));
+        "code" => APIStatus::AccessDenied));
 
 if (!$room->isAllTerminated())
     response(401, array(
@@ -68,4 +67,4 @@ if (!$res)
 
 response(201, array(
     "game" => Game::makeResponse($res),
-    "code" => APIStatus::NewGameDone));
+    "code" => APIStatus::Done));

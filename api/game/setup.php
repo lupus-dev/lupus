@@ -22,8 +22,7 @@ $game_name = $apiMatches[2];
 if (!isset($_GET["descr"]) || !isset($_GET["gen_info"]))
     response(400, array(
         "error" => "Specificare descr e gen_info in GET",
-        "code" => APIStatus::SetupMissingParameter
-    ));
+        "code" => APIStatus::MissingParameter));
 
 $game_descr = $_GET["descr"];
 $gen_info = $_GET["gen_info"];
@@ -31,31 +30,29 @@ $gen_info = $_GET["gen_info"];
 if (!preg_match("/^$descr_name$/", $game_descr))
     response(400, array(
         "error" => "I parametri descr e gen_info non sono in un formato corretto",
-        "code" => APIStatus::SetupMalformed
-    ));
+        "code" => APIStatus::MalformedParameter));
 if (!isset($gen_info["gen_mode"]) ||
         !isset($gen_info["auto"]) || !isset($gen_info["auto"]["num_players"]) || !isset($gen_info["auto"]["roles"]) ||
         !isset($gen_info["manual"]) || !isset($gen_info["manual"]["roles"]))
     response(400, array(
         "error" => "I parametri descr e gen_info non sono in un formato corretto",
-        "code" => APIStatus::SetupMalformed
-    ));
+        "code" => APIStatus::MalformedParameter));
 
 $room = Room::fromRoomName($room_name);
 if (!$room)
     response(400, array(
         "error" => "La stanza $room_name non esiste",
-        "code" => APIStatus::RoomNotFound));
+        "code" => APIStatus::NotFound));
 $game = Game::fromRoomGameName($room_name, $game_name);
 if (!$game)
     response(400, array(
         "error" => "La partita $room_name/$game_name non esiste",
-        "code" => APIStatus::GameNotFound));
+        "code" => APIStatus::NotFound));
 
 if ($room->id_admin != $user->id_user)
     response(401, array(
         "error" => "Non sei l'amministratore di questa stanza",
-        "code" => APIStatus::SetupAccessDenied));
+        "code" => APIStatus::AccessDenied));
 
 if ($game->status != GameStatus::Setup)
     response(401, array(
@@ -69,17 +66,15 @@ if ($num_players < Config::$min_players || $num_players > Config::$max_players)
     response(400, array(
         "error" => "Troppi o troppo pochi giocatori: devono essere presenti almeno "
             . Config::$min_players . " e al più " . Config::$max_players . " giocatori",
-        "code" => APIStatus::SetupInvalidNumPlayers
-    ));
+        "code" => APIStatus::MalformedParameter));
 
 $res = $game->editGame($game_descr, $gen_info);
 
 if (!$res)
     response(500, array(
         "error" => "Errore interno nel modificare la partita",
-        "code" => APIStatus::FatalError
-    ));
+        "code" => APIStatus::FatalError));
 response(200, array(
     "game" => Game::makeResponse($game),
-    "code" => APIStatus::SetupSuccess
+    "code" => APIStatus::Done
 ));

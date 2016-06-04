@@ -375,6 +375,11 @@ Tutte le seguenti funzioni si intendono già nel percorso delle \API\ (es: \page
 \item \pageurl{/new\_room/(room\_name)} Crea una nuova stanza appartenente all'utente. Deve venire specificato il parametro \texttt{descr} in \GET. Può essere specificato il parametro \texttt{private} per rendere la stanza privata
 
 \item \pageurl{/new\_game/(room\_name)/(game\_name)} Crea una nuova partita nella stanza specificata. Devono venire specificati i parametri \texttt{descr} e \texttt{num\_players} in \GET.
+
+\item \pageurl{/notification/dismiss} Nasconde la notifica con l'\texttt{id\_notification} impostato in \texttt{POST}.
+
+\item \pageurl{/notification/update} Restituisce le ultime notifiche dell'utente dalla data \texttt{since}. È possibile ottenere le notifiche nascoste impostando \texttt{hidden} a 1. Di default vengono ritornate le ultime 5 notifiche, è possibile ottenerne un numero diverso impostando \texttt{limit}
+
 \end{itemize}
 
 \subsubsection{Codici di ritorno}
@@ -392,116 +397,63 @@ I codici riconosciuti sono:
 \apicode{1}{NotLoggedIn}{L'utente non è connesso e non può accedere a questa risorsa}
 \apicode{2}{FatalError}{Un errore grave interno al server può aver compromesso la partita}
 \apicode{3}{AccessDenied}{L'utente non ha i permessi per accedere alla risorsa richiesta}
+\apicode{4}{NotFound}{La risorsa richiesta non è stata trovata}
+\apicode{5}{MissingParameter}{Non è stato specificato un parametro richiesto}
+\apicode{6}{MalformedParameter}{Uno dei parametri non ha un formato corretto o è invalido}
+\apicode{7}{Done}{La richiesta è stata completata con successo}
+\apicode{8}{Fail}{La richiesta non è stata completata a causa di un errore}
+\apicode{9}{Found}{La risorsa è stata trovata}
 \hline
-\apicode{100}{LoginDone}{Login riuscito}
 \apicode{101}{LoginAlreadyDone}{Utente già connesso}
-\apicode{102}{LoginMissingParameter}{Mancano i parametri \texttt{username} e \texttt{password}}
-\apicode{103}{LoginFailed}{Credenziali di login errate}
-\hline
-\apicode{110}{LogoutDone}{Logout effettuato con successo}
-\apicode{111}{LogoutFailed}{Logout non riuscito perché l'utente non è connesso}
-\hline
-\apicode{120}{GameFound}{La partita è stata trovata e le informazioni sono visualizzate}
-\apicode{121}{GameNotFound}{La partita non è stata trovata}
 \hline
 \apicode{130}{JoinDoneGameStarted}{L'utente è entrato nella partita e questa è iniziata}
 \apicode{131}{JoinDoneGameWaiting}{L'utente è entrato nella partita ma questa è in attesa}
 \apicode{132}{JoinFailedAlreadyIn}{L'utente era già entrato nella partita}
 \apicode{133}{JoinFailedGameClose}{Non sono permessi ingressi}
 \apicode{134}{JoinFailedGameFull}{L'utente non è entrato nella partita perché è piena}
+\apicode{135}{JoinFailedGamesEnded}{La partità era finita, il giocatore non è entrato}
 \hline
-\apicode{140}{NewGameDone}{La partita è stata creata ed è in attesa che le sia dato il via}
-\apicode{141}{NewGameMissingParameter}{Non sono stati specificati parametri \texttt{descr} e \texttt{num\_players}}
-\apicode{142}{NewGameAccessDenied}{La stanza non appartiene all'utente}
 \apicode{143}{NewGameAlreadyRunning}{Una partita nella stanza è ancora in corso}
 \apicode{144}{NewGameAlreadyExists}{Esiste già una partita con questo nome nella stanza}
-\apicode{145}{NewGameNotEnouthPlayers}{Non è presente il numero minimo di giocatori}
-\apicode{146}{NewGameMalformed}{I parametri \texttt{descr} e \texttt{num\_players} non sono in un formato corretto}
 \hline
-\apicode{150}{StartDone}{La partita è iniziata e i giocatori possono entrare}
-\apicode{151}{StartAccessDenied}{La stanza non appartiene all'utente}
 \apicode{152}{StartNotInSetup}{La partita non è in fase di setup}
 \apicode{153}{StartWithoutLupus}{La partita non contiene lupi}
 \hline
 \apicode{160}{VoteDoneNextDay}{La votazione è stata effettuata e la partita è avanzata}
 \apicode{161}{VoteDoneWaiting}{La votazione è stata effettuata e la partita è in attesa}
 \apicode{162}{VoteDoneGameEnd}{La votazione è stata effettuata e la partita è terminata}
-\apicode{163}{VoteAccessDenied}{L'utente non fa parte della partita}
 \apicode{164}{VoteGameNotRunning}{La partita non è in corso}
-\apicode{165}{VoteMissingParameter}{Non è stato specificato il parametro \texttt{vote}}
 \apicode{166}{VoteNotValid}{Il voto dell'utente non è valido}
 \apicode{167}{VoteNotNeeded}{L'utente non deve votare o ha già votato}
 \hline
-\apicode{170}{NewRoomDone}{La stanza è stata creata}
-\apicode{171}{NewRoomMissingParameter}{Non è stato specificato il parametro \texttt{descr}}
 \apicode{172}{NewRoomRoomsEnded}{L'utente ha finito il numero di stanze che può creare}
 \apicode{173}{NewRoomPrivateRoomsEnded}{L'utente ha finito il numero di stanze private che può creare}
 \apicode{174}{NewRoomAlreadyExists}{Esiste già una stanza con questo nome}
-\apicode{175}{NewRoomMalformed}{Il parametro \texttt{descr} o \texttt{private} non è in un formato corretto}
-\hline
-\apicode{180}{RoomFound}{La stanza è stata trovata e verrà mostrata}
-\apicode{181}{RoomNotFound}{La stanza non è stata trovata}
-\hline
-\apicode{190}{UserFound}{L'utente è stato trovato e verrà mostrato}
-\apicode{191}{UserNotFound}{L'utente non è stato trovato}
 \hline
 \apicode{200}{CheckRoomNameAccepted}{Il nome della stanza è corretto ed accettabile}
-\apicode{201}{CheckRoomNameMissingParameter}{Non è stato specificato il parametro \texttt{room\_name}}
-\apicode{202}{CheckRoomNameMalformed}{Il nome della stanza ha un formato non corretto}
 \apicode{203}{CheckRoomNameExisting}{Il nome della stanza è già stato usato}
 \hline
 \apicode{210}{CheckRoomDescrAccepted}{La descrizione della stanza è accettabile}
-\apicode{211}{CheckRoomDescrMissingParameter}{Non è stato specificato il parametro \texttt{room\_descr}}
-\apicode{212}{CheckRoomDescrMalformed}{La descrizione della stanza ha un formato non corretto}
 \hline
 \apicode{220}{CheckGameNameAccepted}{Il nome della partita è corretto ed accettabile}
-\apicode{221}{CheckGameNameMissingParameter}{Non è stato specificato il parametro \texttt{room\_name} o \texttt{game\_name}}
-\apicode{222}{CheckGameNameMalformed}{Il nome della stanza ha un formato non corretto}
-\apicode{223}{CheckRoomNameNotFound}{La stanza della partita non esiste}
 \apicode{224}{CheckRoomNameExisting}{Il nome della partita è già stato usato in questa stanza}
 \hline
 \apicode{230}{CheckGameDescrAccepted}{La descrizione della partita è accettabile}
-\apicode{231}{CheckGameDescrMissingParameter}{Non è stato specificato il parametro \texttt{game\_descr}}
-\apicode{232}{CheckGameDescrMalformed}{La descrizione della partita ha un formato non corretto}
 \hline
-\apicode{240}{SetupSuccess}{La modifica delle impostazioni di una partita è riuscita}
-\apicode{241}{SetupAccessDenied}{Non si è l'amministratore della stanza}
 \apicode{242}{SetupNotInSetup}{La partita non è in fase di setup}
-\apicode{243}{SetupMissingParameter}{Non è stato specificato il parametro \texttt{descr} o \texttt{num\_players}}
 \hline
-\apicode{250}{SignupSuccess}{La registrazione è stata effettuata con successo}
-\apicode{251}{SignupMissingParameter}{Non sono stati specificati i parametri \texttt{username}, \texttt{password}, \texttt{name}, \texttt{surname}}
 \apicode{252}{SignupAlreadyExists}{Non è possibile registrare un utente con questo \texttt{username}}
-\apicode{253}{SignupMalformed}{Lo \texttt{username} fornito non è un nome breve}
 \hline
-\apicode{260}{ChatSuccess}{Il messaggio è stato inviato}
-\apicode{261}{ChatAccessDenied}{L'utente non ha i privilegi per inviare il messaggio}
-\apicode{262}{ChatMissingParameter}{Non è stato specificato un parametro necessario per l'invio del messaggio}
 \apicode{263}{ChatUserNotInGame}{L'utente non è nella partita}
 \apicode{264}{ChatInvalidUser}{Il destinatario del messaggio non è valido}
 \hline
 \apicode{270}{GameTerminated}{La partita è stata terminata dall'amministratore}
-\apicode{271}{GameTermNotAuthorized}{L'utente non ha i privilegi per terminare la partita}
 \apicode{272}{GameTermNotRunning}{La partita non era in corso}
 \hline
-\end{tabular}
-}
-
-\resizebox{\textwidth}{!} {
-\begin{tabular}{|rl|l|}
-\hline
-\textbf{\#} & \textbf{Abbreviazione} & \textbf{Descrizione} \\
-\hline
-\apicode{280}{PlayerKicked}{Il giocatore è stato espulso}
-\apicode{281}{PlayerKickNotAuthorized}{Il giocatore non è l'amministratore della stanza}
 \apicode{282}{PlayerKickNotValidState}{La partita non è in uno stato valido per espellere giocatori}
-\apicode{283}{PlayerKickMissingParameter}{Non è stato specificato un parametro}
-\apicode{284}{PlayerKickFailed}{L'espulsione è fallita (il giocatore non fa parte della partita?)}
 \hline
 \apicode{290}{ACLAlreadyPresent}{La regola ACL era già presente nell'elenco}
 \apicode{291}{ACLCannotRemoveAdmin}{Non è possibile rimuovere l'admin della stanza dall'ACL}
-\apicode{292}{ACLNotFound}{Non è possibile rimuovere l'ACL perchè non esiste}
-\apicode{293}{ACLDone}{L'inserimento o la rimozione è riuscita}
 \hline
 \end{tabular}
 }

@@ -15,8 +15,7 @@
 if (!$login)
     response (401, array(
         "error" => "Utente non connesso",
-        "code" => APIStatus::LogoutFailed
-        ));
+        "code" => APIStatus::Fail));
 
 // disconnette l'utente
 unset($_SESSION["id_user"]);
@@ -28,4 +27,4 @@ session_unset();
 // responso positivo
 response(202, array(
     "ok" => "Disconnesso",
-    "code" => APIStatus::LogoutDone));
+    "code" => APIStatus::Done));

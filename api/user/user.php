@@ -25,7 +25,7 @@ $reqUser = User::fromUsername($username);
 if (!$reqUser)
     response(404, array(
         "error" => "Utente non trovato",
-        "code" => APIStatus::UserNotFound));
+        "code" => APIStatus::NotFound));
 
 $level = Level::getLevel($user->level);
 
@@ -50,4 +50,4 @@ if ($username == $user->username)
 
 response(202, array(
     "user" => $result,
-    "code" => APIStatus::UserFound));
+    "code" => APIStatus::Found));

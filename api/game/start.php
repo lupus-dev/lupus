@@ -23,17 +23,17 @@ $room = Room::fromRoomName($room_name);
 if (!$room)
     response(400, array(
         "error" => "La stanza $room_name non esiste",
-        "code" => APIStatus::RoomNotFound));
+        "code" => APIStatus::NotFound));
 $game = Game::fromRoomGameName($room_name, $game_name);
 if (!$game)
     response(400, array(
         "error" => "La partita $room_name/$game_name non esiste",
-        "code" => APIStatus::GameNotFound));
+        "code" => APIStatus::NotFound));
 
 if ($room->id_admin != $user->id_user)
     response(401, array(
         "error" => "Non sei l'amministratore di questa stanza",
-        "code" => APIStatus::StartAccessDenied));
+        "code" => APIStatus::AccessDenied));
 
 if ($game->status != GameStatus::Setup)
     response(401, array(
@@ -50,4 +50,4 @@ $game->startGame();
 
 response(200, array(
     "game" => Game::makeResponse($game),
-    "code" => APIStatus::StartDone));
+    "code" => APIStatus::Done));

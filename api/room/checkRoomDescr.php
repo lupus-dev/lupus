@@ -19,16 +19,14 @@ if (!$login)
 if (!isset($_GET["room_descr"]))
     response(400, array(
         "error" => "Non è stato specificato il parametro room_descr",
-        "code" => APIStatus::CheckRoomDescrMissingParameter
-    ));
+        "code" => APIStatus::MissingParameter));
 
 $room_descr = $_GET["room_descr"];
 
 if (!preg_match("/^[a-zA-Z0-9][a-zA-Z0-9 ]{0,43}[a-zA-Z0-9]$/", $room_descr))
     response(200, array(
         "status" => false,
-        "code" => APIStatus::CheckRoomDescrMalformed
-    ));
+        "code" => APIStatus::MalformedParameter));
 
 response(200, array(
     "status" => true,

@@ -15,7 +15,7 @@ if (!$login)
 if (!isset($_GET["game_descr"]))
     response(400, array(
         "error" => "Non è stato specificato il parametro game_descr",
-        "code" => APIStatus::CheckGameDescrMissingParameter
+        "code" => APIStatus::MissingParameter
     ));
 
 $game_descr = $_GET["game_descr"];
@@ -23,7 +23,7 @@ $game_descr = $_GET["game_descr"];
 if (!preg_match("/^$descr_name$/", $game_descr))
     response(200, array(
         "status" => false,
-        "code" => APIStatus::CheckGameDescrMalformed
+        "code" => APIStatus::MalformedParameter
     ));
 
 response(200, array(

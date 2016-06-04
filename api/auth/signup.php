@@ -19,8 +19,7 @@ if ($login)
 if (!isset($_GET["username"]) || !isset($_GET["password"]) || !isset($_GET["name"]) || !isset($_GET["surname"]))
     response (400, array(
         "error" => "Specificare i parametri username,password,name,surname",
-        "code" => APIStatus::SignupMissingParameter
-    ));
+        "code" => APIStatus::MissingParameter));
 
 $username = $_GET["username"];
 $password = $_GET["password"];
@@ -30,8 +29,7 @@ $surname = $_GET["surname"];
 if (!preg_match("/^$shortName$/", $username))
     response (400, array(
         "error" => "Lo username è in un formato non valido",
-        "code" => APIStatus::SignupMalformed
-    ));
+        "code" => APIStatus::MalformedParameter));
 
 $user = User::fromUsername($username);
 
@@ -53,5 +51,5 @@ $_SESSION["id_user"] = $res->id_user;
 
 response(201, array(
     "status" => "ok",
-    "code" => APIStatus::SignupSuccess
+    "code" => APIStatus::Done
 ));

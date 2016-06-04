@@ -21,16 +21,16 @@ $room = Room::fromRoomName($room_name);
 if (!$room)
     response(404, array(
         "error" => "La stanza cercata non esiste",
-        "code" => APIStatus::RoomNotFound));
+        "code" => APIStatus::NotFound));
 if ($room->id_admin != $user->id_user)
     response(401, array(
         "error" => "La stanza non appartiene all'utente",
-        "code" => APIStatus::GameTermNotAuthorized));
+        "code" => APIStatus::NotAuthorized));
 $game = Game::fromRoomGameName($room_name, $game_name);
 if (!$game)
     response(400, array(
         "error" => "La partita $room_name/$game_name non esiste",
-        "code" => APIStatus::GameNotFound));
+        "code" => APIStatus::NotFound));
 
 if ($game->status != GameStatus::Running)
     response(422, array(

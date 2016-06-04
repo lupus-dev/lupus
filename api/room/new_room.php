@@ -17,7 +17,7 @@ if (!$login)
 if (!isset($_GET["descr"]))
     response(400, array(
         "error" => "Specificare una descrizione",
-        "code" => APIStatus::NewRoomMissingParameter));
+        "code" => APIStatus::MissingParameter));
 
 $room_name = $apiMatches[1];
 $room_descr = $_GET["descr"];
@@ -26,8 +26,7 @@ $private = isset($_GET["private"]) ? intval($_GET["private"]) : 0;
 if (!preg_match("/^$descr_name$/", $room_descr))
     response (400, array(
         "error" => "Il parametro descr non è in un formato corretto",
-        "code" => APIStatus::NewRoomMalformed
-    ));
+        "code" => APIStatus::MalformedParameter));
 
 $level = Level::getLevel($user->level);
 if (!$level)
@@ -49,7 +48,7 @@ if ($private && $numPrivateRooms+1 > $level->privateRoom)
 if ($private != RoomPrivate::Open && $private != RoomPrivate::LinkOnly && $private != RoomPrivate::ACL)
     response(400, array(
         "error" => "Il parametro private non è nel formato corretto",
-        "code" => APIStatus::NewRoomMalformed));
+        "code" => APIStatus::MalformedParameter));
 
 $existRoom = Room::checkIfExists($room_name);
 if ($existRoom)
@@ -66,4 +65,4 @@ if (!$res)
 
 response(201, array(
     "room" => Room::makeResponse($res),
-    "code" => APIStatus::NewRoomDone));
+    "code" => APIStatus::Done));

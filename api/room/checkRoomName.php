@@ -19,16 +19,14 @@ if (!$login)
 if (!isset($_GET["room_name"]))
     response(400, array(
         "error" => "Non è stato specificato il parametro room_name",
-        "code" => APIStatus::CheckRoomNameMissingParameter
-    ));
+        "code" => APIStatus::MissingParameter));
 
 $room_name = $_GET["room_name"];
 
 if (!preg_match("/^$shortName$/", $room_name))
     response(200, array(
         "status" => false,
-        "code" => APIStatus::CheckRoomNameMalformed
-    ));
+        "code" => APIStatus::MalformedParameter));
 
 $room = Room::checkIfExists($room_name);
 if ($room)

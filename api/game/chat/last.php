@@ -25,14 +25,13 @@ $game = Game::fromRoomGameName($room_name, $game_name);
 if (!$game)
     response (404, array(
         "error" => "Partita non trovata",
-        "code" => APIStatus::GameNotFound));
+        "code" => APIStatus::NotFound));
 
 $role = firstUpper(Role::getRole($user, $game));
 if (!$role)
     response (401, array(
         "error" => "L'utente non fa parte della partita",
-        "code" => APIStatus::ChatAccessDenied
-    ));
+        "code" => APIStatus::AccessDenied));
 
 $groups = $role::$chat_groups;
 $groups[] = ChatGroup::User;
@@ -41,21 +40,18 @@ $group = ChatGroup::getChatGroup($group_name);
 if (!in_array($group, $groups))
     response (401, array(
         "error" => "Il gruppo non è visibile all'utente",
-        "code" => APIStatus::ChatAccessDenied
-    ));
+        "code" => APIStatus::AccessDenied));
 
 if ($group == ChatGroup::User) {
     if (!isset($_GET["user"]))
         response (400, array(
             "error" => "Non è stato specificato il parametro user",
-            "code" => APIStatus::ChatMissingParameter
-        ));
+            "code" => APIStatus::MissingParameter));
     $dest_user = User::fromUsername($_GET["user"]);
     if (!$dest_user)
         response (404, array(
             "error" => "L'utente destinatario non esiste",
-            "code" => APIStatus::UserNotFound
-        ));
+            "code" => APIStatus::NotFound));
     if (!$game->inGame($dest_user->id_user))
         response (404, array(
             "error" => "L'utente destinatario non appartiene a questa partita",
@@ -73,7 +69,7 @@ if ($group == ChatGroup::User) {
 $last = Chat::getLastTimestamp($game, $user->id_user, $group, $dest);
 $response = array(
     "timestamp" => $last,
-    "code" => APIStatus::ChatSuccess
+    "code" => APIStatus::Done
 );
 
 if (isset($_GET["after"])) {

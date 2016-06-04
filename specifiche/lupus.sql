@@ -30,6 +30,15 @@ CREATE TABLE `game` (
   `gen_info` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `notification` (
+  `id_notification` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `message` varchar(200) NOT NULL,
+  `link` varchar(200) DEFAULT NULL,
+  `hidden` tinyint(4) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `player` (
   `id_role` int(11) NOT NULL,
   `id_game` int(11) NOT NULL,
@@ -88,6 +97,10 @@ ALTER TABLE `game`
   ADD KEY `id_room` (`id_room`),
   ADD KEY `game_name` (`game_name`);
 
+ALTER TABLE `notification`
+  ADD PRIMARY KEY (`id_notification`),
+  ADD KEY `id_user` (`id_user`);
+
 ALTER TABLE `player`
   ADD PRIMARY KEY (`id_role`),
   ADD KEY `id_game` (`id_game`,`id_user`),
@@ -118,6 +131,8 @@ ALTER TABLE `event`
   MODIFY `id_event` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `game`
   MODIFY `id_game` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `notification`
+  MODIFY `id_notification` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `player`
   MODIFY `id_role` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `room`
@@ -136,6 +151,9 @@ ALTER TABLE `event`
 
 ALTER TABLE `game`
   ADD CONSTRAINT `game_ibfk_1` FOREIGN KEY (`id_room`) REFERENCES `room` (`id_room`);
+
+ALTER TABLE `notification`
+  ADD CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`);
 
 ALTER TABLE `player`
   ADD CONSTRAINT `player_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `game` (`id_game`),

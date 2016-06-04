@@ -19,8 +19,7 @@ if (!$login)
 if (!isset($_GET["room_name"]) || !isset($_GET["game_name"]))
     response(400, array(
         "error" => "Non è stato specificato il parametro room_name e game_name",
-        "code" => APIStatus::CheckGameNameMissingParameter
-    ));
+        "code" => APIStatus::MissingParameter));
 
 $room_name = $_GET["room_name"];
 $game_name = $_GET["game_name"];
@@ -28,15 +27,13 @@ $game_name = $_GET["game_name"];
 if (!preg_match("/^$shortName$/", $room_name) || !preg_match("/^$shortName$/", $game_name))
    response(200, array(
         "status" => false,
-        "code" => APIStatus::CheckGameNameMalformed
-    ));
+        "code" => APIStatus::MalformedParameter));
 
 $room = Room::checkIfExists($room_name);
 if (!$room)
     response(200, array(
         "status" => false,
-        "code" => APIStatus::CheckGameNameNotFound
-    ));
+        "code" => APIStatus::NotFound));
 
 $game = Game::checkIfExists($room_name, $game_name);
 if ($game) 
