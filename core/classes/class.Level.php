@@ -133,6 +133,9 @@ class Level {
 
         logEvent("L'utente $user->username passa dal livello $user->level al livello $level", LogLevel::Debug);
 
+        $message = "<b>Congratulazioni!</b> Hai avanzato di livello, ora sei <em>{$levels[$level]->name}</em>";
+        Notification::addNotification($user, $message, "/index");
+
         $user->level = $level;
         return true;
     }

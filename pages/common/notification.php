@@ -10,7 +10,7 @@
 <ul class="nav navbar-nav">
     <li class="dropdown" id="notifications">
         <a href="#" id="notifications-toggle" class="dropdown-toggle" data-toggle="dropdown">
-            <span class="glyphicon glyphicon-record hidden-xs"></span>
+            <span class="glyphicon glyphicon-bell hidden-xs"></span>
             <span class="visible-xs">Notifiche</span>
         </a>
         <div class="dropdown-menu">

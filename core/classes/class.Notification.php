@@ -77,7 +77,7 @@ class Notification {
      * @return Notification|false Ritorna la notifica appena creata, false in caso di errore
      */
     public static function addNotification($user, $message, $link) {
-        $sql = "INSERT INTO notification (id_user, message, link, seen, hidden) VALUES (?, ?, ?, 0, 0)";
+        $sql = "INSERT INTO notification (id_user, message, link) VALUES (?, ?, ?)";
         $res = Database::query($sql, [$user->id_user, $message, $link]);
 
         if (!$res) return false;
