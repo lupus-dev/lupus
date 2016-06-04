@@ -10,7 +10,6 @@
 // inizializza tutto
 require_once __DIR__ . "/core/init.php";
 
-// TODO: permettere che la baseDir sia vuota
 $request = $_SERVER['REQUEST_URI'];
 $request = substr($request, strlen($baseDir)+1);  // +1 perchè va aggiunto /
 
