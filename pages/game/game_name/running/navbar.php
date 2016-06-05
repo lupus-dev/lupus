@@ -40,8 +40,8 @@ $dayName = $day ? "Giorno $d" : "Notte $d";
             <?php if ($login) { ?>
                 <div class="navbar-right">
                     <span class="navbar-text">
-                        Benvenuto <?= $user->name ?> <?= $user->surname ?> 
-                        <small>(<?= $user->username ?>)</small>
+                        Benvenuto <?= $user->name ?> <?= $user->surname ?>
+                        <a href="<?= $baseDir ?>/user"><small>(<?= $user->username ?>)</small></a>
                     </span>
                     <button type="button" class="btn btn-warning navbar-btn" onclick="logout()">Logout</button>
                 </div>

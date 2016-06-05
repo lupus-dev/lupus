@@ -101,7 +101,7 @@ function getDate(date) {
 }
 function getMessage(mex) {
 	var time = $("<span>").addClass("chat-time").text(getDate(mex.timestamp));
-	var from = $("<span>").addClass("chat-from").text(mex.from);
+	var from = $("<span>").addClass("chat-from").append($('<a>').attr('href', path+'/user/'+mex.from).text(mex.from));
 	var text = $("<span>").addClass("chat-mex").text(mex.text);
 
 	return $("<div>").addClass("chat-message").append(time).append(from).append(text);

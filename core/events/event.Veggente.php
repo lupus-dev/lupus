@@ -7,5 +7,5 @@
  */
 
 ?>
-<p>La tua palla di cristallo nuova ha appena guardato all'interno di <code><?= $username ?></code>,
+<p>La tua palla di cristallo nuova ha appena guardato all'interno di <code><a href="<?= $baseDir ?>/user/<?= $username ?>"><?= $username ?></a></code>,
 la chiara immagine di un volto <?= $mana ?> è comparso nella nebbia.</p>

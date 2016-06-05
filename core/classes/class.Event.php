@@ -456,6 +456,7 @@ class Event {
      * @return string Output del template
      */
     private static function getEventTemplate($file, $defined_vars = array()) {
+        global $baseDir;
         extract($defined_vars);
         ob_start();
         include __DIR__ . "/../events/event.$file.php";

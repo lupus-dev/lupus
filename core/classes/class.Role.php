@@ -204,6 +204,8 @@ abstract class Role {
         if ($votes[0]["id_user"] != $this->user->id_user)
             return true;
 
+        // TODO scegliere l'utente che mette al rogo tra coloro che hanno votato per la morte
+        // dell'utente, non l'ultimo che ha votato
         logEvent("L'utente {$this->user->username} è stato scelto per mettere al rogo", LogLevel::Debug);
 
         $candidates = array();
