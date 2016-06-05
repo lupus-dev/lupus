@@ -40,8 +40,9 @@ $_room = startsWith($request, "room") ? "active" : "";
                 <div class="navbar-right">
                     <?php require __DIR__ . "/notification.php"; ?>
                     <span class="navbar-text">
-                        Benvenuto <?= $user->name ?> <?= $user->surname ?> 
-                        <small>(<?= $user->username ?>)</small>
+                        Benvenuto
+                        <?= $user->name ?> <?= $user->surname ?>
+                        <a href="<?= $baseDir ?>/user"><small>(<?= $user->username ?>)</small></a>
                     </span>
                     <button type="button" class="btn btn-warning navbar-btn" onclick="logout()">Logout</button>
                 </div>

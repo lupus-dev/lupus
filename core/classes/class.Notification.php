@@ -101,7 +101,7 @@ class Notification {
         $sql = "SELECT * 
                 FROM notification 
                 WHERE id_user=? AND hidden<=? AND date>?
-                ORDER BY `date` DESC
+                ORDER BY hidden ASC, `date` DESC
                 LIMIT ?";
         $res = Database::query($sql, [$user->id_user, $includeHidden?1:0, $since->format("Y-m-d H:i:s"), $limit]);
 

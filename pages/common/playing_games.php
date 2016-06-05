@@ -15,7 +15,7 @@ $joinable = (count($user->getActiveGame()) + 1) <= $level->aviableGame;
 ?>
 <?php if (count($activeGames) > 0): ?>
     <div class="page-header">
-        <h1>Stai giocando in queste partite</h1>
+        <h2>Stai giocando in queste partite</h2>
     </div>
     <?php foreach ($activeGames as $game): ?>
         <h3>
@@ -27,7 +27,7 @@ $joinable = (count($user->getActiveGame()) + 1) <= $level->aviableGame;
 
 <?php else: ?>
     <div class="page-header">
-        <h1>Non stai giocando...</h1>
+        <h2>Non stai giocando...</h2>
     </div>    
 <?php endif; ?>
 <?php if ($joinable): ?>

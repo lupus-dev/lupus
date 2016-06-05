@@ -14,7 +14,7 @@ $endedGames = $user->getEndedGame();
 ?>
 <?php if (count($endedGames) > 0): ?>
     <div class="page-header">
-        <h1>Hai giocato in queste partite</h1>
+        <h2>Hai giocato in queste partite</h2>
     </div>
     <?php foreach ($endedGames as $game): ?>
         <p>

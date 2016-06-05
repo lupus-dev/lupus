@@ -33,7 +33,7 @@ CREATE TABLE `game` (
 CREATE TABLE `notification` (
   `id_notification` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `message` varchar(200) NOT NULL,
   `link` varchar(200) DEFAULT NULL,
   `hidden` tinyint(4) NOT NULL DEFAULT '0'

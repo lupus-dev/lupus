@@ -216,26 +216,29 @@ table.first-col-small {
 		h4 { text-align: center; }
 
 		& > p { margin: 5px 20px; }
-
-		.notification-element {
-			color: black !important;
-			text-decoration: none !important;
-			display: block;
-			min-height: 50px;
-			padding: 5px;
-
-			border-top: 1px #bbb solid;
-
-			&:last-child:hover { border-radius: 0 0 4px 4px; }
-			&:hover { background-color: #eee; }
-
-			.btn-dismiss-notification {
-				padding: 3px;
-				float: right;
-			}
-		}
 	}
 }
+
+.notification-element {
+	color: black !important;
+	text-decoration: none !important;
+	display: block;
+	min-height: 50px;
+	padding: 5px;
+
+	border-top: 1px #bbb solid;
+
+	&:last-child:hover { border-radius: 0 0 4px 4px; }
+	&:hover { background-color: #eee !important; }
+
+	&.notification-hidden { background-color: #e8e6f4; }
+
+	.btn-dismiss-notification {
+		padding: 3px;
+		float: right;
+	}
+}
+
 
 $background-neofita:		grey;
 $background-principiante:	#aaa;

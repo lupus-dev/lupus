@@ -205,10 +205,11 @@ class User {
 
     /**
      * Ottiene una lista delle partite in terminate appartenenti all'utente
+     * @param bool $includePrivate Indica se includere anche le partite private
      * @return array Ritorna un vettore di coppie. Ogni coppia contiene la chiave
      * room_name e la chiave game_name
      */
-    public function getEndedGame() {
+    public function getEndedGame($includePrivate = false) {
         $id_user = $this->id_user;
         $winy = GameStatus::Winy;
         // ottiene il game_name e la room_name
@@ -216,8 +217,8 @@ class User {
                   FROM game
                   JOIN room ON room.id_room = game.id_room
                   JOIN player ON player.id_game = game.id_game
-                  WHERE game.status>=? AND id_user=?";
-        $res = Database::query($query, [$winy, $id_user]);
+                  WHERE game.status>=? AND id_user=? AND room.private<=?";
+        $res = Database::query($query, [$winy, $id_user, $includePrivate ? 10 : 0]);
 
         $games = array();
         foreach ($res as $game)

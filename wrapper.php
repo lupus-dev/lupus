@@ -34,6 +34,8 @@ $paths = array(
     "/^room\/($shortName)\/?$/" => "room/room_name/room_name.php",
     "/^room\/_new\/?$/" => "room/new_room/new_room.php",
     "/^join\/?$/" => "join/join.php",
+	"/^user\/?$/" => "user/user.php",
+	"/^user\/($shortName)\/?/" => "user/user.php",
     // tutto quello che non è riconoscuto rimanda all'index
     "/.*/" => "index"
 );

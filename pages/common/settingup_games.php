@@ -16,7 +16,7 @@ $rooms = array_merge($user->getPublicRoom(), $user->getPrivateRoom());
 ?>
 <?php if (count($setupGames) > 0): ?>
     <div class="page-header">
-        <h1>Stai creando queste partite</h1>
+        <h2>Stai creando queste partite</h2>
     </div>
     <?php foreach ($setupGames as $game): ?>
         <h3>
