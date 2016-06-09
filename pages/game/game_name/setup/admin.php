@@ -19,7 +19,7 @@ $autoRoles = $gen_info["auto"]["roles"];
 $manualRoles = $gen_info["manual"]["roles"];
 
 $level = Level::getLevel($user->level);
-$aviableRoles = RoleDispenser::getAviableRoles($level->betaFeature);
+$aviableRoles = RoleDispenser::getAvailableRoles($level->betaFeature);
 ?>
 <div class="col-md-6">
     <div class="short-name">

@@ -85,7 +85,7 @@ abstract class Role {
      * Utente a cui appartiene il ruolo
      * @var \User
      */
-    protected $user;
+    public $user;
 
     /**
      * Moteore della partita che gestisce il ruolo

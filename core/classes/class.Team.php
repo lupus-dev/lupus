@@ -113,7 +113,7 @@ abstract class Team {
     public static function getRoles($team_name) {
         $roles = array();
         // tutti i ruoli disponibili
-        $all_roles = RoleDispenser::getAviableRoles(true);
+        $all_roles = RoleDispenser::getAvailableRoles(true);
         // cerca tra i ruoli quelli che appartengono ad una squadra
         foreach ($all_roles as $role)
             if ($role::$team_name == $team_name)

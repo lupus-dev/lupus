@@ -250,8 +250,10 @@ class Engine {
                 if (!RoleDispenser::Compute($this->game))
                     return Engine::BadRoleAssign;
                 // ottiene i ruoli renerati e avvia la partita
-                $this->getAllRoles();
+                $roles = $this->getAllRoles();
                 $this->game->status(GameStatus::Running);
+                foreach ($roles as $role)
+                    Achievement::triggerCompleteCheck($role->user, ["game" => $this->game], ["AtLeastKGames"], LogLevel::Debug);
                 break;
             default:
                 logEvent("Tempo non riconosciuto ({$this->game->day} => $time)", LogLevel::Warning);
