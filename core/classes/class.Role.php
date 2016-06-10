@@ -284,17 +284,26 @@ abstract class Role {
         $id_game = $this->engine->game->id_game;
         $id_user = $this->user->id_user;
 
-        $query = "SELECT data FROM player WHERE id_game=? AND id_user=?";
-        $res = Database::query($query, [$id_game, $id_user]);
+        $data = false;
 
-        if (!$res || count($res) != 1)
-            return false;
+        if (Database::$mongo) {
+            $d = Database::$mongo->roles->findOne(["id_game" => $id_game, "id_user" => $id_user]);
+            if ($d)
+                $data = $d["data"];
+        } else {
+            $query = "SELECT data FROM player WHERE id_game=? AND id_user=?";
+            $res = Database::query($query, [$id_game, $id_user]);
 
-        $data = json_decode($res[0]["data"], true);
-        if (!$data) {
-            logEvent("I dati dell'utente {$this->user->username} sono danneggiati", LogLevel::Notice);
-            return false;
+            if (!$res || count($res) != 1)
+                return false;
+
+            $data = json_decode($res[0]["data"], true);
+            if (!$data) {
+                logEvent("I dati dell'utente {$this->user->username} sono danneggiati", LogLevel::Notice);
+                return false;
+            }
         }
+
         return $data;
     }
 
@@ -306,16 +315,22 @@ abstract class Role {
      * @return boolean True se l'operazione ha esito positivo, false altrimenti
      */
     protected function setData($data) {
-        $json = json_encode($data);
-
         $id_game = $this->engine->game->id_game;
         $id_user = $this->user->id_user;
 
-        $query = "UPDATE player SET data=? WHERE id_game=? AND id_user=?";
-        $res = Database::query($query, [$json, $id_game, $id_user]);
-        if (!$res)
-            return false;
-        return true;
+        if (Database::$mongo) {
+            $res = Database::$mongo->roles->updateOne(
+                ["id_game" => $id_game, "id_user" => $id_user],
+                [ '$set' => ["data" => $data] ],
+                ["upsert" => true]);
+            return $res->getUpsertedCount() + $res->getModifiedCount() == 1;
+        } else {
+            $json = json_encode($data);
+
+            $query = "UPDATE player SET data=? WHERE id_game=? AND id_user=?";
+            $res = Database::query($query, [$json, $id_game, $id_user]);
+            return !!$res;
+        }
     }
 
     /**
