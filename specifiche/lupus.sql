@@ -1,6 +1,13 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
+CREATE TABLE `achievements` (
+  `id_achievement` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `achievement_name` varchar(50) NOT NULL,
+  `unlock_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `chat` (
   `id_chat` int(11) NOT NULL,
   `id_game` int(11) NOT NULL,
@@ -81,6 +88,11 @@ CREATE TABLE `vote` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+ALTER TABLE `achievements`
+  ADD PRIMARY KEY (`id_achievement`),
+  ADD UNIQUE KEY `id_user_2` (`id_user`,`achievement_name`),
+  ADD KEY `id_user` (`id_user`);
+
 ALTER TABLE `chat`
   ADD PRIMARY KEY (`id_chat`),
   ADD KEY `id_game` (`id_game`),
@@ -103,7 +115,7 @@ ALTER TABLE `notification`
 
 ALTER TABLE `player`
   ADD PRIMARY KEY (`id_role`),
-  ADD KEY `id_game` (`id_game`,`id_user`),
+  ADD UNIQUE KEY `id_game` (`id_game`,`id_user`) USING BTREE,
   ADD KEY `id_user` (`id_user`);
 
 ALTER TABLE `room`
@@ -125,6 +137,8 @@ ALTER TABLE `vote`
   ADD KEY `id_user` (`id_user`);
 
 
+ALTER TABLE `achievements`
+  MODIFY `id_achievement` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `chat`
   MODIFY `id_chat` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `event`
@@ -141,6 +155,9 @@ ALTER TABLE `user`
   MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `vote`
   MODIFY `id_vote` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `achievements`
+  ADD CONSTRAINT `achievements_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`);
 
 ALTER TABLE `chat`
   ADD CONSTRAINT `chat_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `game` (`id_game`),
