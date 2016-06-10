@@ -14,6 +14,11 @@ class AtLeastKGames extends Achievement {
      */
     public static $enabled = false;
 
+    /**
+     * Numero minimo di partite da giocare per sbloccare l'obiettivo,
+     * viene overridato dalle classe derivate
+     * @var int
+     */
     protected $K = 0;
 
     /**

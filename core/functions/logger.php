@@ -63,3 +63,55 @@ function logEvent($event, $level = LogLevel::Debug) {
     
     fclose($file);
 }
+
+function getErrorType($errno) {
+    switch($errno) {
+        case E_ERROR:               return "Error";
+        case E_WARNING:             return "Warning";
+        case E_PARSE:               return "Parse Error";
+        case E_NOTICE:              return "Notice";
+        case E_CORE_ERROR:          return "Core Error";
+        case E_CORE_WARNING:        return "Core Warning";
+        case E_COMPILE_ERROR:       return "Compile Error";
+        case E_COMPILE_WARNING:     return "Compile Warning";
+        case E_USER_ERROR:          return "User Error";
+        case E_USER_WARNING:        return "User Warning";
+        case E_USER_NOTICE:         return "User Notice";
+        case E_STRICT:              return "Strict Notice";
+        case E_RECOVERABLE_ERROR:   return "Recoverable Error";
+        default:                    return "Unknown error ($errno)";
+    }
+}
+
+function error_handler($errno, $errstr, $errfile, $errline, $errcontext) {
+    logEvent(getErrorType($errno) . ": " . $errstr, LogLevel::Error);
+    logEvent("On file: " . $errfile . " line " . $errline, LogLevel::Error);
+    logEvent("Error context: " . json_encode($errcontext, JSON_PRETTY_PRINT), LogLevel::Error);
+}
+
+function exception_handler($ex) {
+    logEvent("Exception: " . $ex->getMessage(), LogLevel::Error);
+    logEvent("On file {$ex->getFile()} line {$ex->getLine()}", LogLevel::Error);
+    foreach (explode("\n", $ex->getTraceAsString()) as $line)
+        logEvent("    " . $line, LogLevel::Error);
+
+    echo "<b>Exception</b>: " . $ex->getMessage() . "<br>";
+    echo "On file {$ex->getFile()} line {$ex->getLine()}" . "<br>";
+    echo "Stacktrace:<br>";
+    foreach (explode("\n", $ex->getTraceAsString()) as $line)
+        echo "    " . $line . "<br>";
+}
+
+/**
+ * Inizializza l'handler custom per gli errori e le eccezioni
+ */
+function initErrorHandler() {
+    $root_base = __DIR__ . "/../../";
+    $log_path = $root_base . Config::$log_path;
+
+    if (!is_writable($log_path))
+        return;
+
+    set_error_handler("error_handler");
+    set_exception_handler("exception_handler");
+}

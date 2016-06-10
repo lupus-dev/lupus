@@ -28,6 +28,9 @@ requireDir(__DIR__ . "/functions");
 
 // carica il file di configurazione
 Config::loadConfig();
+
+initErrorHandler();
+
 $db = Database::connect() || die();
 
 $baseDir = Config::$webapp_base;

@@ -80,6 +80,13 @@ class Engine {
     public $roles;
 
     /**
+     * Vettore temporaneo contenente gli utenti che hanno vinto la partita, viene
+     * riempito solo nella fase di chiusura della parita
+     * @var array
+     */
+    private $winners = array();
+
+    /**
      * Crea un nuovo motore basandosi sulla partita specificata
      * @param \Game $game Partita in cui il motore girerà
      */
@@ -280,6 +287,10 @@ class Engine {
         if ($endStatus <= GameStatus::DeadWin) {
             logEvent("La partita è terminata correttamente: codice $endStatus", LogLevel::Debug);
             $this->game->status($endStatus);
+
+            foreach ($this->winners as $user)
+                Achievement::triggerCompleteCheck($user, [], [ "AtLeastKWins" ]);
+
             return Engine::EndGame;
         }
         return false;
@@ -318,8 +329,11 @@ class Engine {
                 logEvent("La squadra {$team_name::$name} ha vinto", LogLevel::Debug);
 
                 $players = $team_obj->getAllTeam();
-                foreach ($players as $id_user)
-                    User::fromIdUser($id_user)->addKarma(Level::KARMA_PER_WIN);
+                foreach ($players as $id_user) {
+                    $user = User::fromIdUser($id_user);
+                    $user->addKarma(Level::KARMA_PER_WIN);
+                    $this->winners[] = $user;
+                }
 
                 return GameStatus::Winy + $team_name::$team_code;
             }

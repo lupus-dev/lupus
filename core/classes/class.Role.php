@@ -544,6 +544,7 @@ abstract class Role {
      * Verifica se $killer può uccidere $user
      * @param \User $user Utente da uccidere
      * @param \User $killer Utente che può uccidere
+     * @return bool True se l'utente è protetto, false altrimenti
      */
     protected function isProtected($user, $killer) {
         $id_user = "@" . $user->id_user;
