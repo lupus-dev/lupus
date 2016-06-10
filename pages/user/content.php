@@ -38,7 +38,7 @@ $allAchievements = Achievement::getAllAchievements();
                     <img src="<?= $baseDir ?>/img/achievements/<?= $achievement_name ?>.png" class="achievement-icon pull-left">
                     <h4><?= $a["name"] ?></h4>
                     <p><?= $a["description"] ?></p>
-                    <footer>Sbloccato il <?= $unlock_date ?></footer>
+                    <footer>Sbloccato il <?= (new DateTime($unlock_date))->format('d/m/Y \a\l\l\e H:i:s') ?></footer>
                 </div>
             </div>
         </div>
