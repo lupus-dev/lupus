@@ -28,17 +28,17 @@ abstract class Achievement {
     public static $description = "";
 
     /**
-     * Percorso dell'immagine che rappresenta l'obiettivo
-     * @var string
-     */
-    public static $image = "";
-
-    /**
      * Indica se l'obiettivo è attivo oppure no, è utile per nascondere degli
      * obiettivi o per fare dell'ereditarietà
      * @var bool
      */
     public static $enabled = true;
+
+    /**
+     * Indice di difficoltà dell'achievement
+     * @var int
+     */
+    public static $difficulty = 0;
 
     /**
      * Verifica se l'utente può sbloccare l'obiettivo
@@ -127,6 +127,38 @@ abstract class Achievement {
         }
     }
 
+    /**
+     * Ottiene una lista degli obiettivi sbloccati dall'utente
+     * @param User $user Utente da controllare
+     * @return bool|array False se si verifica un errore, un array di obiettivi altrimenti
+     */
+    public static function getUserAchievements($user) {
+        $sql = "SELECT * FROM achievements WHERE id_user=?";
+        $res = Database::query($sql, [$user->id_user]);
+        if ($res === false) return false;
+
+        $achievements = [];
+
+        foreach ($res as $a) {
+            $achievement_name = $a["achievement_name"];
+            $achievements[$achievement_name] = $a["unlock_date"];
+        }
+
+        return $achievements;
+    }
+
+    public static function getAchievementInfo($achievement_name) {
+        return [
+            "achievement_name" => $achievement_name,
+            "name" => $achievement_name::$name,
+            "description" => $achievement_name::$description
+        ];
+    }
+
+    /**
+     * Ritorna il nome dell'Achievement dell'istanza
+     * @return string
+     */
     protected function getAchievementName() {
         $class_name = get_class($this);
         return $class_name::$achievement_name;
@@ -162,6 +194,9 @@ abstract class Achievement {
                 logEvent("Nella cartella degli obiettivi è presente un file ($file) con nome non valido", LogLevel::Notice);
         }
 
+        usort($achievements, function ($a, $b) {
+            return $a::$difficulty > $b::$difficulty ? 1 : -1;
+        });
         return $achievements;
     }
 }

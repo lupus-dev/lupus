@@ -13,8 +13,8 @@ class AtLeast5Games extends AtLeastKGames {
     public static $achievement_name = "AtLeast5Games";
     public static $name = "Appena iniziato";
     public static $description = "Gioca almeno 5 partite";
-    public static $image = "?";
     public static $enabled = true;
+    public static $difficulty = 10;
     protected $K = 5;
 
 }

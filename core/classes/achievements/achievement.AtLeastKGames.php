@@ -6,13 +6,6 @@
  *   - 2016 Edoardo Morassutto <edoardo.morassutto@gmail.com>
  */
 
-/**
- * Lupus in Tabula
- *  ...un progetto di Edoardo Morassutto
- *  Contributors:
- *   - 2016 Edoardo Morassutto <edoardo.morassutto@gmail.com>
- */
-
 class AtLeastKGames extends Achievement {
 
     /**

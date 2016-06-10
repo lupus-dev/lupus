@@ -239,6 +239,19 @@ table.first-col-small {
 	}
 }
 
+.achievement {
+	h4 {
+		font-weight: bold;
+		margin-bottom: 0;
+	}
+	.achievement-icon {
+		height: 70px;
+		margin: 5px;
+	}
+	footer {
+		font-style: italic;
+	}
+}
 
 $background-neofita:		grey;
 $background-principiante:	#aaa;
